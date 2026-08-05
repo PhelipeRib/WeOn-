@@ -95,12 +95,12 @@
     pre.code-block { background: #111420; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 0.85em; overflow-x: auto; color: #79c0ff; border-left: 3px solid var(--accent); }
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
 
-    /* KANBAN INTERATIVO DINÂMICO */
+    /* ESTILIZAÇÃO ESTILO JIRA PARA O KANBAN */
     .kanban-board {
       display: flex;
       gap: 15px;
       overflow-x: auto;
-      padding-bottom: 10px;
+      padding-bottom: 12px;
     }
     
     .kanban-column {
@@ -108,7 +108,7 @@
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 15px;
-      min-width: 230px;
+      min-width: 250px;
       flex: 1;
       transition: background 0.2s, border-color 0.2s;
     }
@@ -124,32 +124,56 @@
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 8px;
       word-break: break-word;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .cards-container { min-height: 80px; }
 
+    /* CARDS ESTILO JIRA */
     .kanban-card {
-      background: #22273d;
-      border: 1px solid var(--border-color);
+      background: #1e2235;
+      border: 1px solid #2d334d;
+      border-left: 4px solid var(--accent);
       border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
       font-size: 0.85em;
       cursor: grab;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      position: relative;
     }
-    .kanban-card:hover { border-color: #3b4261; }
+    .kanban-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,255,204,0.15); }
     .kanban-card:active { cursor: grabbing; transform: scale(0.98); }
-    .kanban-card h4 { color: var(--text-main); font-weight: 600; margin-bottom: 4px; }
-    .kanban-card p.obs-text { color: var(--text-muted); font-size: 0.75em; margin-top: 4px; line-height: 1.2; word-break: break-word; }
-    .kanban-card span.add-obs { color: var(--accent); font-size: 0.7em; opacity: 0.6; display: inline-block; margin-top: 4px; }
-    .kanban-card:hover span.add-obs { opacity: 1; }
+    
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .card-title { color: var(--text-main); font-weight: 700; font-size: 0.95em; word-break: break-word; }
+    .btn-edit-card { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85em; transition: color 0.2s; padding: 2px 4px; }
+    .btn-edit-card:hover { color: var(--accent); }
 
-    /* MODAL E TOAST */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
-    .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; }
-    .modal-content h3 { margin-bottom: 15px; color: var(--accent); font-size: 1.1em; }
-    .modal-content textarea { width: 100%; height: 100px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 10px; margin-bottom: 15px; resize: vertical; }
+    .card-obs-area { color: var(--text-muted); font-size: 0.8em; line-height: 1.3; margin-top: 6px; word-break: break-word; }
+    .card-obs-area b, .card-obs-area strong { color: #fff; font-weight: 700; }
+    .card-obs-area u { text-decoration: underline; }
+    .card-obs-area i { font-style: italic; }
+
+    .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; color: var(--accent); background: rgba(0, 255, 204, 0.1); padding: 2px 6px; border-radius: 4px; margin-top: 8px; }
+
+    /* MODAL FORMATADOR ESTILO JIRA */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+    .modal-content h3 { margin-bottom: 12px; color: var(--accent); font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+
+    /* TOOLBAR DE FORMATAÇÃO */
+    .editor-toolbar { display: flex; gap: 6px; margin-bottom: 8px; background: var(--bg-input); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap; }
+    .editor-btn { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 9px; border-radius: 4px; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
+    .editor-btn:hover { background: var(--accent); color: #0f111a; font-weight: bold; }
+    .editor-select { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px; border-radius: 4px; font-size: 0.8em; }
+
+    .rich-editor { width: 100%; min-height: 120px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 12px; margin-bottom: 15px; outline: none; font-size: 0.9em; line-height: 1.4; overflow-y: auto; max-height: 250px; }
+    .rich-editor:focus { border-color: var(--accent); }
+
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
 
     #toast { visibility: hidden; min-width: 200px; background-color: var(--accent); color: #0f111a; font-weight: bold; font-size: 0.85em; text-align: center; border-radius: 6px; padding: 12px; position: fixed; z-index: 2000; right: 20px; bottom: 20px; box-shadow: 0 4px 15px rgba(0,255,204,0.3); transition: opacity 0.3s, bottom 0.3s; opacity: 0; }
@@ -373,14 +397,31 @@ Empresa:
     </div>
   </div>
 
-  <!-- MODAL DE OBSERVAÇÃO DO CARD -->
+  <!-- MODAL DE EDIÇÃO ESTILO JIRA COM TOOLBAR -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
-      <h3 id="modalClienteNome">Editar Observação</h3>
-      <textarea id="modalObsInput" placeholder="Digite uma nota/obs para este cliente..."></textarea>
+      <h3 id="modalClienteNome"><i class="fab fa-jira"></i> Editar Card</h3>
+      
+      <!-- TOOLBAR DE FORMATAÇÃO DE TEXTO -->
+      <div class="editor-toolbar">
+        <button class="editor-btn" onclick="formatDoc('bold')" title="Negrito"><b>B</b></button>
+        <button class="editor-btn" onclick="formatDoc('italic')" title="Itálico"><i>I</i></button>
+        <button class="editor-btn" onclick="formatDoc('underline')" title="Sublinhado"><u>U</u></button>
+        <button class="editor-btn" onclick="formatDoc('insertUnorderedList')" title="Lista"><i class="fas fa-list-ul"></i></button>
+        <select class="editor-select" onchange="formatDoc('foreColor', this.value)">
+          <option value="#f8f9fa">Texto Branco</option>
+          <option value="#00ffcc">Destaque Ciano</option>
+          <option value="#ffb703">Alerta Amarelo</option>
+          <option value="#ff4a4a">Bloqueio Vermelho</option>
+        </select>
+      </div>
+
+      <!-- EDITOR RICO HTML -->
+      <div id="modalObsEditor" class="rich-editor" contenteditable="true"></div>
+
       <div class="modal-actions">
         <button class="btn-widget" onclick="fecharModal()">Cancelar</button>
-        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarObservacao()">Salvar</button>
+        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarObservacao()">Salvar Alterações</button>
       </div>
     </div>
   </div>
@@ -413,13 +454,12 @@ Empresa:
       });
     }
 
-    // 3. Copiar Código Inteiro
     function copyCodeBlock(btnElement) {
       const code = document.getElementById("curlCode").innerText;
       copyText(code, btnElement);
     }
 
-    // 4. Busca Inteligente + Auto Abertura de Abas
+    // 3. Busca Inteligente
     function filterItems() {
       const input = document.getElementById('searchInput').value.toLowerCase();
       const wrappers = document.querySelectorAll('.target-search');
@@ -443,7 +483,7 @@ Empresa:
       });
     }
 
-    // 5. Widget de Notas Rápidas
+    // 4. Bloco de Notas Local Storage
     window.onload = function() {
       const savedNotes = localStorage.getItem('weon_quick_notes');
       if (savedNotes) document.getElementById('quickNotes').value = savedNotes;
@@ -460,11 +500,9 @@ Empresa:
       }
     }
 
-    // 6. Exports
     function downloadTXT() {
       const text = document.getElementById('quickNotes').value;
       if (!text.trim()) return alert("O bloco de notas está vazio!");
-      
       const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -475,10 +513,8 @@ Empresa:
     function downloadDOCX() {
       const text = document.getElementById('quickNotes').value;
       if (!text.trim()) return alert("O bloco de notas está vazio!");
-
       const formattedText = text.split('\n').map(line => `<w:p><w:r><w:t>${escapeXml(line)}</w:t></w:r></w:p>`).join('');
       const docxTemplate = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${formattedText}</w:body></w:document>`;
-
       const blob = new Blob([docxTemplate], { type: 'application/msword' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -490,9 +526,9 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 7. INTEGRAÇÃO OTIMIZADA BIDIRECIONAL COM GOOGLE SHEETS
+    // 5. KANBAN BIDIRECIONAL COM EDITOR ESTILO JIRA
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
-    const APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT'; // <-- MANTENHA A URL DO SEU APPS SCRIPT AQUI!
+    const APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT'; // Coloque sua URL do Apps Script se for usar gravação automática
 
     let cardElementoAtual = null;
     let clienteAtualObs = { cliente: '', col: 0 };
@@ -543,13 +579,17 @@ Empresa:
                 colObj.cardsHTML += `
                   <div class="kanban-card" draggable="true" 
                        ondragstart="drag(event)" 
-                       onclick="abrirModalObs(this, '${clienteNome}', ${cellIndex})"
                        data-cliente="${clienteNome}" 
                        data-col="${cellIndex}"
                        data-obs="">
-                    <h4>${clienteNome}</h4>
-                    <p class="obs-text"></p>
-                    <span class="add-obs"><i class="fas fa-pen"></i> Editar nota</span>
+                    <div class="card-top">
+                      <span class="card-title">${clienteNome}</span>
+                      <button class="btn-edit-card" onclick="abrirModalObs(this.closest('.kanban-card'), '${clienteNome}', ${cellIndex})" title="Editar Detalhes">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </div>
+                    <div class="card-obs-area"></div>
+                    <div class="card-badge"><i class="fas fa-tasks"></i> Implantação</div>
                   </div>
                 `;
               }
@@ -579,7 +619,7 @@ Empresa:
       }
     }
 
-    // DRAG & DROP FLUIDO NA INTERFACE
+    // DRAG AND DROP
     function allowDrop(ev) {
       ev.preventDefault();
       ev.currentTarget.classList.add('drag-over');
@@ -590,7 +630,7 @@ Empresa:
     }
 
     function drag(ev) {
-      const card = ev.target;
+      const card = ev.currentTarget;
       ev.dataTransfer.setData("text/plain", JSON.stringify({
         cliente: card.getAttribute('data-cliente'),
         origemCol: parseInt(card.getAttribute('data-col'))
@@ -608,7 +648,6 @@ Empresa:
 
       if (data.origemCol === destinoCol) return;
 
-      // Move o elemento na tela instantaneamente
       const cardsContainer = column.querySelector('.cards-container');
       const emptyText = cardsContainer.querySelector('p');
       if (emptyText) emptyText.remove();
@@ -618,7 +657,6 @@ Empresa:
 
       mostrarToast("Card movido!");
 
-      // Envia para a planilha em segundo plano
       if(APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('COLE_AQUI')) {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -634,14 +672,18 @@ Empresa:
       }
     }
 
-    // MODAL DE OBSERVAÇÃO INSTANTÂNEO
+    // FORMATAÇÃO DE TEXTO NO MODAL
+    function formatDoc(cmd, value = null) {
+      document.execCommand(cmd, false, value);
+    }
+
     function abrirModalObs(cardEl, cliente, col) {
       cardElementoAtual = cardEl;
       clienteAtualObs = { cliente, col };
       
       const obsAtual = cardEl.getAttribute('data-obs') || '';
-      document.getElementById('modalClienteNome').innerText = `Observação: ${cliente}`;
-      document.getElementById('modalObsInput').value = obsAtual;
+      document.getElementById('modalClienteNome').innerHTML = `<i class="fab fa-jira"></i> Editar: ${cliente}`;
+      document.getElementById('modalObsEditor').innerHTML = obsAtual;
       document.getElementById('obsModal').style.display = 'flex';
     }
 
@@ -650,16 +692,16 @@ Empresa:
     }
 
     function salvarObservacao() {
-      const obs = document.getElementById('modalObsInput').value;
+      const obsHtml = document.getElementById('modalObsEditor').innerHTML;
       
       if (cardElementoAtual) {
-        cardElementoAtual.setAttribute('data-obs', obs);
-        const pObs = cardElementoAtual.querySelector('.obs-text');
-        pObs.innerText = obs ? `📌 ${obs}` : '';
+        cardElementoAtual.setAttribute('data-obs', obsHtml);
+        const obsArea = cardElementoAtual.querySelector('.card-obs-area');
+        obsArea.innerHTML = obsHtml;
       }
 
       fecharModal();
-      mostrarToast("Observação salva!");
+      mostrarToast("Card atualizado!");
 
       if (APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('COLE_AQUI')) {
         fetch(APPS_SCRIPT_URL, {
@@ -670,7 +712,7 @@ Empresa:
             acao: 'salvarObs',
             cliente: clienteAtualObs.cliente,
             col: clienteAtualObs.col,
-            obs: obs
+            obs: obsHtml
           })
         });
       }
