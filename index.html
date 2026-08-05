@@ -95,7 +95,7 @@
     pre.code-block { background: #111420; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 0.85em; overflow-x: auto; color: #79c0ff; border-left: 3px solid var(--accent); }
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
 
-    /* ESTILIZAÇÃO KANBAN COM CARDS COMPACTOS / RECLUSOS */
+    /* ESTILIZAÇÃO KANBAN DINÂMICO */
     .kanban-board {
       display: flex;
       gap: 15px;
@@ -128,7 +128,7 @@
 
     .cards-container { min-height: 80px; }
 
-    /* CARD COMPACTO (RECLUSO POR PADRÃO) */
+    /* CARD COMPACTO COM PREVIA ESTILIZADA */
     .kanban-card {
       background: #1e2235;
       border: 1px solid #2d334d;
@@ -140,7 +140,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      max-height: 110px; /* Limite máximo para não ficar gigante */
+      max-height: 110px;
       overflow: hidden;
       position: relative;
     }
@@ -152,14 +152,13 @@
     .btn-edit-card { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85em; transition: color 0.2s; padding: 2px 4px; }
     .btn-edit-card:hover { color: var(--accent); }
 
-    /* PREVIA RECLUSA DO TEXTO DA OBSERVAÇÃO (MÁXIMO 2 LINHAS) */
     .card-obs-area { 
       color: var(--text-muted); 
       font-size: 0.78em; 
       line-height: 1.3; 
       word-break: break-word;
       display: -webkit-box;
-      -webkit-line-clamp: 2; /* Corta em 2 linhas max */
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -175,7 +174,7 @@
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.68em; color: var(--accent); background: rgba(0, 255, 204, 0.1); padding: 2px 6px; border-radius: 4px; }
     .card-expand-hint { font-size: 0.68em; color: var(--text-muted); opacity: 0.7; }
 
-    /* MODAL DE EDIÇÃO EXPANDIDO */
+    /* MODAL DE EDIÇÃO COM SELEÇÃO FLUIDA DE FONTE/COR */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.78); align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 25px; border-radius: 12px; width: 92%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
     .modal-content h3 { margin-bottom: 15px; color: var(--accent); font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
@@ -185,13 +184,13 @@
     .input-card-title { width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; font-weight: bold; font-size: 0.95em; }
     .input-card-title:focus { outline: none; border-color: var(--accent); }
 
-    /* TOOLBAR DE FORMATAÇÃO E FONTE */
+    /* TOOLBAR FLUIDA SEM PERDER O FOCO */
     .editor-toolbar { display: flex; gap: 6px; margin-bottom: 8px; background: var(--bg-input); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap; align-items: center; }
     .editor-btn { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 9px; border-radius: 4px; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
     .editor-btn:hover { background: var(--accent); color: #0f111a; font-weight: bold; }
-    .editor-select { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 6px; border-radius: 4px; font-size: 0.8em; }
+    .editor-select { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 6px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
 
-    .rich-editor { width: 100%; min-height: 140px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 12px; margin-bottom: 15px; outline: none; font-size: 0.9em; line-height: 1.4; overflow-y: auto; max-height: 280px; }
+    .rich-editor { width: 100%; min-height: 150px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 12px; margin-bottom: 15px; outline: none; font-size: 0.9em; line-height: 1.4; overflow-y: auto; max-height: 280px; }
     .rich-editor:focus { border-color: var(--accent); }
 
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
@@ -422,7 +421,6 @@ Empresa:
     <div class="modal-content">
       <h3><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
       
-      <!-- EDITE O TÍTULO DO CARD AQUI -->
       <div class="input-title-group">
         <label>Título do Card / Cliente:</label>
         <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Nome do card/cliente...">
@@ -430,23 +428,25 @@ Empresa:
 
       <label style="display:block; font-size:0.75em; color:var(--text-muted); margin-bottom:4px; font-weight:600; text-transform:uppercase;">Descrição / Anotações:</label>
       
-      <!-- TOOLBAR DE FORMATAÇÃO E TAMANHO DE FONTE -->
+      <!-- TOOLBAR COM PREVENÇÃO DE PERDA DE SELEÇÃO -->
       <div class="editor-toolbar">
-        <button class="editor-btn" onclick="formatDoc('bold')" title="Negrito"><b>B</b></button>
-        <button class="editor-btn" onclick="formatDoc('italic')" title="Itálico"><i>I</i></button>
-        <button class="editor-btn" onclick="formatDoc('underline')" title="Sublinhado"><u>U</u></button>
-        <button class="editor-btn" onclick="formatDoc('insertUnorderedList')" title="Lista"><i class="fas fa-list-ul"></i></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('bold')" title="Negrito"><b>B</b></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('italic')" title="Itálico"><i>I</i></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('underline')" title="Sublinhado"><u>U</u></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Lista"><i class="fas fa-list-ul"></i></button>
         
         <!-- SELETOR DE TAMANHO DE FONTE -->
-        <select class="editor-select" onchange="formatDoc('fontSize', this.value)">
-          <option value="3">Tamanho Normal</option>
-          <option value="1">Fonte Pequena</option>
-          <option value="4">Fonte Grande</option>
-          <option value="6">Fonte Gigante</option>
+        <select class="editor-select" onmousedown="salvarSelecaoTexto()" onchange="formatDoc('fontSize', this.value); this.selectedIndex=0;">
+          <option value="" disabled selected>Tamanho Fonte</option>
+          <option value="2">Pequena</option>
+          <option value="3">Normal</option>
+          <option value="5">Grande</option>
+          <option value="6">Gigante</option>
         </select>
 
         <!-- SELETOR DE COR DA FONTE -->
-        <select class="editor-select" onchange="formatDoc('foreColor', this.value)">
+        <select class="editor-select" onmousedown="salvarSelecaoTexto()" onchange="formatDoc('foreColor', this.value); this.selectedIndex=0;">
+          <option value="" disabled selected>Cor da Fonte</option>
           <option value="#f8f9fa">Branco</option>
           <option value="#00ffcc">Ciano Destaque</option>
           <option value="#ffb703">Amarelo Alerta</option>
@@ -455,7 +455,7 @@ Empresa:
       </div>
 
       <!-- EDITOR RICO HTML -->
-      <div id="modalObsEditor" class="rich-editor" contenteditable="true"></div>
+      <div id="modalObsEditor" class="rich-editor" contenteditable="true" onkeyup="salvarSelecaoTexto()" onclick="salvarSelecaoTexto()"></div>
 
       <div class="modal-actions">
         <button class="btn-widget" onclick="fecharModal()">Cancelar</button>
@@ -478,7 +478,7 @@ Empresa:
       });
     });
 
-    // 2. Copiar Texto com feedback visual
+    // 2. Copiar Texto
     function copyText(text, btnElement) {
       navigator.clipboard.writeText(text).then(() => {
         const icon = btnElement.querySelector('i');
@@ -564,12 +564,13 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 5. KANBAN BIDIRECIONAL COM CARDS RECLUSOS E TÍTULOS EDITÁVEIS
+    // 5. KANBAN BIDIRECIONAL COM SELEÇÃO DE TEXTO FLUIDA
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT'; 
 
     let cardElementoAtual = null;
     let clienteAtualObs = { cliente: '', col: 0 };
+    let savedRange = null; // Guarda a seleção exata do cursor no editor
 
     function mostrarToast(mensagem) {
       const toast = document.getElementById("toast");
@@ -659,7 +660,7 @@ Empresa:
       }
     }
 
-    // DRAG AND DROP
+    // DRAG AND DROP FLUIDO
     function allowDrop(ev) {
       ev.preventDefault();
       ev.currentTarget.classList.add('drag-over');
@@ -712,9 +713,28 @@ Empresa:
       }
     }
 
-    // FORMATAÇÃO NO MODAL
+    // GESTÃO DE SELEÇÃO E FORMATAÇÃO DE TEXTO
+    function salvarSelecaoTexto() {
+      const sel = window.getSelection();
+      if (sel.getRangeAt && sel.rangeCount) {
+        savedRange = sel.getRangeAt(0);
+      }
+    }
+
+    function restaurarSelecaoTexto() {
+      if (savedRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedRange);
+      }
+    }
+
     function formatDoc(cmd, value = null) {
+      const editor = document.getElementById('modalObsEditor');
+      editor.focus();
+      restaurarSelecaoTexto();
       document.execCommand(cmd, false, value);
+      salvarSelecaoTexto();
     }
 
     function abrirModalObs(cardEl, col) {
@@ -726,6 +746,10 @@ Empresa:
       document.getElementById('modalTitleInput').value = clienteNome;
       document.getElementById('modalObsEditor').innerHTML = obsAtual;
       document.getElementById('obsModal').style.display = 'flex';
+
+      setTimeout(() => {
+        document.getElementById('modalObsEditor').focus();
+      }, 100);
     }
 
     function fecharModal() {
@@ -737,13 +761,11 @@ Empresa:
       const obsHtml = document.getElementById('modalObsEditor').innerHTML;
       
       if (cardElementoAtual) {
-        // Atualiza título do card se tiver mudado
         if (novoTitulo) {
           cardElementoAtual.setAttribute('data-cliente', novoTitulo);
           cardElementoAtual.querySelector('.card-title').innerText = novoTitulo;
         }
 
-        // Atualiza a prévia compacta do card
         cardElementoAtual.setAttribute('data-obs', obsHtml);
         const obsArea = cardElementoAtual.querySelector('.card-obs-area');
         obsArea.innerHTML = obsHtml;
