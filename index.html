@@ -444,7 +444,7 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 7. INTEGRAÇÃO KANBAN <-> MODELO PLANILHA WEON
+    // 7. INTEGRAÇÃO DIRETA COM SUA PLANILHA WEON (SEM DADOS FAKES)
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
 
     async function carregarKanbanDoSheets() {
@@ -452,38 +452,9 @@ Empresa:
       const colGoLive = document.getElementById('cards-golive');
       const colCS = document.getElementById('cards-cs');
 
-      const mockData = [
-        { cliente: 'Empresa Exemplo Alpha', detalhes: 'Ajustando Bot de Atendimento', status: 'Onboarding' },
-        { cliente: 'Empresa Exemplo Beta', detalhes: 'Homologação de IP & cURL', status: 'GoLive' },
-        { cliente: 'Empresa Exemplo Gamma', detalhes: 'Implantação OK. Passado para CS', status: 'CS' }
-      ];
-
-      const renderCards = (data) => {
-        colOnboarding.innerHTML = '';
-        colGoLive.innerHTML = '';
-        colCS.innerHTML = '';
-
-        data.forEach(item => {
-          const cardHTML = `
-            <div class="kanban-card">
-              <h4>${item.cliente}</h4>
-              <p>${item.detalhes}</p>
-            </div>
-          `;
-
-          const statusNormalizado = (item.status || '').toLowerCase().trim();
-
-          if (statusNormalizado.includes('onboard') || statusNormalizado.includes('novademanda') || statusNormalizado.includes('primeirocontato')) {
-            colOnboarding.innerHTML += cardHTML;
-          } else if (statusNormalizado.includes('golive') || statusNormalizado.includes('go-live') || statusNormalizado.includes('kickoff') || statusNormalizado.includes('setup')) {
-            colGoLive.innerHTML += cardHTML;
-          } else if (statusNormalizado.includes('cs') || statusNormalizado.includes('concluido') || statusNormalizado.includes('finalizado')) {
-            colCS.innerHTML += cardHTML;
-          } else {
-            colOnboarding.innerHTML += cardHTML;
-          }
-        });
-      };
+      colOnboarding.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Buscando dados...</p>';
+      colGoLive.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Buscando dados...</p>';
+      colCS.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Buscando dados...</p>';
 
       try {
         const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
@@ -493,55 +464,60 @@ Empresa:
         const jsonData = JSON.parse(text.substring(47, text.length - 2));
         const rows = jsonData.table.rows;
 
+        colOnboarding.innerHTML = '';
+        colGoLive.innerHTML = '';
+        colCS.innerHTML = '';
+
         if (!rows || rows.length <= 1) {
-          renderCards(mockData);
+          colOnboarding.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Nenhum cliente cadastrado.</p>';
           return;
         }
 
-        const realData = [];
-        
-        // Lê as linhas a partir da linha 1 (pulando o cabeçalho)
+        // Percorre as linhas a partir da linha 1 (pulando o cabeçalho)
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
-          if (!row.c) continue;
+          if (!row || !row.c) continue;
 
-          // Nome da Empresa (geralmente primeira célula)
-          let cliente = '';
-          let detalhes = 'Em acompanhamento';
-          let statusIndex = 0;
+          // Coluna A (0) = Cliente | Coluna B (1) = Status | Coluna C (2) = Observação
+          const cliente = row.c[0] ? row.c[0].v : '';
+          const status = row.c[1] ? row.c[1].v : '';
+          const obs = row.c[2] ? row.c[2].v : '';
 
-          // Procura qual célula tem o nome do cliente e qual a última etapa marcada na horizontal
-          for (let col = 0; col < row.c.length; col++) {
-            if (row.c[col] && row.c[col].v !== null && row.c[col].v !== '') {
-              if (!cliente) {
-                cliente = row.c[col].v;
-              } else {
-                statusIndex = col;
-                detalhes = `Etapa atual: Coluna ${col + 1}`;
-              }
-            }
+          if (!cliente) continue;
+
+          const cardHTML = `
+            <div class="kanban-card">
+              <h4>${cliente}</h4>
+              <p>${status ? '<b>' + status + '</b>' : ''}${obs ? ' - ' + obs : ''}</p>
+            </div>
+          `;
+
+          const statusUpper = String(status).toUpperCase().trim();
+
+          if (
+            statusUpper.includes('FINALIZADO') || 
+            statusUpper.includes('SETUP REALIZADO') ||
+            statusUpper.includes('CS')
+          ) {
+            colCS.innerHTML += cardHTML;
+          } 
+          else if (
+            statusUpper.includes('SETUP EM ANDAMENTO') || 
+            statusUpper.includes('KICK OFF') || 
+            statusUpper.includes('LIBEROU ACESSO') ||
+            statusUpper.includes('GOLIVE') ||
+            statusUpper.includes('GO-LIVE')
+          ) {
+            colGoLive.innerHTML += cardHTML;
+          } 
+          else {
+            colOnboarding.innerHTML += cardHTML;
           }
-
-          if (cliente) {
-            let statusName = 'Onboarding';
-            if (statusIndex >= 6) {
-              statusName = 'CS';
-            } else if (statusIndex >= 3) {
-              statusName = 'GoLive';
-            }
-            realData.push({ cliente, detalhes, status: statusName });
-          }
-        }
-
-        if (realData.length > 0) {
-          renderCards(realData);
-        } else {
-          renderCards(mockData);
         }
 
       } catch (error) {
-        console.warn("Lendo dados de exemplo:", error);
-        renderCards(mockData);
+        console.error("Erro ao conectar com o Google Sheets:", error);
+        colOnboarding.innerHTML = '<p style="font-size:0.8em; color:#ff4a4a;">Erro ao carregar dados da planilha. Verifique a publicação.</p>';
       }
     }
 
