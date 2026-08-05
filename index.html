@@ -444,7 +444,7 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 7. INTEGRAÇÃO DIRETA COM SUA PLANILHA WEON (SEM DADOS FAKES)
+    // 7. INTEGRAÇÃO ADAPTADA À SUA PLANILHA HORIZONTAL
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
 
     async function carregarKanbanDoSheets() {
@@ -462,62 +462,63 @@ Empresa:
         const text = await response.text();
         
         const jsonData = JSON.parse(text.substring(47, text.length - 2));
+        const cols = jsonData.table.cols;
         const rows = jsonData.table.rows;
 
         colOnboarding.innerHTML = '';
         colGoLive.innerHTML = '';
         colCS.innerHTML = '';
 
-        if (!rows || rows.length <= 1) {
+        if (!rows || rows.length === 0) {
           colOnboarding.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Nenhum cliente cadastrado.</p>';
           return;
         }
 
-        // Percorre as linhas a partir da linha 1 (pulando o cabeçalho)
-        for (let i = 1; i < rows.length; i++) {
-          const row = rows[i];
-          if (!row || !row.c) continue;
+        // Mapeia os títulos das colunas (Linha 1 da planilha)
+        const headerNames = cols.map(col => col ? (col.label || '') : '');
 
-          // Coluna A (0) = Cliente | Coluna B (1) = Status | Coluna C (2) = Observação
-          const cliente = row.c[0] ? row.c[0].v : '';
-          const status = row.c[1] ? row.c[1].v : '';
-          const obs = row.c[2] ? row.c[2].v : '';
+        // Varre cada linha (cliente)
+        rows.forEach(row => {
+          if (!row || !row.c) return;
 
-          if (!cliente) continue;
+          // Descobre a última coluna preenchida para esta empresa
+          let ultimaColuna = -1;
+          let nomeCliente = '';
+          let etapaNome = '';
+
+          row.c.forEach((cell, index) => {
+            if (cell && cell.v !== null && String(cell.v).trim() !== '') {
+              if (!nomeCliente) nomeCliente = String(cell.v);
+              ultimaColuna = index;
+              if (headerNames[index]) etapaNome = headerNames[index];
+            }
+          });
+
+          if (!nomeCliente) return;
 
           const cardHTML = `
             <div class="kanban-card">
-              <h4>${cliente}</h4>
-              <p>${status ? '<b>' + status + '</b>' : ''}${obs ? ' - ' + obs : ''}</p>
+              <h4>${nomeCliente}</h4>
+              <p>${etapaNome ? '📌 ' + etapaNome : 'Em andamento'}</p>
             </div>
           `;
 
-          const statusUpper = String(status).toUpperCase().trim();
-
-          if (
-            statusUpper.includes('FINALIZADO') || 
-            statusUpper.includes('SETUP REALIZADO') ||
-            statusUpper.includes('CS')
-          ) {
+          // Agrupa as colunas da sua planilha (A até K) nas 3 abas do Kanban
+          if (ultimaColuna >= 6) { 
+            // Colunas G, H (Setup Realizado, Finalizado/Treinamento) -> CS
             colCS.innerHTML += cardHTML;
-          } 
-          else if (
-            statusUpper.includes('SETUP EM ANDAMENTO') || 
-            statusUpper.includes('KICK OFF') || 
-            statusUpper.includes('LIBEROU ACESSO') ||
-            statusUpper.includes('GOLIVE') ||
-            statusUpper.includes('GO-LIVE')
-          ) {
+          } else if (ultimaColuna >= 4) { 
+            // Colunas E, F (Cliente preencheu BP, Setup em andamento) -> Go-Live
             colGoLive.innerHTML += cardHTML;
-          } 
-          else {
+          } else { 
+            // Colunas A, B, C, D ou Bloqueios -> Onboarding
             colOnboarding.innerHTML += cardHTML;
           }
-        }
+        });
 
       } catch (error) {
         console.error("Erro ao conectar com o Google Sheets:", error);
-        colOnboarding.innerHTML = '<p style="font-size:0.8em; color:#ff4a4a;">Erro ao carregar dados da planilha. Verifique a publicação.</p>';
+        colOnboarding.innerHTML = '<p style="font-size:0.8em; color:#ff4a4a;">Erro ao carregar dados da planilha.</p>';
       }
     }
 
