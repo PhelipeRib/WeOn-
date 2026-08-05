@@ -16,11 +16,6 @@
       --text-main: #f8f9fa;
       --text-muted: #a0aec0;
       --border-color: #2d3142;
-
-      /* Cores do Kanban integradas ao seu padrão */
-      --status-onboarding: #ffb703;
-      --status-golive: #00b4d8;
-      --status-cs: #00ffcc;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
@@ -100,18 +95,46 @@
     pre.code-block { background: #111420; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 0.85em; overflow-x: auto; color: #79c0ff; border-left: 3px solid var(--accent); }
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
 
-    /* CSS do Kanban */
-    .kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-    @media (max-width: 768px) { .kanban-board { grid-template-columns: 1fr; } }
-    .kanban-column { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; }
-    .kanban-header { font-size: 0.85em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .kanban-column.onboarding .kanban-header { color: var(--status-onboarding); }
-    .kanban-column.golive .kanban-header { color: var(--status-golive); }
-    .kanban-column.cs .kanban-header { color: var(--status-cs); }
-    .kanban-card { background: #22273d; border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; margin-bottom: 10px; }
+    /* CSS DO KANBAN DINÂMICO (Rola na horizontal se tiver muitas colunas na planilha) */
+    .kanban-board {
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    
+    .kanban-column {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      min-width: 220px;
+      flex: 1;
+    }
+
+    .kanban-header {
+      font-size: 0.8em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .kanban-card {
+      background: #22273d;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 0.85em;
+    }
     .kanban-card:last-child { margin-bottom: 0; }
-    .kanban-card h4 { font-size: 0.95em; color: var(--text-main); margin-bottom: 4px; }
-    .kanban-card p { font-size: 0.8em; color: var(--text-muted); }
+    .kanban-card h4 { color: var(--text-main); font-weight: 600; margin-bottom: 4px; }
+    .kanban-card p { color: var(--text-muted); font-size: 0.8em; }
 
     .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 20px; }
   </style>
@@ -151,7 +174,7 @@
       </div>
     </div>
 
-    <!-- SEÇÃO KANBAN DINÂMICO GOOGLE SHEETS -->
+    <!-- SEÇÃO KANBAN 100% DINÂMICO (PUXA TUDO DO SHEETS) -->
     <h2><i class="fas fa-users-cog"></i> Acompanhamento de Clientes</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible">
@@ -160,19 +183,9 @@
       </button>
       <div class="content">
         <div class="content-inner">
-          <div class="kanban-board">
-            <div class="kanban-column onboarding">
-              <div class="kanban-header"><i class="fas fa-clock"></i> Onboarding / Setup</div>
-              <div id="cards-onboarding"></div>
-            </div>
-            <div class="kanban-column golive">
-              <div class="kanban-header"><i class="fas fa-rocket"></i> Homologação / Go-Live</div>
-              <div id="cards-golive"></div>
-            </div>
-            <div class="kanban-column cs">
-              <div class="kanban-header"><i class="fas fa-check-circle"></i> Passagem p/ CS</div>
-              <div id="cards-cs"></div>
-            </div>
+          <!-- O JavaScript vai injetar as colunas e os cards AQUI DENTRO dinamicamente! -->
+          <div class="kanban-board" id="kanban-board">
+            <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas da planilha...</p>
           </div>
         </div>
       </div>
@@ -444,17 +457,11 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 7. INTEGRAÇÃO ADAPTADA À SUA PLANILHA HORIZONTAL
+    // 7. GERADOR DE KANBAN 100% DINÂMICO A PARTIR DA PLANILHA
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
 
     async function carregarKanbanDoSheets() {
-      const colOnboarding = document.getElementById('cards-onboarding');
-      const colGoLive = document.getElementById('cards-golive');
-      const colCS = document.getElementById('cards-cs');
-
-      colOnboarding.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Buscando dados...</p>';
-      colGoLive.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Buscando dados...</p>';
-      colCS.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Buscando dados...</p>';
+      const boardContainer = document.getElementById('kanban-board');
 
       try {
         const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
@@ -465,60 +472,68 @@ Empresa:
         const cols = jsonData.table.cols;
         const rows = jsonData.table.rows;
 
-        colOnboarding.innerHTML = '';
-        colGoLive.innerHTML = '';
-        colCS.innerHTML = '';
+        boardContainer.innerHTML = '';
 
-        if (!rows || rows.length === 0) {
-          colOnboarding.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Nenhum cliente cadastrado.</p>';
+        if (!cols || cols.length === 0) {
+          boardContainer.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Nenhuma coluna encontrada na planilha.</p>';
           return;
         }
 
-        // Mapeia os títulos das colunas (Linha 1 da planilha)
-        const headerNames = cols.map(col => col ? (col.label || '') : '');
+        // 1. Pega os nomes das colunas da Linha 1 da planilha
+        const colunasMap = [];
+        cols.forEach((col, index) => {
+          if (col && col.label && col.label.trim() !== '') {
+            colunasMap.push({
+              index: index,
+              nome: col.label.trim(),
+              cardsHTML: ''
+            });
+          }
+        });
 
-        // Varre cada linha (cliente)
-        rows.forEach(row => {
-          if (!row || !row.c) return;
+        if (colunasMap.length === 0) {
+          boardContainer.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Configure os títulos das colunas na Linha 1 da planilha.</p>';
+          return;
+        }
 
-          // Descobre a última coluna preenchida para esta empresa
-          let ultimaColuna = -1;
-          let nomeCliente = '';
-          let etapaNome = '';
+        // 2. Percorre cada cliente da planilha e insere na coluna correspondente
+        if (rows && rows.length > 0) {
+          rows.forEach(row => {
+            if (!row || !row.c) return;
 
-          row.c.forEach((cell, index) => {
-            if (cell && cell.v !== null && String(cell.v).trim() !== '') {
-              if (!nomeCliente) nomeCliente = String(cell.v);
-              ultimaColuna = index;
-              if (headerNames[index]) etapaNome = headerNames[index];
-            }
+            // Varre as células do cliente
+            row.c.forEach((cell, cellIndex) => {
+              if (cell && cell.v !== null && String(cell.v).trim() !== '') {
+                // Encontra a coluna correspondente
+                const colObj = colunasMap.find(c => c.index === cellIndex);
+                if (colObj) {
+                  colObj.cardsHTML += `
+                    <div class="kanban-card">
+                      <h4>${String(cell.v)}</h4>
+                    </div>
+                  `;
+                }
+              }
+            });
           });
+        }
 
-          if (!nomeCliente) return;
-
-          const cardHTML = `
-            <div class="kanban-card">
-              <h4>${nomeCliente}</h4>
-              <p>${etapaNome ? '📌 ' + etapaNome : 'Em andamento'}</p>
+        // 3. Monta o HTML das colunas dinâmicas no Dashboard
+        colunasMap.forEach(col => {
+          const colDiv = document.createElement('div');
+          colDiv.className = 'kanban-column';
+          colDiv.innerHTML = `
+            <div class="kanban-header">${col.nome}</div>
+            <div class="cards-container">
+              ${col.cardsHTML ? col.cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted);">Vazio</p>'}
             </div>
           `;
-
-          // Agrupa as colunas da sua planilha (A até K) nas 3 abas do Kanban
-          if (ultimaColuna >= 6) { 
-            // Colunas G, H (Setup Realizado, Finalizado/Treinamento) -> CS
-            colCS.innerHTML += cardHTML;
-          } else if (ultimaColuna >= 4) { 
-            // Colunas E, F (Cliente preencheu BP, Setup em andamento) -> Go-Live
-            colGoLive.innerHTML += cardHTML;
-          } else { 
-            // Colunas A, B, C, D ou Bloqueios -> Onboarding
-            colOnboarding.innerHTML += cardHTML;
-          }
+          boardContainer.appendChild(colDiv);
         });
 
       } catch (error) {
         console.error("Erro ao conectar com o Google Sheets:", error);
-        colOnboarding.innerHTML = '<p style="font-size:0.8em; color:#ff4a4a;">Erro ao carregar dados da planilha.</p>';
+        boardContainer.innerHTML = '<p style="font-size:0.8em; color:#ff4a4a;">Erro ao carregar colunas da planilha. Verifique a publicação.</p>';
       }
     }
 
