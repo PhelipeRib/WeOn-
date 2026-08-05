@@ -95,7 +95,7 @@
     pre.code-block { background: #111420; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 0.85em; overflow-x: auto; color: #79c0ff; border-left: 3px solid var(--accent); }
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
 
-    /* ESTILIZAÇÃO ESTILO JIRA PARA O KANBAN */
+    /* ESTILIZAÇÃO KANBAN COM CARDS COMPACTOS / RECLUSOS */
     .kanban-board {
       display: flex;
       gap: 15px;
@@ -124,54 +124,74 @@
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 8px;
       word-break: break-word;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     .cards-container { min-height: 80px; }
 
-    /* CARDS ESTILO JIRA */
+    /* CARD COMPACTO (RECLUSO POR PADRÃO) */
     .kanban-card {
       background: #1e2235;
       border: 1px solid #2d334d;
       border-left: 4px solid var(--accent);
       border-radius: 6px;
-      padding: 12px;
+      padding: 10px 12px;
       margin-bottom: 10px;
       font-size: 0.85em;
-      cursor: grab;
+      cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      max-height: 110px; /* Limite máximo para não ficar gigante */
+      overflow: hidden;
       position: relative;
     }
     .kanban-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,255,204,0.15); }
-    .kanban-card:active { cursor: grabbing; transform: scale(0.98); }
+    .kanban-card:active { cursor: grabbing; }
     
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .card-title { color: var(--text-main); font-weight: 700; font-size: 0.95em; word-break: break-word; }
     .btn-edit-card { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85em; transition: color 0.2s; padding: 2px 4px; }
     .btn-edit-card:hover { color: var(--accent); }
 
-    .card-obs-area { color: var(--text-muted); font-size: 0.8em; line-height: 1.3; margin-top: 6px; word-break: break-word; }
-    .card-obs-area b, .card-obs-area strong { color: #fff; font-weight: 700; }
-    .card-obs-area u { text-decoration: underline; }
-    .card-obs-area i { font-style: italic; }
+    /* PREVIA RECLUSA DO TEXTO DA OBSERVAÇÃO (MÁXIMO 2 LINHAS) */
+    .card-obs-area { 
+      color: var(--text-muted); 
+      font-size: 0.78em; 
+      line-height: 1.3; 
+      word-break: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Corta em 2 linhas max */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-    .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; color: var(--accent); background: rgba(0, 255, 204, 0.1); padding: 2px 6px; border-radius: 4px; margin-top: 8px; }
+    .card-footer-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
 
-    /* MODAL FORMATADOR ESTILO JIRA */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-    .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-    .modal-content h3 { margin-bottom: 12px; color: var(--accent); font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+    .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.68em; color: var(--accent); background: rgba(0, 255, 204, 0.1); padding: 2px 6px; border-radius: 4px; }
+    .card-expand-hint { font-size: 0.68em; color: var(--text-muted); opacity: 0.7; }
 
-    /* TOOLBAR DE FORMATAÇÃO */
-    .editor-toolbar { display: flex; gap: 6px; margin-bottom: 8px; background: var(--bg-input); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap; }
+    /* MODAL DE EDIÇÃO EXPANDIDO */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.78); align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 25px; border-radius: 12px; width: 92%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+    .modal-content h3 { margin-bottom: 15px; color: var(--accent); font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+
+    .input-title-group { margin-bottom: 12px; }
+    .input-title-group label { display: block; font-size: 0.75em; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+    .input-card-title { width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; font-weight: bold; font-size: 0.95em; }
+    .input-card-title:focus { outline: none; border-color: var(--accent); }
+
+    /* TOOLBAR DE FORMATAÇÃO E FONTE */
+    .editor-toolbar { display: flex; gap: 6px; margin-bottom: 8px; background: var(--bg-input); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap; align-items: center; }
     .editor-btn { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 9px; border-radius: 4px; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
     .editor-btn:hover { background: var(--accent); color: #0f111a; font-weight: bold; }
-    .editor-select { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px; border-radius: 4px; font-size: 0.8em; }
+    .editor-select { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 6px; border-radius: 4px; font-size: 0.8em; }
 
-    .rich-editor { width: 100%; min-height: 120px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 12px; margin-bottom: 15px; outline: none; font-size: 0.9em; line-height: 1.4; overflow-y: auto; max-height: 250px; }
+    .rich-editor { width: 100%; min-height: 140px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 12px; margin-bottom: 15px; outline: none; font-size: 0.9em; line-height: 1.4; overflow-y: auto; max-height: 280px; }
     .rich-editor:focus { border-color: var(--accent); }
 
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
@@ -397,22 +417,40 @@ Empresa:
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO ESTILO JIRA COM TOOLBAR -->
+  <!-- MODAL DE EDIÇÃO COMPLETO -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
-      <h3 id="modalClienteNome"><i class="fab fa-jira"></i> Editar Card</h3>
+      <h3><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
       
-      <!-- TOOLBAR DE FORMATAÇÃO DE TEXTO -->
+      <!-- EDITE O TÍTULO DO CARD AQUI -->
+      <div class="input-title-group">
+        <label>Título do Card / Cliente:</label>
+        <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Nome do card/cliente...">
+      </div>
+
+      <label style="display:block; font-size:0.75em; color:var(--text-muted); margin-bottom:4px; font-weight:600; text-transform:uppercase;">Descrição / Anotações:</label>
+      
+      <!-- TOOLBAR DE FORMATAÇÃO E TAMANHO DE FONTE -->
       <div class="editor-toolbar">
         <button class="editor-btn" onclick="formatDoc('bold')" title="Negrito"><b>B</b></button>
         <button class="editor-btn" onclick="formatDoc('italic')" title="Itálico"><i>I</i></button>
         <button class="editor-btn" onclick="formatDoc('underline')" title="Sublinhado"><u>U</u></button>
         <button class="editor-btn" onclick="formatDoc('insertUnorderedList')" title="Lista"><i class="fas fa-list-ul"></i></button>
+        
+        <!-- SELETOR DE TAMANHO DE FONTE -->
+        <select class="editor-select" onchange="formatDoc('fontSize', this.value)">
+          <option value="3">Tamanho Normal</option>
+          <option value="1">Fonte Pequena</option>
+          <option value="4">Fonte Grande</option>
+          <option value="6">Fonte Gigante</option>
+        </select>
+
+        <!-- SELETOR DE COR DA FONTE -->
         <select class="editor-select" onchange="formatDoc('foreColor', this.value)">
-          <option value="#f8f9fa">Texto Branco</option>
-          <option value="#00ffcc">Destaque Ciano</option>
-          <option value="#ffb703">Alerta Amarelo</option>
-          <option value="#ff4a4a">Bloqueio Vermelho</option>
+          <option value="#f8f9fa">Branco</option>
+          <option value="#00ffcc">Ciano Destaque</option>
+          <option value="#ffb703">Amarelo Alerta</option>
+          <option value="#ff4a4a">Vermelho Bloqueio</option>
         </select>
       </div>
 
@@ -526,9 +564,9 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 5. KANBAN BIDIRECIONAL COM EDITOR ESTILO JIRA
+    // 5. KANBAN BIDIRECIONAL COM CARDS RECLUSOS E TÍTULOS EDITÁVEIS
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
-    const APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT'; // Coloque sua URL do Apps Script se for usar gravação automática
+    const APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT'; 
 
     let cardElementoAtual = null;
     let clienteAtualObs = { cliente: '', col: 0 };
@@ -579,17 +617,19 @@ Empresa:
                 colObj.cardsHTML += `
                   <div class="kanban-card" draggable="true" 
                        ondragstart="drag(event)" 
+                       onclick="abrirModalObs(this, ${cellIndex})"
                        data-cliente="${clienteNome}" 
                        data-col="${cellIndex}"
                        data-obs="">
                     <div class="card-top">
                       <span class="card-title">${clienteNome}</span>
-                      <button class="btn-edit-card" onclick="abrirModalObs(this.closest('.kanban-card'), '${clienteNome}', ${cellIndex})" title="Editar Detalhes">
-                        <i class="fas fa-edit"></i>
-                      </button>
+                      <button class="btn-edit-card" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
                     </div>
                     <div class="card-obs-area"></div>
-                    <div class="card-badge"><i class="fas fa-tasks"></i> Implantação</div>
+                    <div class="card-footer-info">
+                      <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
+                      <span class="card-expand-hint"><i class="fas fa-search-plus"></i> Abrir</span>
+                    </div>
                   </div>
                 `;
               }
@@ -672,17 +712,18 @@ Empresa:
       }
     }
 
-    // FORMATAÇÃO DE TEXTO NO MODAL
+    // FORMATAÇÃO NO MODAL
     function formatDoc(cmd, value = null) {
       document.execCommand(cmd, false, value);
     }
 
-    function abrirModalObs(cardEl, cliente, col) {
+    function abrirModalObs(cardEl, col) {
       cardElementoAtual = cardEl;
-      clienteAtualObs = { cliente, col };
+      const clienteNome = cardEl.getAttribute('data-cliente');
+      clienteAtualObs = { cliente: clienteNome, col: col };
       
       const obsAtual = cardEl.getAttribute('data-obs') || '';
-      document.getElementById('modalClienteNome').innerHTML = `<i class="fab fa-jira"></i> Editar: ${cliente}`;
+      document.getElementById('modalTitleInput').value = clienteNome;
       document.getElementById('modalObsEditor').innerHTML = obsAtual;
       document.getElementById('obsModal').style.display = 'flex';
     }
@@ -692,9 +733,17 @@ Empresa:
     }
 
     function salvarObservacao() {
+      const novoTitulo = document.getElementById('modalTitleInput').value.trim();
       const obsHtml = document.getElementById('modalObsEditor').innerHTML;
       
       if (cardElementoAtual) {
+        // Atualiza título do card se tiver mudado
+        if (novoTitulo) {
+          cardElementoAtual.setAttribute('data-cliente', novoTitulo);
+          cardElementoAtual.querySelector('.card-title').innerText = novoTitulo;
+        }
+
+        // Atualiza a prévia compacta do card
         cardElementoAtual.setAttribute('data-obs', obsHtml);
         const obsArea = cardElementoAtual.querySelector('.card-obs-area');
         obsArea.innerHTML = obsHtml;
@@ -710,7 +759,7 @@ Empresa:
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             acao: 'salvarObs',
-            cliente: clienteAtualObs.cliente,
+            cliente: novoTitulo || clienteAtualObs.cliente,
             col: clienteAtualObs.col,
             obs: obsHtml
           })
