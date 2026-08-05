@@ -580,7 +580,7 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 5. KANBAN COM PERSISTÊNCIA LOCAL + CRIAÇÃO DE CARDS + APPS SCRIPT
+    // 5. KANBAN COM PERSISTÊNCIA COMPLETA (LOCAL + GOOGLE SHEETS)
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxik9ULAs7wfKcp4lY30WtRDbcojU6pV00EthdCZHm7CO25oU2fn1ZxbsTRQQ1T7B4u/exec'; 
 
@@ -597,12 +597,30 @@ Empresa:
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2200);
     }
 
-    // GERENCIAMENTO LOCAL STORAGE PARA CARDS
+    // PERSISTÊNCIA LOCALSTORAGE
     function getObsLocal(cliente) {
       return localStorage.getItem('weon_obs_' + cliente) || '';
     }
     function saveObsLocal(cliente, obs) {
       localStorage.setItem('weon_obs_' + cliente, obs);
+    }
+
+    function getCardsCriadosLocais() {
+      const saved = localStorage.getItem('weon_cards_criados');
+      return saved ? JSON.parse(saved) : [];
+    }
+
+    function saveCardCriadoLocal(cliente, colIndex, obs) {
+      const cards = getCardsCriadosLocais();
+      // Evita duplicatas no array local
+      const idExistente = cards.findIndex(c => c.cliente.toLowerCase() === cliente.toLowerCase());
+      if (idExistente >= 0) {
+        cards[idExistente] = { cliente, colIndex, obs };
+      } else {
+        cards.push({ cliente, colIndex, obs });
+      }
+      localStorage.setItem('weon_cards_criados', JSON.stringify(cards));
+      saveObsLocal(cliente, obs);
     }
 
     async function carregarKanbanDoSheets() {
@@ -632,6 +650,7 @@ Empresa:
           });
         }
 
+        // Pega cards vindos do Sheets
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
           if (!row || !row.c) continue;
@@ -642,28 +661,20 @@ Empresa:
               if (colObj) {
                 const clienteNome = String(cell.v);
                 const localObs = getObsLocal(clienteNome);
-                colObj.cardsHTML += `
-                  <div class="kanban-card" draggable="true" 
-                       ondragstart="drag(event)" 
-                       onclick="abrirModalObs(this, ${cellIndex})"
-                       data-cliente="${clienteNome}" 
-                       data-col="${cellIndex}"
-                       data-obs="${escapeXmlAttr(localObs)}">
-                    <div class="card-top">
-                      <span class="card-title">${clienteNome}</span>
-                      <button class="btn-edit-card" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
-                    </div>
-                    <div class="card-obs-area">${localObs}</div>
-                    <div class="card-footer-info">
-                      <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
-                      <span class="card-expand-hint"><i class="fas fa-search-plus"></i> Abrir</span>
-                    </div>
-                  </div>
-                `;
+                colObj.cardsHTML += criarCardHTML(clienteNome, cellIndex, localObs);
               }
             }
           });
         }
+
+        // Inclui cards criados localmente pelo usuário que ainda não vieram na sincronização da planilha
+        const cardsLocais = getCardsCriadosLocais();
+        cardsLocais.forEach(cardLoc => {
+          const colObj = colunasMap.find(c => c.index === cardLoc.colIndex);
+          if (colObj && !colObj.cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
+            colObj.cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs);
+          }
+        });
 
         colunasMap.forEach(col => {
           const colDiv = document.createElement('div');
@@ -694,12 +705,33 @@ Empresa:
       }
     }
 
+    function criarCardHTML(clienteNome, cellIndex, obsText) {
+      return `
+        <div class="kanban-card" draggable="true" 
+             ondragstart="drag(event)" 
+             onclick="abrirModalObs(this, ${cellIndex})"
+             data-cliente="${clienteNome}" 
+             data-col="${cellIndex}"
+             data-obs="${escapeXmlAttr(obsText)}">
+          <div class="card-top">
+            <span class="card-title">${clienteNome}</span>
+            <button class="btn-edit-card" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
+          </div>
+          <div class="card-obs-area">${obsText}</div>
+          <div class="card-footer-info">
+            <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
+            <span class="card-expand-hint"><i class="fas fa-search-plus"></i> Abrir</span>
+          </div>
+        </div>
+      `;
+    }
+
     function escapeXmlAttr(unsafe) {
       if(!unsafe) return '';
       return unsafe.replace(/"/g, '&quot;');
     }
 
-    // DRAG AND DROP FLUIDO
+    // DRAG AND DROP
     function allowDrop(ev) {
       ev.preventDefault();
       ev.currentTarget.classList.add('drag-over');
@@ -737,7 +769,7 @@ Empresa:
 
       mostrarToast("Card movido!");
 
-      if(APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('COLE_AQUI')) {
+      if(APPS_SCRIPT_URL) {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -752,7 +784,7 @@ Empresa:
       }
     }
 
-    // GESTÃO DE SELEÇÃO E FORMATAÇÃO DE TEXTO
+    // GESTÃO DE SELEÇÃO E FORMATAÇÃO
     function salvarSelecaoTexto() {
       const sel = window.getSelection();
       if (sel.getRangeAt && sel.rangeCount) {
@@ -819,8 +851,8 @@ Empresa:
       if (!novoTitulo) return alert("Digite um título para o card!");
 
       if (modoCriacao) {
-        // CRIA CARD NA INTERFACE INSTANTANEAMENTE
-        saveObsLocal(novoTitulo, obsHtml);
+        // GRAVA NO CACHE LOCAL (E PREVINE SUMIR AO DAR F5)
+        saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml);
 
         const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
         if (colDiv) {
@@ -828,34 +860,14 @@ Empresa:
           const emptyP = container.querySelector('p');
           if (emptyP) emptyP.remove();
 
-          const cardHTML = document.createElement('div');
-          cardHTML.className = 'kanban-card';
-          cardHTML.draggable = true;
-          cardHTML.setAttribute('ondragstart', 'drag(event)');
-          cardHTML.setAttribute('onclick', `abrirModalObs(this, ${colIndexCriacao})`);
-          cardHTML.setAttribute('data-cliente', novoTitulo);
-          cardHTML.setAttribute('data-col', colIndexCriacao);
-          cardHTML.setAttribute('data-obs', escapeXmlAttr(obsHtml));
-
-          cardHTML.innerHTML = `
-            <div class="card-top">
-              <span class="card-title">${novoTitulo}</span>
-              <button class="btn-edit-card" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
-            </div>
-            <div class="card-obs-area">${obsHtml}</div>
-            <div class="card-footer-info">
-              <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
-              <span class="card-expand-hint"><i class="fas fa-search-plus"></i> Abrir</span>
-            </div>
-          `;
-
-          container.appendChild(cardHTML);
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = criarCardHTML(novoTitulo, colIndexCriacao, obsHtml);
+          container.appendChild(tempDiv.firstElementChild);
         }
 
         mostrarToast("Novo card criado!");
 
-        // REPLICA CRIAÇÃO NA PLANILHA
-        if (APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('COLE_AQUI')) {
+        if (APPS_SCRIPT_URL) {
           fetch(APPS_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -883,7 +895,7 @@ Empresa:
 
         mostrarToast("Card atualizado!");
 
-        if (APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('COLE_AQUI')) {
+        if (APPS_SCRIPT_URL) {
           fetch(APPS_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
