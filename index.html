@@ -580,7 +580,7 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 5. KANBAN COM PERSISTÊNCIA COMPLETA (LOCAL + GOOGLE SHEETS)
+    // 5. KANBAN COM INTEGRAÇÃO BIDIRECIONAL E GARANTIDA COM O GOOGLE SHEETS
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxik9ULAs7wfKcp4lY30WtRDbcojU6pV00EthdCZHm7CO25oU2fn1ZxbsTRQQ1T7B4u/exec'; 
 
@@ -595,6 +595,23 @@ Empresa:
       toast.innerText = mensagem;
       toast.className = "show";
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2200);
+    }
+
+    // ENVIADOR DIRETO PARA APPS SCRIPT (GARANTIDO VIA URLSEARCHPARAMS)
+    function enviarParaGoogleSheets(dados) {
+      if (!APPS_SCRIPT_URL) return;
+      
+      const payload = new URLSearchParams();
+      for (const key in dados) {
+        payload.append(key, dados[key]);
+      }
+
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: payload.toString()
+      }).catch(err => console.error("Erro ao enviar dados para a planilha:", err));
     }
 
     // PERSISTÊNCIA LOCALSTORAGE
@@ -612,7 +629,6 @@ Empresa:
 
     function saveCardCriadoLocal(cliente, colIndex, obs) {
       const cards = getCardsCriadosLocais();
-      // Evita duplicatas no array local
       const idExistente = cards.findIndex(c => c.cliente.toLowerCase() === cliente.toLowerCase());
       if (idExistente >= 0) {
         cards[idExistente] = { cliente, colIndex, obs };
@@ -667,7 +683,7 @@ Empresa:
           });
         }
 
-        // Inclui cards criados localmente pelo usuário que ainda não vieram na sincronização da planilha
+        // Inclui cards criados localmente pelo usuário caso ainda não tenham sido lidos pela Viz API
         const cardsLocais = getCardsCriadosLocais();
         cardsLocais.forEach(cardLoc => {
           const colObj = colunasMap.find(c => c.index === cardLoc.colIndex);
@@ -769,22 +785,16 @@ Empresa:
 
       mostrarToast("Card movido!");
 
-      if(APPS_SCRIPT_URL) {
-        fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            acao: 'mover',
-            cliente: data.cliente,
-            origemCol: data.origemCol,
-            destinoCol: destinoCol
-          })
-        });
-      }
+      // Envia ao Google Sheets
+      enviarParaGoogleSheets({
+        acao: 'mover',
+        cliente: data.cliente,
+        origemCol: data.origemCol,
+        destinoCol: destinoCol
+      });
     }
 
-    // GESTÃO DE SELEÇÃO E FORMATAÇÃO
+    // FORMATAÇÃO E SELEÇÃO DE TEXTO
     function salvarSelecaoTexto() {
       const sel = window.getSelection();
       if (sel.getRangeAt && sel.rangeCount) {
@@ -851,7 +861,6 @@ Empresa:
       if (!novoTitulo) return alert("Digite um título para o card!");
 
       if (modoCriacao) {
-        // GRAVA NO CACHE LOCAL (E PREVINE SUMIR AO DAR F5)
         saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml);
 
         const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
@@ -867,21 +876,14 @@ Empresa:
 
         mostrarToast("Novo card criado!");
 
-        if (APPS_SCRIPT_URL) {
-          fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              acao: 'criarCard',
-              cliente: novoTitulo,
-              col: colIndexCriacao
-            })
-          });
-        }
+        // ENVIA A CRIAÇÃO PARA A PLANILHA GOOGLE
+        enviarParaGoogleSheets({
+          acao: 'criarCard',
+          cliente: novoTitulo,
+          col: colIndexCriacao
+        });
 
       } else {
-        // EDIÇÃO DE CARD EXISTENTE
         if (cardElementoAtual) {
           cardElementoAtual.setAttribute('data-cliente', novoTitulo);
           cardElementoAtual.querySelector('.card-title').innerText = novoTitulo;
@@ -895,19 +897,13 @@ Empresa:
 
         mostrarToast("Card atualizado!");
 
-        if (APPS_SCRIPT_URL) {
-          fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              acao: 'salvarObs',
-              cliente: novoTitulo,
-              col: clienteAtualObs.col,
-              obs: obsHtml
-            })
-          });
-        }
+        // ENVIA A NOTA PARA A PLANILHA GOOGLE
+        enviarParaGoogleSheets({
+          acao: 'salvarObs',
+          cliente: novoTitulo,
+          col: clienteAtualObs.col,
+          obs: obsHtml
+        });
       }
 
       fecharModal();
