@@ -104,22 +104,10 @@
       scroll-behavior: smooth;
     }
 
-    /* CUSTOM SCROLLBAR DESTACADA */
-    .kanban-board::-webkit-scrollbar {
-      height: 10px;
-    }
-    .kanban-board::-webkit-scrollbar-track {
-      background: var(--bg-input);
-      border-radius: 6px;
-    }
-    .kanban-board::-webkit-scrollbar-thumb {
-      background: #2b334d;
-      border-radius: 6px;
-      border: 2px solid var(--bg-input);
-    }
-    .kanban-board::-webkit-scrollbar-thumb:hover {
-      background: var(--accent);
-    }
+    .kanban-board::-webkit-scrollbar { height: 10px; }
+    .kanban-board::-webkit-scrollbar-track { background: var(--bg-input); border-radius: 6px; }
+    .kanban-board::-webkit-scrollbar-thumb { background: #2b334d; border-radius: 6px; border: 2px solid var(--bg-input); }
+    .kanban-board::-webkit-scrollbar-thumb:hover { background: var(--accent); }
     
     .kanban-column {
       background: var(--bg-input);
@@ -127,7 +115,7 @@
       border-radius: 8px;
       padding: 15px;
       min-width: 250px;
-      flex: 0 0 250px; /* Garante tamanho uniforme mantendo o scroll lateral */
+      flex: 0 0 250px;
       transition: background 0.2s, border-color 0.2s;
     }
     .kanban-column.drag-over { background: #252c48; border-color: var(--accent); }
@@ -137,12 +125,26 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       color: var(--accent);
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 8px;
       word-break: break-word;
     }
+
+    .btn-add-card-col {
+      width: 100%;
+      background: #252a3f;
+      border: 1px dashed var(--border-color);
+      color: var(--text-muted);
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75em;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    .btn-add-card-col:hover { border-color: var(--accent); color: var(--accent); background: #2a314d; }
 
     .cards-container { min-height: 80px; }
 
@@ -182,17 +184,11 @@
       text-overflow: ellipsis;
     }
 
-    .card-footer-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 6px;
-    }
-
+    .card-footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.68em; color: var(--accent); background: rgba(0, 255, 204, 0.1); padding: 2px 6px; border-radius: 4px; }
     .card-expand-hint { font-size: 0.68em; color: var(--text-muted); opacity: 0.7; }
 
-    /* MODAL DE EDIÇÃO COM CORREÇÃO DE LISTAS */
+    /* MODAL DE EDIÇÃO E DE CRIAÇÃO */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.78); align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 25px; border-radius: 12px; width: 92%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
     .modal-content h3 { margin-bottom: 15px; color: var(--accent); font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
@@ -210,7 +206,6 @@
     .rich-editor { width: 100%; min-height: 150px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 12px; margin-bottom: 15px; outline: none; font-size: 0.9em; line-height: 1.4; overflow-y: auto; max-height: 280px; }
     .rich-editor:focus { border-color: var(--accent); }
 
-    /* ESTILIZAÇÃO DE LISTAS NO EDITOR E CARDS */
     .rich-editor ul, .card-obs-area ul { list-style-type: disc !important; padding-left: 20px !important; margin: 6px 0 !important; }
     .rich-editor ol, .card-obs-area ol { list-style-type: decimal !important; padding-left: 20px !important; margin: 6px 0 !important; }
     .rich-editor li, .card-obs-area li { margin-bottom: 2px !important; }
@@ -438,19 +433,19 @@ Empresa:
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO COMPLETO -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
-      <h3><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
+      <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
       
       <div class="input-title-group">
         <label>Título do Card / Cliente:</label>
-        <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Nome do card/cliente...">
+        <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Ex: Nome da Empresa / Demanda...">
       </div>
 
       <label style="display:block; font-size:0.75em; color:var(--text-muted); margin-bottom:4px; font-weight:600; text-transform:uppercase;">Descrição / Anotações:</label>
       
-      <!-- TOOLBAR OTIMIZADA COM BORRACHA DE LIMPAR FORMATAÇÃO -->
+      <!-- TOOLBAR OTIMIZADA -->
       <div class="editor-toolbar">
         <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('bold')" title="Negrito"><b>B</b></button>
         <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('italic')" title="Itálico"><i>I</i></button>
@@ -458,7 +453,6 @@ Empresa:
         <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Lista de Marcadores"><i class="fas fa-list-ul"></i></button>
         <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('removeFormat')" title="Limpar Formatação"><i class="fas fa-remove-format"></i> Tx</button>
         
-        <!-- SELETOR DE TAMANHO DE FONTE -->
         <select class="editor-select" onmousedown="salvarSelecaoTexto()" onchange="formatDoc('fontSize', this.value); this.selectedIndex=0;">
           <option value="" disabled selected>Tamanho Fonte</option>
           <option value="2">Pequena</option>
@@ -467,7 +461,6 @@ Empresa:
           <option value="6">Gigante</option>
         </select>
 
-        <!-- SELETOR DE COR DA FONTE -->
         <select class="editor-select" onmousedown="salvarSelecaoTexto()" onchange="formatDoc('foreColor', this.value); this.selectedIndex=0;">
           <option value="" disabled selected>Cor da Fonte</option>
           <option value="#f8f9fa">Branco</option>
@@ -587,12 +580,14 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 5. KANBAN BIDIRECIONAL COM ROLAGEM HORIZONTAL E SUPORTE A LISTAS
+    // 5. KANBAN COM PERSISTÊNCIA LOCAL + CRIAÇÃO DE CARDS + APPS SCRIPT
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT'; 
 
     let cardElementoAtual = null;
     let clienteAtualObs = { cliente: '', col: 0 };
+    let modoCriacao = false;
+    let colIndexCriacao = 0;
     let savedRange = null;
 
     function mostrarToast(mensagem) {
@@ -600,6 +595,14 @@ Empresa:
       toast.innerText = mensagem;
       toast.className = "show";
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2200);
+    }
+
+    // GERENCIAMENTO LOCAL STORAGE PARA CARDS
+    function getObsLocal(cliente) {
+      return localStorage.getItem('weon_obs_' + cliente) || '';
+    }
+    function saveObsLocal(cliente, obs) {
+      localStorage.setItem('weon_obs_' + cliente, obs);
     }
 
     async function carregarKanbanDoSheets() {
@@ -638,18 +641,19 @@ Empresa:
               const colObj = colunasMap.find(c => c.index === cellIndex);
               if (colObj) {
                 const clienteNome = String(cell.v);
+                const localObs = getObsLocal(clienteNome);
                 colObj.cardsHTML += `
                   <div class="kanban-card" draggable="true" 
                        ondragstart="drag(event)" 
                        onclick="abrirModalObs(this, ${cellIndex})"
                        data-cliente="${clienteNome}" 
                        data-col="${cellIndex}"
-                       data-obs="">
+                       data-obs="${escapeXmlAttr(localObs)}">
                     <div class="card-top">
                       <span class="card-title">${clienteNome}</span>
                       <button class="btn-edit-card" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
                     </div>
-                    <div class="card-obs-area"></div>
+                    <div class="card-obs-area">${localObs}</div>
                     <div class="card-footer-info">
                       <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
                       <span class="card-expand-hint"><i class="fas fa-search-plus"></i> Abrir</span>
@@ -671,6 +675,7 @@ Empresa:
           
           colDiv.innerHTML = `
             <div class="kanban-header">${col.nome}</div>
+            <button class="btn-add-card-col" onclick="abrirModalCriar(${col.index})"><i class="fas fa-plus"></i> Criar Novo Card</button>
             <div class="cards-container">
               ${col.cardsHTML ? col.cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}
             </div>
@@ -678,7 +683,6 @@ Empresa:
           boardContainer.appendChild(colDiv);
         });
 
-        // Habilita Scroll Lateral com a rodinha do mouse no Kanban
         boardContainer.addEventListener('wheel', (evt) => {
           if (evt.deltaY !== 0) {
             boardContainer.scrollLeft += evt.deltaY;
@@ -688,6 +692,11 @@ Empresa:
       } catch (error) {
         console.error("Erro ao carregar Sheets:", error);
       }
+    }
+
+    function escapeXmlAttr(unsafe) {
+      if(!unsafe) return '';
+      return unsafe.replace(/"/g, '&quot;');
     }
 
     // DRAG AND DROP FLUIDO
@@ -768,17 +777,34 @@ Empresa:
     }
 
     function abrirModalObs(cardEl, col) {
+      modoCriacao = false;
       cardElementoAtual = cardEl;
       const clienteNome = cardEl.getAttribute('data-cliente');
       clienteAtualObs = { cliente: clienteNome, col: col };
       
-      const obsAtual = cardEl.getAttribute('data-obs') || '';
+      const obsAtual = cardEl.getAttribute('data-obs') || getObsLocal(clienteNome);
+      document.getElementById('modalHeaderTitle').innerHTML = `<i class="fab fa-jira"></i> Editar Detalhes do Card`;
       document.getElementById('modalTitleInput').value = clienteNome;
       document.getElementById('modalObsEditor').innerHTML = obsAtual;
       document.getElementById('obsModal').style.display = 'flex';
 
       setTimeout(() => {
         document.getElementById('modalObsEditor').focus();
+      }, 100);
+    }
+
+    function abrirModalCriar(colIndex) {
+      modoCriacao = true;
+      colIndexCriacao = colIndex;
+      cardElementoAtual = null;
+
+      document.getElementById('modalHeaderTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Criar Novo Card`;
+      document.getElementById('modalTitleInput').value = '';
+      document.getElementById('modalObsEditor').innerHTML = '';
+      document.getElementById('obsModal').style.display = 'flex';
+
+      setTimeout(() => {
+        document.getElementById('modalTitleInput').focus();
       }, 100);
     }
 
@@ -789,34 +815,90 @@ Empresa:
     function salvarObservacao() {
       const novoTitulo = document.getElementById('modalTitleInput').value.trim();
       const obsHtml = document.getElementById('modalObsEditor').innerHTML;
-      
-      if (cardElementoAtual) {
-        if (novoTitulo) {
-          cardElementoAtual.setAttribute('data-cliente', novoTitulo);
-          cardElementoAtual.querySelector('.card-title').innerText = novoTitulo;
+
+      if (!novoTitulo) return alert("Digite um título para o card!");
+
+      if (modoCriacao) {
+        // CRIA CARD NA INTERFACE INSTANTANEAMENTE
+        saveObsLocal(novoTitulo, obsHtml);
+
+        const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
+        if (colDiv) {
+          const container = colDiv.querySelector('.cards-container');
+          const emptyP = container.querySelector('p');
+          if (emptyP) emptyP.remove();
+
+          const cardHTML = document.createElement('div');
+          cardHTML.className = 'kanban-card';
+          cardHTML.draggable = true;
+          cardHTML.setAttribute('ondragstart', 'drag(event)');
+          cardHTML.setAttribute('onclick', `abrirModalObs(this, ${colIndexCriacao})`);
+          cardHTML.setAttribute('data-cliente', novoTitulo);
+          cardHTML.setAttribute('data-col', colIndexCriacao);
+          cardHTML.setAttribute('data-obs', escapeXmlAttr(obsHtml));
+
+          cardHTML.innerHTML = `
+            <div class="card-top">
+              <span class="card-title">${novoTitulo}</span>
+              <button class="btn-edit-card" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
+            </div>
+            <div class="card-obs-area">${obsHtml}</div>
+            <div class="card-footer-info">
+              <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
+              <span class="card-expand-hint"><i class="fas fa-search-plus"></i> Abrir</span>
+            </div>
+          `;
+
+          container.appendChild(cardHTML);
         }
 
-        cardElementoAtual.setAttribute('data-obs', obsHtml);
-        const obsArea = cardElementoAtual.querySelector('.card-obs-area');
-        obsArea.innerHTML = obsHtml;
+        mostrarToast("Novo card criado!");
+
+        // REPLICA CRIAÇÃO NA PLANILHA
+        if (APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('COLE_AQUI')) {
+          fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              acao: 'criarCard',
+              cliente: novoTitulo,
+              col: colIndexCriacao
+            })
+          });
+        }
+
+      } else {
+        // EDIÇÃO DE CARD EXISTENTE
+        if (cardElementoAtual) {
+          cardElementoAtual.setAttribute('data-cliente', novoTitulo);
+          cardElementoAtual.querySelector('.card-title').innerText = novoTitulo;
+          cardElementoAtual.setAttribute('data-obs', obsHtml);
+          
+          const obsArea = cardElementoAtual.querySelector('.card-obs-area');
+          obsArea.innerHTML = obsHtml;
+
+          saveObsLocal(novoTitulo, obsHtml);
+        }
+
+        mostrarToast("Card atualizado!");
+
+        if (APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('COLE_AQUI')) {
+          fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              acao: 'salvarObs',
+              cliente: novoTitulo,
+              col: clienteAtualObs.col,
+              obs: obsHtml
+            })
+          });
+        }
       }
 
       fecharModal();
-      mostrarToast("Card atualizado!");
-
-      if (APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('COLE_AQUI')) {
-        fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            acao: 'salvarObs',
-            cliente: novoTitulo || clienteAtualObs.cliente,
-            col: clienteAtualObs.col,
-            obs: obsHtml
-          })
-        });
-      }
     }
 
     window.addEventListener('DOMContentLoaded', carregarKanbanDoSheets);
