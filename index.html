@@ -1,82 +1,531 @@
-// 7. GERADOR DE KANBAN 100% DINÂMICO (CORRIGIDO PARA A SUA PLANILHA)
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Interno | Auxílio WeON</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>    
+
+  <style>
+    :root {
+      --bg-principal: #0f111a;
+      --bg-card: #161925;
+      --bg-input: #1f2335;
+      --accent: #00ffcc;
+      --accent-hover: #00ccaa;
+      --text-main: #f8f9fa;
+      --text-muted: #a0aec0;
+      --border-color: #2d3142;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: var(--bg-principal); color: var(--text-main); padding: 30px 20px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 950px; background: var(--bg-card); padding: 35px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--border-color); }
+    
+    header { text-align: center; margin-bottom: 25px; }
+    header h1 { color: var(--accent); font-size: 2.3em; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    header p { color: var(--text-muted); margin-top: 8px; font-size: 0.95em; }
+
+    .featured-banner {
+      background: linear-gradient(135deg, #1d2440 0%, #0f1424 100%);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .featured-banner:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(0, 255, 204, 0.3); }
+    .featured-content { display: flex; align-items: center; gap: 18px; }
+    .featured-icon { background: rgba(0, 255, 204, 0.1); color: var(--accent); width: 55px; height: 55px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.6em; }
+    .featured-text h3 { color: #fff; font-size: 1.25em; margin-bottom: 4px; }
+    .featured-text p { color: var(--text-muted); font-size: 0.9em; }
+    .featured-action { background: var(--accent); color: #0f111a; padding: 10px 20px; border-radius: 8px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+    .top-widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+    @media (max-width: 768px) { .top-widgets { grid-template-columns: 1fr; } }
+
+    .search-box { position: relative; display: flex; align-items: center; }
+    .search-box i { position: absolute; left: 15px; color: var(--text-muted); }
+    .search-box input { width: 100%; padding: 12px 15px 12px 45px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: white; }
+    .search-box input:focus { outline: none; border-color: var(--accent); }
+
+    .scratchpad { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .scratchpad textarea { width: 100%; height: 80px; background: transparent; border: none; resize: vertical; color: var(--text-main); font-size: 0.9em; }
+    .scratchpad textarea:focus { outline: none; }
+    .scratchpad-actions { display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #252a3f; padding-top: 8px; }
+
+    .btn-widget { background: #252a3f; border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 10px; font-size: 0.75em; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    .btn-widget:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-widget.btn-danger:hover { border-color: #ff4a4a; color: #ff4a4a; }
+
+    h2 { font-size: 1.2em; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 8px; text-transform: uppercase; border-left: 3px solid var(--accent); padding-left: 10px; }
+
+    .collapsible-wrapper { margin-bottom: 12px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
+    .collapsible { width: 100%; background-color: var(--bg-input); padding: 16px 20px; cursor: pointer; border: none; color: var(--text-main); font-size: 1em; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .collapsible:hover { background-color: #252a3f; }
+    .collapsible .btn-title { display: flex; align-items: center; gap: 12px; }
+    .collapsible .btn-title i { color: var(--accent); width: 20px; }
+    .collapsible .chevron { transition: transform 0.3s; color: var(--text-muted); }
+    .collapsible.active .chevron { transform: rotate(180deg); color: var(--accent); }
+
+    .content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: #1a1d2e; }
+    .content-inner { padding: 20px; }
+
+    .data-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #252a3f; }
+    .data-row:last-child { border-bottom: none; }
+    .data-label { color: var(--text-muted); font-size: 0.95em; }
+    .data-value { font-family: monospace; background: #111420; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; display: flex; align-items: center; gap: 10px; }
+
+    .btn-copy { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
+    .btn-copy:hover { color: var(--accent); }
+    .btn-copy.copied { color: #00ffcc !important; }
+
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .custom-link { background: #22273d; padding: 12px; border-radius: 6px; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.9em; border: 1px solid transparent; }
+    .custom-link:hover { background: var(--bg-input); border-color: var(--accent); transform: translateY(-2px); }
+    .custom-link i { color: var(--accent); }
+    .link-subtext { display: block; font-size: 0.75em; color: var(--text-muted); margin-top: 2px; }
+
+    textarea.ticket-template { width: 100%; height: 180px; background: #111420; border: 1px solid var(--border-color); border-radius: 6px; color: #79c0ff; font-family: monospace; padding: 12px; font-size: 0.9em; resize: vertical; }
+    pre.code-block { background: #111420; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 0.85em; overflow-x: auto; color: #79c0ff; border-left: 3px solid var(--accent); }
+    .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
+
+    /* CSS DO KANBAN DINÂMICO (Rola na horizontal se tiver muitas colunas na planilha) */
+    .kanban-board {
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    
+    .kanban-column {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      min-width: 220px;
+      flex: 1;
+    }
+
+    .kanban-header {
+      font-size: 0.8em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .kanban-card {
+      background: #22273d;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 0.85em;
+    }
+    .kanban-card:last-child { margin-bottom: 0; }
+    .kanban-card h4 { color: var(--text-main); font-weight: 600; margin-bottom: 4px; }
+    .kanban-card p { color: var(--text-muted); font-size: 0.8em; }
+
+    .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-cubes"></i> Auxílio WeON</h1>
+      <p>Hub central de credenciais, rotinas e acessos operacionais</p>
+    </header>
+
+    <a href="https://weon5m3.weon.com.br/supervisor/tasks" target="_blank" class="featured-banner">
+      <div class="featured-content">
+        <div class="featured-icon"><i class="fas fa-layer-group"></i></div>
+        <div class="featured-text">
+          <h3>Quadro Geral de Situações</h3>
+          <p>Acompanhamento e tarefas em tempo real da implantação WeON</p>
+        </div>
+      </div>
+      <div class="featured-action">Acessar Painel <i class="fas fa-arrow-right"></i></div>
+    </a>
+
+    <div class="top-widgets">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Buscar credencial, link ou comando..." onkeyup="filterItems()">
+      </div>
+      
+      <div class="scratchpad">
+        <textarea id="quickNotes" placeholder="📌 Bloco de notas rápido (Salva automaticamente)..." oninput="saveNotes()"></textarea>
+        <div class="scratchpad-actions">
+          <button class="btn-widget" onclick="downloadTXT()"><i class="fas fa-file-alt"></i> .TXT</button>
+          <button class="btn-widget" onclick="downloadDOCX()"><i class="fas fa-file-word"></i> .DOCX</button>
+          <button class="btn-widget btn-danger" onclick="clearNotes()"><i class="fas fa-trash-alt"></i> Limpar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO KANBAN 100% DINÂMICO (PUXA TUDO DO SHEETS) -->
+    <h2><i class="fas fa-users-cog"></i> Acompanhamento de Clientes</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-columns"></i> Quadro de Implantação (Google Sheets)</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <!-- O JavaScript vai injetar as colunas e os cards AQUI DENTRO dinamicamente! -->
+          <div class="kanban-board" id="kanban-board">
+            <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas da planilha...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2><i class="fas fa-tasks"></i> Rotinas</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-file-alt"></i> Template: Abertura de Chamado</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <textarea class="ticket-template" readonly>[ ] Incidente [ ] Bug release
+
+Empresa:
+
+1. Erro:
+
+2. Solicitação:
+
+3. Diagnóstico:
+
+4. Solução:
+
+5. Prevenção:</textarea>
+        </div>
+      </div>
+    </div>
+
+    <h2><i class="fas fa-lock"></i> Credenciais e Acessos</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-shield-alt"></i> Acessos e Senhas Gerais</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="data-row">
+            <span class="data-label">WeON Admin User</span>
+            <span class="data-value">admin <button class="btn-copy" onclick="copyText('admin', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">WeON Admin Senha</span>
+            <span class="data-value">vah%4ge1E <button class="btn-copy" onclick="copyText('vah%4ge1E', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso para o admin (m3 weon)</span>
+            <span class="data-value">10.0.9.84/weon <button class="btn-copy" onclick="copyText('10.0.9.84/weon', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso weon5m1-dn1</span>
+            <span class="data-value">10.0.8.78 <button class="btn-copy" onclick="copyText('10.0.8.78', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso weon5m2-dn1</span>
+            <span class="data-value">10.0.8.184 <button class="btn-copy" onclick="copyText('10.0.8.184', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso Dg solutions</span>
+            <span class="data-value">10.0.9.175 <button class="btn-copy" onclick="copyText('10.0.9.175', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">weon.supervisor User</span>
+            <span class="data-value">supweon <button class="btn-copy" onclick="copyText('supweon', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">weon.supervisor Senha</span>
+            <span class="data-value">W30N_S3cVrItY <button class="btn-copy" onclick="copyText('W30N_S3cVrItY', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fab fa-jira"></i> JIRA - Implantação</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="data-row">
+            <span class="data-label">Link do Portal</span>
+            <span class="data-value"><a href="https://weon.atlassian.net/jira/for-you?tab=recommendedActions" target="_blank" style="color:var(--accent); text-decoration:underline;">Suporte WeON - Resumo</a></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">E-mail</span>
+            <span class="data-value">comercial@weon.com.br <button class="btn-copy" onclick="copyText('comercial@weon.com.br', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Senha</span>
+            <span class="data-value">Weon@2024* <button class="btn-copy" onclick="copyText('Weon@2024*', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2><i class="fas fa-external-link-alt"></i> Navegação rápida</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-link"></i> Links Importantes</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="link-grid">
+            <a href="https://docs.google.com/spreadsheets/d/1yMYhXJ9JZTmsKo9AkVnRKQRXVluUKItGVkTpkBxhO4A/edit?usp=sharing" target="_blank" class="custom-link"><i class="fas fa-table"></i> Projetos Weon</a>
+            <a href="https://docs.google.com/document/d/1JAgCLbS67m6NICvjwlGDb3mG30wsGmNH/edit?usp=sharing&ouid=114973427241747262319&rtpof=true&sd=true" target="_blank" class="custom-link"><i class="fas fa-robot"></i> Bot de atendimento</a>
+            <a href="https://docs.google.com/spreadsheets/d/1mJ7D98iXfaj85HGFVSixoacgSwWZEY1JglSsG5HkvDI/edit?gid=1891921868#gid=1891921868" target="_blank" class="custom-link"><i class="fas fa-project-diagram"></i> Descritivo Comercial</a>
+            <a href="https://drive.google.com/drive/folders/12lWKbZBbYX66lqhWc7x-KDUrU8P4K7IT?usp=drive_link" target="_blank" class="custom-link"><i class="fab fa-google-drive"></i> Empresas Implantação</a>
+            <a href="https://docs.google.com/spreadsheets/d/1B6YU1bAtcj3IlDBH7tThz53MCGcM58sGbIXZf_Z9lUI/edit?gid=1376319518#gid=1376319518" target="_blank" class="custom-link"><i class="fas fa-table"></i> Dashboard GUPSHUP</a>
+            <a href="http://172.16.0.226/zabbix/zabbix.php?action=dashboard.list" target="_blank" class="custom-link"><i class="fas fa-chart-line"></i> Zabbix</a>
+            <a href="https://docs.google.com/spreadsheets/d/1-VYV3dmdrxgsZy-ZBy-lEDwq1BKh-ZA7Yj6-Kh3-Ysk/edit?gid=150809063#gid=150809063" target="_blank" class="custom-link"><i class="fas fa-shield-virus"></i> Processo ISO</a>
+            <a href="https://drive.google.com/drive/folders/1K2JiILPLgvj3EuVYeD0q0aqQ3ZrZuG_1" target="_blank" class="custom-link"><i class="fab fa-google-drive"></i> ISO GERAL WEON</a>
+            <a href="https://docs.google.com/document/d/1tIQEkCfIJEwFAsGpJ7mHy5vItnCx5WH4OwPOifYuFo8/edit?usp=sharing" class="custom-link"><i class="fas fa-cogs"></i> Configuração Coex</a>
+            <a href="https://docs.google.com/document/d/1lcrsotUPRzp619ojLae1pN6hrRGw-x5suvB1Zt_weBI/edit?usp=sharing" target="_blank" class="custom-link"><i class="fab fa-meta"></i> Meta Docs</a>
+            <a href="https://weon.notion.site/WeAction-API-8cd617e2f0e746359a6e6b3557ed2482" target="_blank" class="custom-link"><i class="fas fa-book"></i> Notion WeAction API</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2><i class="fas fa-book-open"></i> Biblioteca de Artigos</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-graduation-cap"></i> Artigos e Documentações Internas</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="link-grid">
+            <a href="Plano-de-Estudo-Node-RED-WeON.pdf" target="_blank" class="custom-link"><i class="fas fa-file-pdf"></i> Manual NodeRed</a>
+            <a href="https://weon.atlassian.net/wiki/spaces/NBDCS/pages/1673101313/Como+criar+supervisor" target="_blank" class="custom-link">
+              <div><i class="fab fa-confluence"></i> Confluence Jira <span class="link-subtext">⚠️ Requer acesso</span></div>
+            </a>
+            <a href="https://docs.google.com/document/d/1WB6I7U8UVwT7GiIrxQ5tLXKgb5YiDXm9/edit" target="_blank" class="custom-link"><i class="fas fa-file-word"></i> POP Agentes</a>
+            <a href="https://docs.weon.com.br/" target="_blank" class="custom-link"><i class="fas fa-question-circle"></i> FAQ Supervisores</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2><i class="fas fa-code"></i> Desenvolvedor & Integrações</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-terminal"></i> Códigos e Chamadas de API</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="code-header">
+            <span>Requisição Token cURL</span>
+            <button class="btn-copy" onclick="copyCodeBlock(this)"><i class="fas fa-copy"></i> Copiar Código</button>
+          </div>
+          <pre class="code-block" id="curlCode">curl --location 'https://weon5m1.weon.com.br/weaction-api/api/weon/v3/auth/token' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "identifier": "apicontraktor",
+    "password": "Ck@2026"
+}'</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p><i class="fas fa-info-circle"></i> Este documento foi estilizado para facilitar o dia a dia operacional interno.</p>
+    </div>
+  </div>
+
+  <script>
+    // 1. Controle do Accordion
+    const collapsibles = document.querySelectorAll(".collapsible");
+    collapsibles.forEach(button => {
+      button.addEventListener("click", () => {
+        button.classList.toggle("active");
+        const content = button.nextElementSibling;
+        content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
+      });
+    });
+
+    // 2. Copiar Texto com feedback visual
+    function copyText(text, btnElement) {
+      navigator.clipboard.writeText(text).then(() => {
+        const icon = btnElement.querySelector('i');
+        icon.className = 'fas fa-check';
+        btnElement.classList.add('copied');
+        
+        setTimeout(() => {
+          icon.className = 'fas fa-copy';
+          btnElement.classList.remove('copied');
+        }, 1500);
+      });
+    }
+
+    // 3. Copiar Código Inteiro
+    function copyCodeBlock(btnElement) {
+      const code = document.getElementById("curlCode").innerText;
+      copyText(code, btnElement);
+    }
+
+    // 4. Busca Inteligente + Auto Abertura de Abas
+    function filterItems() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const wrappers = document.querySelectorAll('.target-search');
+
+      wrappers.forEach(wrapper => {
+        const textContent = wrapper.innerText.toLowerCase();
+        const btn = wrapper.querySelector('.collapsible');
+        const content = wrapper.querySelector('.content');
+
+        if (textContent.includes(input) && input.trim() !== '') {
+          wrapper.style.display = "block";
+          btn.classList.add('active');
+          content.style.maxHeight = content.scrollHeight + "px";
+        } else if (input.trim() === '') {
+          wrapper.style.display = "block";
+          btn.classList.remove('active');
+          content.style.maxHeight = null;
+        } else {
+          wrapper.style.display = "none";
+        }
+      });
+    }
+
+    // 5. Widget de Notas Rápidas
+    window.onload = function() {
+      const savedNotes = localStorage.getItem('weon_quick_notes');
+      if (savedNotes) document.getElementById('quickNotes').value = savedNotes;
+    }
+
+    function saveNotes() {
+      localStorage.setItem('weon_quick_notes', document.getElementById('quickNotes').value);
+    }
+
+    function clearNotes() {
+      if(confirm("Tem certeza que deseja limpar as anotações atuais?")) {
+        document.getElementById('quickNotes').value = "";
+        localStorage.removeItem('weon_quick_notes');
+      }
+    }
+
+    // 6. Exports
+    function downloadTXT() {
+      const text = document.getElementById('quickNotes').value;
+      if (!text.trim()) return alert("O bloco de notas está vazio!");
+      
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'notas_weon.txt';
+      link.click();
+    }
+
+    function downloadDOCX() {
+      const text = document.getElementById('quickNotes').value;
+      if (!text.trim()) return alert("O bloco de notas está vazio!");
+
+      const formattedText = text.split('\n').map(line => `<w:p><w:r><w:t>${escapeXml(line)}</w:t></w:r></w:p>`).join('');
+      const docxTemplate = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${formattedText}</w:body></w:document>`;
+
+      const blob = new Blob([docxTemplate], { type: 'application/msword' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'notas_weon.docx';
+      link.click();
+    }
+
+    function escapeXml(unsafe) {
+      return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
+    }
+
+    // 7. GERADOR DE KANBAN 100% DINÂMICO A PARTIR DA PLANILHA
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
 
     async function carregarKanbanDoSheets() {
       const boardContainer = document.getElementById('kanban-board');
 
       try {
-        // Força a leitura do intervalo A1 até Z100
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&range=A1:Z100`;
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
         const response = await fetch(url);
         const text = await response.text();
         
         const jsonData = JSON.parse(text.substring(47, text.length - 2));
-        const table = jsonData.table;
-        const rows = table.rows;
+        const cols = jsonData.table.cols;
+        const rows = jsonData.table.rows;
 
         boardContainer.innerHTML = '';
 
-        if (!rows || rows.length === 0) {
-          boardContainer.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Planilha vazia.</p>';
+        if (!cols || cols.length === 0) {
+          boardContainer.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Nenhuma coluna encontrada na planilha.</p>';
           return;
         }
 
-        // 1. Extrai os Títulos das Colunas (Linha 1 da planilha)
+        // 1. Pega os nomes das colunas da Linha 1 da planilha
         const colunasMap = [];
-        const empenhoHeaderRow = rows[0]; // Primeira linha da planilha
-
-        if (empenhoHeaderRow && empenhoHeaderRow.c) {
-          empenhoHeaderRow.c.forEach((cell, index) => {
-            // Tenta pegar o nome pelo rótulo do Google ou pelo valor da célula A1, B1, C1...
-            let nomeColuna = '';
-            if (table.cols && table.cols[index] && table.cols[index].label) {
-              nomeColuna = table.cols[index].label;
-            } else if (cell && cell.v !== null) {
-              nomeColuna = String(cell.v);
-            }
-
-            if (nomeColuna.trim() !== '') {
-              colunasMap.push({
-                index: index,
-                nome: nomeColuna.trim(),
-                cardsHTML: ''
-              });
-            }
-          });
-        }
+        cols.forEach((col, index) => {
+          if (col && col.label && col.label.trim() !== '') {
+            colunasMap.push({
+              index: index,
+              nome: col.label.trim(),
+              cardsHTML: ''
+            });
+          }
+        });
 
         if (colunasMap.length === 0) {
-          boardContainer.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Nenhum título encontrado na Linha 1 da planilha.</p>';
+          boardContainer.innerHTML = '<p style="font-size:0.8em; color:var(--text-muted);">Configure os títulos das colunas na Linha 1 da planilha.</p>';
           return;
         }
 
-        // 2. Percorre as Linhas de Dados (a partir da linha 2, índice 1)
-        for (let i = 1; i < rows.length; i++) {
-          const row = rows[i];
-          if (!row || !row.c) continue;
+        // 2. Percorre cada cliente da planilha e insere na coluna correspondente
+        if (rows && rows.length > 0) {
+          rows.forEach(row => {
+            if (!row || !row.c) return;
 
-          row.c.forEach((cell, cellIndex) => {
-            if (cell && cell.v !== null && String(cell.v).trim() !== '') {
-              const colObj = colunasMap.find(c => c.index === cellIndex);
-              if (colObj) {
-                colObj.cardsHTML += `
-                  <div class="kanban-card">
-                    <h4>${String(cell.v)}</h4>
-                  </div>
-                `;
+            // Varre as células do cliente
+            row.c.forEach((cell, cellIndex) => {
+              if (cell && cell.v !== null && String(cell.v).trim() !== '') {
+                // Encontra a coluna correspondente
+                const colObj = colunasMap.find(c => c.index === cellIndex);
+                if (colObj) {
+                  colObj.cardsHTML += `
+                    <div class="kanban-card">
+                      <h4>${String(cell.v)}</h4>
+                    </div>
+                  `;
+                }
               }
-            }
+            });
           });
         }
 
-        // 3. Desenha as colunas dinâmicas no Dashboard
+        // 3. Monta o HTML das colunas dinâmicas no Dashboard
         colunasMap.forEach(col => {
           const colDiv = document.createElement('div');
           colDiv.className = 'kanban-column';
           colDiv.innerHTML = `
             <div class="kanban-header">${col.nome}</div>
             <div class="cards-container">
-              ${col.cardsHTML ? col.cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.5;">Vazio</p>'}
+              ${col.cardsHTML ? col.cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted);">Vazio</p>'}
             </div>
           `;
           boardContainer.appendChild(colDiv);
@@ -84,8 +533,11 @@
 
       } catch (error) {
         console.error("Erro ao conectar com o Google Sheets:", error);
-        boardContainer.innerHTML = '<p style="font-size:0.8em; color:#ff4a4a;">Erro ao carregar dados da planilha.</p>';
+        boardContainer.innerHTML = '<p style="font-size:0.8em; color:#ff4a4a;">Erro ao carregar colunas da planilha. Verifique a publicação.</p>';
       }
     }
 
     window.addEventListener('DOMContentLoaded', carregarKanbanDoSheets);
+  </script>
+</body>
+</html>
