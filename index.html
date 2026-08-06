@@ -95,7 +95,7 @@
     pre.code-block { background: #111420; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 0.85em; overflow-x: auto; color: #79c0ff; border-left: 3px solid var(--accent); }
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
 
-    /* ESTILIZAÇÃO KANBAN DINÂMICO E BARRA DE ROLAGEM VISÍVEL */
+    /* KANBAN DINÂMICO E VISUALIZADOR DE ANEXOS */
     .kanban-board {
       display: flex;
       gap: 15px;
@@ -148,7 +148,6 @@
 
     .cards-container { min-height: 80px; }
 
-    /* CARD COMPACTO */
     .kanban-card {
       background: #1e2235;
       border: 1px solid #2d334d;
@@ -160,7 +159,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      max-height: 110px;
+      max-height: 120px;
       overflow: hidden;
       position: relative;
     }
@@ -184,6 +183,8 @@
       text-overflow: ellipsis;
     }
 
+    .card-obs-area a { color: var(--accent) !important; text-decoration: underline !important; font-weight: bold; }
+
     .card-footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.68em; color: var(--accent); background: rgba(0, 255, 204, 0.1); padding: 2px 6px; border-radius: 4px; }
     .card-expand-hint { font-size: 0.68em; color: var(--text-muted); opacity: 0.7; }
@@ -203,7 +204,13 @@
     .editor-btn:hover { background: var(--accent); color: #0f111a; font-weight: bold; }
     .editor-select { background: #2b314a; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 6px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
 
-    .rich-editor { width: 100%; min-height: 150px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 12px; margin-bottom: 15px; outline: none; font-size: 0.9em; line-height: 1.4; overflow-y: auto; max-height: 280px; }
+    /* ÁREA DE ANEXAR ARQUIVO NO MODAL */
+    .attachment-box { margin-bottom: 12px; background: var(--bg-input); padding: 10px; border-radius: 6px; border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+    .attachment-box label { font-size: 0.78em; color: var(--accent); cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+    .attachment-box input[type="file"] { display: none; }
+    .upload-status { font-size: 0.75em; color: var(--text-muted); }
+
+    .rich-editor { width: 100%; min-height: 140px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 12px; margin-bottom: 15px; outline: none; font-size: 0.9em; line-height: 1.4; overflow-y: auto; max-height: 250px; }
     .rich-editor:focus { border-color: var(--accent); }
 
     .rich-editor ul, .card-obs-area ul { list-style-type: disc !important; padding-left: 20px !important; margin: 6px 0 !important; }
@@ -443,6 +450,13 @@ Empresa:
         <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Ex: Nome da Empresa / Demanda...">
       </div>
 
+      <!-- BOTÃO PARA ANEXAR ARQUIVOS / DOCUMENTOS -->
+      <div class="attachment-box">
+        <label for="fileInput"><i class="fas fa-paperclip"></i> Anexar Arquivo (PDF, DOCX, Imagem...)</label>
+        <input type="file" id="fileInput" onchange="uploadArquivoDrive(this)">
+        <span id="uploadStatus" class="upload-status">Nenhum anexo novo</span>
+      </div>
+
       <label style="display:block; font-size:0.75em; color:var(--text-muted); margin-bottom:4px; font-weight:600; text-transform:uppercase;">Descrição / Anotações:</label>
       
       <!-- TOOLBAR OTIMIZADA -->
@@ -580,7 +594,7 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 5. KANBAN COM LEITURA DIRETA E RETROALIMENTADA DAS NOTAS
+    // 5. KANBAN COM UPLOAD DE ARQUIVOS E RETROALIMENTAÇÃO COMPLETA
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxik9ULAs7wfKcp4lY30WtRDbcojU6pV00EthdCZHm7CO25oU2fn1ZxbsTRQQ1T7B4u/exec'; 
 
@@ -613,6 +627,52 @@ Empresa:
       }).catch(err => console.error("Erro ao enviar dados para a planilha:", err));
     }
 
+    // UPLOAD DE ARQUIVO PARA O GOOGLE DRIVE VIA BASE64
+    function uploadArquivoDrive(inputEl) {
+      const file = inputEl.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById('uploadStatus');
+      statusEl.innerText = "Enviando arquivo...";
+      statusEl.style.color = "#ffb703";
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Data = e.target.result;
+
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            acao: 'uploadArquivo',
+            fileName: file.name,
+            fileData: base64Data,
+            mimeType: file.type
+          })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === 'success') {
+            statusEl.innerText = "✓ Anexado!";
+            statusEl.style.color = "#00ffcc";
+
+            // Injeta o link do anexo com ícone no final do editor
+            const editor = document.getElementById('modalObsEditor');
+            const fileLinkHTML = `<p style="margin-top:6px;"><a href="${res.fileUrl}" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:bold;"><i class="fas fa-file-download"></i> ${res.fileName}</a></p>`;
+            editor.innerHTML += fileLinkHTML;
+          } else {
+            statusEl.innerText = "Erro no envio.";
+            statusEl.style.color = "#ff4a4a";
+          }
+        })
+        .catch(() => {
+          statusEl.innerText = "Erro ao enviar.";
+          statusEl.style.color = "#ff4a4a";
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
     function getObsLocal(cliente) {
       return localStorage.getItem('weon_obs_' + cliente) || '';
     }
@@ -637,7 +697,6 @@ Empresa:
       saveObsLocal(cliente, obs);
     }
 
-    // CARREGAMENTO DIRETO DA API DO APPS SCRIPT (RETORNA DADOS + NOTAS DAS CÉLULAS)
     async function carregarKanbanDoSheets() {
       const boardContainer = document.getElementById('kanban-board');
 
@@ -656,7 +715,6 @@ Empresa:
           let cardsHTML = '';
 
           col.cards.forEach(card => {
-            // Nota do Sheets tem prioridade se existir
             let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
             if (card.obs) {
               saveObsLocal(card.cliente, card.obs);
@@ -664,7 +722,6 @@ Empresa:
             cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto);
           });
 
-          // Adiciona cards locais pendentes
           const cardsLocais = getCardsCriadosLocais();
           cardsLocais.forEach(cardLoc => {
             if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
@@ -772,7 +829,7 @@ Empresa:
       });
     }
 
-    // FORMATAÇÃO E SELEÇÃO DE TEXTO
+    // GESTÃO DE SELEÇÃO E FORMATAÇÃO
     function salvarSelecaoTexto() {
       const sel = window.getSelection();
       if (sel.getRangeAt && sel.rangeCount) {
@@ -802,6 +859,9 @@ Empresa:
       const clienteNome = cardEl.getAttribute('data-cliente');
       clienteAtualObs = { cliente: clienteNome, col: col };
       
+      const statusEl = document.getElementById('uploadStatus');
+      if (statusEl) statusEl.innerText = "Nenhum anexo novo";
+
       const obsAtual = cardEl.getAttribute('data-obs') || getObsLocal(clienteNome);
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fab fa-jira"></i> Editar Detalhes do Card`;
       document.getElementById('modalTitleInput').value = clienteNome;
@@ -817,6 +877,9 @@ Empresa:
       modoCriacao = true;
       colIndexCriacao = colIndex;
       cardElementoAtual = null;
+
+      const statusEl = document.getElementById('uploadStatus');
+      if (statusEl) statusEl.innerText = "Nenhum anexo novo";
 
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Criar Novo Card`;
       document.getElementById('modalTitleInput').value = '';
