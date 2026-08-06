@@ -580,7 +580,7 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 5. KANBAN COM INTEGRAÇÃO RETROALIMENTADA DA PLANILHA (LEITURA DE NOTAS DO SHEETS)
+    // 5. KANBAN COM LEITURA DIRETA E RETROALIMENTADA DAS NOTAS
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxik9ULAs7wfKcp4lY30WtRDbcojU6pV00EthdCZHm7CO25oU2fn1ZxbsTRQQ1T7B4u/exec'; 
 
@@ -637,66 +637,41 @@ Empresa:
       saveObsLocal(cliente, obs);
     }
 
+    // CARREGAMENTO DIRETO DA API DO APPS SCRIPT (RETORNA DADOS + NOTAS DAS CÉLULAS)
     async function carregarKanbanDoSheets() {
       const boardContainer = document.getElementById('kanban-board');
 
       try {
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&range=A1:Z100`;
-        const response = await fetch(url);
-        const text = await response.text();
-        
-        const jsonData = JSON.parse(text.substring(47, text.length - 2));
-        const table = jsonData.table;
-        const rows = table.rows;
+        const response = await fetch(APPS_SCRIPT_URL);
+        const resData = await response.json();
+
+        if (resData.status !== 'success' || !resData.colunas) {
+          throw new Error("Erro no retorno do Apps Script");
+        }
 
         boardContainer.innerHTML = '';
-        if (!rows || rows.length === 0) return;
-
-        const colunasMap = [];
-        const empenhoHeaderRow = rows[0]; 
-
-        if (empenhoHeaderRow && empenhoHeaderRow.c) {
-          empenhoHeaderRow.c.forEach((cell, index) => {
-            let nomeColuna = cell && cell.v !== null ? String(cell.v) : '';
-            if (nomeColuna.trim() !== '') {
-              colunasMap.push({ index: index, nome: nomeColuna.trim(), cardsHTML: '' });
-            }
-          });
-        }
-
-        // Pega cards vindos do Sheets
-        for (let i = 1; i < rows.length; i++) {
-          const row = rows[i];
-          if (!row || !row.c) continue;
-
-          row.c.forEach((cell, cellIndex) => {
-            if (cell && cell.v !== null && String(cell.v).trim() !== '') {
-              const colObj = colunasMap.find(c => c.index === cellIndex);
-              if (colObj) {
-                const clienteNome = String(cell.v);
-                
-                // PRIORIDADE DA NOTA: Pega a Nota da Célula na Planilha (cell.n) se existir, ou do cache local
-                let notaTexto = (cell && cell.n) ? cell.n : getObsLocal(clienteNome);
-                if (cell && cell.n) {
-                  saveObsLocal(clienteNome, cell.n); // Atualiza cache local com o do Sheets
-                }
-
-                colObj.cardsHTML += criarCardHTML(clienteNome, cellIndex, notaTexto);
-              }
-            }
-          });
-        }
-
-        // Inclui cards criados localmente caso a API de visualização do Sheets ainda não tenha atualizado
-        const cardsLocais = getCardsCriadosLocais();
-        cardsLocais.forEach(cardLoc => {
-          const colObj = colunasMap.find(c => c.index === cardLoc.colIndex);
-          if (colObj && !colObj.cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
-            colObj.cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs);
-          }
-        });
+        const colunasMap = resData.colunas;
 
         colunasMap.forEach(col => {
+          let cardsHTML = '';
+
+          col.cards.forEach(card => {
+            // Nota do Sheets tem prioridade se existir
+            let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
+            if (card.obs) {
+              saveObsLocal(card.cliente, card.obs);
+            }
+            cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto);
+          });
+
+          // Adiciona cards locais pendentes
+          const cardsLocais = getCardsCriadosLocais();
+          cardsLocais.forEach(cardLoc => {
+            if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
+              cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs);
+            }
+          });
+
           const colDiv = document.createElement('div');
           colDiv.className = 'kanban-column';
           colDiv.setAttribute('data-col-index', col.index);
@@ -708,7 +683,7 @@ Empresa:
             <div class="kanban-header">${col.nome}</div>
             <button class="btn-add-card-col" onclick="abrirModalCriar(${col.index})"><i class="fas fa-plus"></i> Criar Novo Card</button>
             <div class="cards-container">
-              ${col.cardsHTML ? col.cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}
+              ${cardsHTML ? cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}
             </div>
           `;
           boardContainer.appendChild(colDiv);
@@ -721,7 +696,7 @@ Empresa:
         });
 
       } catch (error) {
-        console.error("Erro ao carregar Sheets:", error);
+        console.error("Erro ao carregar dados do Apps Script:", error);
       }
     }
 
@@ -797,7 +772,7 @@ Empresa:
       });
     }
 
-    // GESTÃO DE SELEÇÃO E FORMATAÇÃO
+    // FORMATAÇÃO E SELEÇÃO DE TEXTO
     function salvarSelecaoTexto() {
       const sel = window.getSelection();
       if (sel.getRangeAt && sel.rangeCount) {
