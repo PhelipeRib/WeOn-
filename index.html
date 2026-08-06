@@ -580,7 +580,7 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // 5. KANBAN COM INTEGRAÇÃO BIDIRECIONAL E GARANTIDA COM O GOOGLE SHEETS
+    // 5. KANBAN COM INTEGRAÇÃO RETROALIMENTADA DA PLANILHA (LEITURA DE NOTAS DO SHEETS)
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxik9ULAs7wfKcp4lY30WtRDbcojU6pV00EthdCZHm7CO25oU2fn1ZxbsTRQQ1T7B4u/exec'; 
 
@@ -597,7 +597,6 @@ Empresa:
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2200);
     }
 
-    // ENVIADOR DIRETO PARA APPS SCRIPT (GARANTIDO VIA URLSEARCHPARAMS)
     function enviarParaGoogleSheets(dados) {
       if (!APPS_SCRIPT_URL) return;
       
@@ -614,7 +613,6 @@ Empresa:
       }).catch(err => console.error("Erro ao enviar dados para a planilha:", err));
     }
 
-    // PERSISTÊNCIA LOCALSTORAGE
     function getObsLocal(cliente) {
       return localStorage.getItem('weon_obs_' + cliente) || '';
     }
@@ -676,14 +674,20 @@ Empresa:
               const colObj = colunasMap.find(c => c.index === cellIndex);
               if (colObj) {
                 const clienteNome = String(cell.v);
-                const localObs = getObsLocal(clienteNome);
-                colObj.cardsHTML += criarCardHTML(clienteNome, cellIndex, localObs);
+                
+                // PRIORIDADE DA NOTA: Pega a Nota da Célula na Planilha (cell.n) se existir, ou do cache local
+                let notaTexto = (cell && cell.n) ? cell.n : getObsLocal(clienteNome);
+                if (cell && cell.n) {
+                  saveObsLocal(clienteNome, cell.n); // Atualiza cache local com o do Sheets
+                }
+
+                colObj.cardsHTML += criarCardHTML(clienteNome, cellIndex, notaTexto);
               }
             }
           });
         }
 
-        // Inclui cards criados localmente pelo usuário caso ainda não tenham sido lidos pela Viz API
+        // Inclui cards criados localmente caso a API de visualização do Sheets ainda não tenha atualizado
         const cardsLocais = getCardsCriadosLocais();
         cardsLocais.forEach(cardLoc => {
           const colObj = colunasMap.find(c => c.index === cardLoc.colIndex);
@@ -785,7 +789,6 @@ Empresa:
 
       mostrarToast("Card movido!");
 
-      // Envia ao Google Sheets
       enviarParaGoogleSheets({
         acao: 'mover',
         cliente: data.cliente,
@@ -794,7 +797,7 @@ Empresa:
       });
     }
 
-    // FORMATAÇÃO E SELEÇÃO DE TEXTO
+    // GESTÃO DE SELEÇÃO E FORMATAÇÃO
     function salvarSelecaoTexto() {
       const sel = window.getSelection();
       if (sel.getRangeAt && sel.rangeCount) {
@@ -876,7 +879,6 @@ Empresa:
 
         mostrarToast("Novo card criado!");
 
-        // ENVIA A CRIAÇÃO PARA A PLANILHA GOOGLE
         enviarParaGoogleSheets({
           acao: 'criarCard',
           cliente: novoTitulo,
@@ -897,7 +899,6 @@ Empresa:
 
         mostrarToast("Card atualizado!");
 
-        // ENVIA A NOTA PARA A PLANILHA GOOGLE
         enviarParaGoogleSheets({
           acao: 'salvarObs',
           cliente: novoTitulo,
