@@ -67,7 +67,7 @@
 
     h2 { font-size: 1.2em; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 8px; text-transform: uppercase; border-left: 3px solid var(--accent); padding-left: 10px; }
 
-    /* PAINEL BI INTEGADOR COM CARDS DE KPI E GRÁFICOS */
+    /* ESTILIZAÇÃO DO PAINEL BI / KPIs E GRÁFICOS */
     .bi-container { display: flex; flex-direction: column; gap: 20px; margin-bottom: 25px; background: #121522; padding: 20px; border-radius: 10px; border: 1px solid #262b3d; }
     .bi-title { font-size: 0.9em; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
 
@@ -304,7 +304,7 @@
       <div class="content" style="max-height: 3000px;">
         <div class="content-inner">
           
-          <!-- BLINDAgem DO BI (PAINEL ANALÍTICO COMPLETO) -->
+          <!-- PAINEL ANALÍTICO BI INTEGRADO -->
           <div class="bi-container">
             <div class="bi-title"><i class="fas fa-chart-pie"></i> Indicadores & Métricas em Tempo Real</div>
             
@@ -880,58 +880,62 @@ Empresa:
 
       // SEGURANÇA PARA RENDERIZAR GRÁFICOS SE O CHART.JS ESTIVER CARREGADO
       if (typeof Chart !== 'undefined') {
-        const ctxDonut = document.getElementById('donutChart').getContext('2d');
-        if (donutChartInstance) donutChartInstance.destroy();
+        try {
+          const ctxDonut = document.getElementById('donutChart').getContext('2d');
+          if (donutChartInstance) donutChartInstance.destroy();
 
-        donutChartInstance = new Chart(ctxDonut, {
-          type: 'doughnut',
-          data: {
-            labels: labelsColunas,
-            datasets: [{
-              data: dadosColunas,
-              backgroundColor: coresDinamicas.slice(0, labelsColunas.length),
-              borderColor: '#161925',
-              borderWidth: 2
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'right',
-                labels: { color: '#a0aec0', font: { size: 10 } }
+          donutChartInstance = new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+              labels: labelsColunas,
+              datasets: [{
+                data: dadosColunas,
+                backgroundColor: coresDinamicas.slice(0, labelsColunas.length),
+                borderColor: '#161925',
+                borderWidth: 2
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'right',
+                  labels: { color: '#a0aec0', font: { size: 10 } }
+                }
               }
             }
-          }
-        });
+          });
 
-        const ctxBar = document.getElementById('barChart').getContext('2d');
-        if (barChartInstance) barChartInstance.destroy();
+          const ctxBar = document.getElementById('barChart').getContext('2d');
+          if (barChartInstance) barChartInstance.destroy();
 
-        barChartInstance = new Chart(ctxBar, {
-          type: 'bar',
-          data: {
-            labels: labelsColunas,
-            datasets: [{
-              label: 'Volume de Projetos',
-              data: dadosColunas,
-              backgroundColor: 'rgba(0, 255, 204, 0.4)',
-              borderColor: '#00ffcc',
-              borderWidth: 1.5,
-              borderRadius: 4
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              x: { ticks: { color: '#a0aec0', font: { size: 9 } }, grid: { display: false } },
-              y: { ticks: { color: '#a0aec0', precision: 0 }, grid: { color: '#2d3142' } }
+          barChartInstance = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+              labels: labelsColunas,
+              datasets: [{
+                label: 'Volume de Projetos',
+                data: dadosColunas,
+                backgroundColor: 'rgba(0, 255, 204, 0.4)',
+                borderColor: '#00ffcc',
+                borderWidth: 1.5,
+                borderRadius: 4
+              }]
             },
-            plugins: { legend: { display: false } }
-          }
-        });
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: { ticks: { color: '#a0aec0', font: { size: 9 } }, grid: { display: false } },
+                y: { ticks: { color: '#a0aec0', precision: 0 }, grid: { color: '#2d3142' } }
+              },
+              plugins: { legend: { display: false } }
+            }
+          });
+        } catch (e) {
+          console.error("Erro ao desenhar gráficos do Chart.js:", e);
+        }
       }
     }
 
