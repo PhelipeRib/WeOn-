@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard Interno | Auxílio WeON</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>    
-  <!-- CHART.JS PARA GRÁFICOS INTERATIVOS -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
@@ -67,27 +65,33 @@
 
     h2 { font-size: 1.2em; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 8px; text-transform: uppercase; border-left: 3px solid var(--accent); padding-left: 10px; }
 
-    /* ESTILIZAÇÃO DO PAINEL BI / KPIs E GRÁFICOS */
-    .bi-container { display: flex; flex-direction: column; gap: 20px; margin-bottom: 25px; background: #121522; padding: 20px; border-radius: 10px; border: 1px solid #262b3d; }
-    .bi-title { font-size: 0.9em; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+    /* NOVA SEÇÃO DEDICADA DE DASHBOARD & BI */
+    .bi-dashboard-section { display: flex; flex-direction: column; gap: 20px; }
+    
+    .kpi-cards-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+    .kpi-card { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .kpi-icon { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4em; }
+    .kpi-info h4 { font-size: 1.8em; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 4px; }
+    .kpi-info span { font-size: 0.72em; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-    .kpi-card { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
-    .kpi-icon { width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2em; background: rgba(255,255,255,0.05); }
-    .kpi-data h4 { font-size: 1.5em; font-weight: 700; color: #fff; line-height: 1; }
-    .kpi-data span { font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+    .kpi-card.total .kpi-icon { color: var(--accent); background: rgba(0, 255, 204, 0.1); border: 1px solid var(--accent); }
+    .kpi-card.andamento .kpi-icon { color: #38bdf8; background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; }
+    .kpi-card.bloqueio .kpi-icon { color: #ff4a4a; background: rgba(255, 74, 74, 0.1); border: 1px solid #ff4a4a; }
+    .kpi-card.concluido .kpi-icon { color: #4ade80; background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; }
 
-    .kpi-card.total .kpi-icon { color: var(--accent); background: rgba(0, 255, 204, 0.1); }
-    .kpi-card.andamento .kpi-icon { color: #38bdf8; background: rgba(56, 189, 248, 0.1); }
-    .kpi-card.bloqueio .kpi-icon { color: #ff4a4a; background: rgba(255, 74, 74, 0.1); }
-    .kpi-card.concluido .kpi-icon { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+    /* GRÁFICOS VISUAIS EM HTML/CSS NATIVO (SEM DEPENDER DE CHART.JS EXTERNO) */
+    .dash-charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .dash-charts-grid { grid-template-columns: 1fr; } }
 
-    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
+    .dash-chart-card { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+    .dash-chart-card h3 { font-size: 0.85em; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
 
-    .chart-box { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .chart-box h4 { font-size: 0.8em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; align-self: flex-start; }
-    .chart-container-wrapper { width: 100%; height: 200px; position: relative; }
+    /* BARRA DE PROGRESSO E DE ESTEIRA */
+    .status-bar-container { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .status-bar-item { display: flex; flex-direction: column; gap: 4px; }
+    .status-bar-header { display: flex; justify-content: space-between; font-size: 0.78em; color: var(--text-main); font-weight: 600; }
+    .status-bar-bg { width: 100%; height: 8px; background: #111420; border-radius: 4px; overflow: hidden; }
+    .status-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.5s ease; }
 
     .collapsible-wrapper { margin-bottom: 12px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
     .collapsible { width: 100%; background-color: var(--bg-input); padding: 16px 20px; cursor: pointer; border: none; color: var(--text-main); font-size: 1em; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
@@ -119,7 +123,7 @@
     pre.code-block { background: #111420; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 0.85em; overflow-x: auto; color: #79c0ff; border-left: 3px solid var(--accent); }
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
 
-    /* ESTILIZAÇÃO KANBAN DINÂMICO E ROLAGEM VISÍVEL */
+    /* KANBAN DINÂMICO E ROLAGEM VISÍVEL */
     .kanban-board {
       display: flex;
       gap: 15px;
@@ -172,7 +176,6 @@
 
     .cards-container { min-height: 80px; }
 
-    /* CARD COMPACTO */
     .kanban-card {
       background: #1e2235;
       border: 1px solid #2d334d;
@@ -294,72 +297,80 @@
       </div>
     </div>
 
-    <!-- SEÇÃO KANBAN DINÂMICO GOOGLE SHEETS + PAINEL DE BI INTEGRADOR -->
+    <!-- SEÇÃO NOVA 1: DASHBOARD DE INDICADORES BI -->
+    <h2><i class="fas fa-chart-line"></i> Dashboard & Indicadores BI</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible active">
+        <span class="btn-title"><i class="fas fa-chart-pie"></i> Visão Geral & Métricas do Projeto</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content" style="max-height: 1500px;">
+        <div class="content-inner bi-dashboard-section">
+          
+          <!-- CARDS DE METRICAS (KPIs) -->
+          <div class="kpi-cards-wrapper">
+            <div class="kpi-card total">
+              <div class="kpi-icon"><i class="fas fa-project-diagram"></i></div>
+              <div class="kpi-info">
+                <h4 id="kpiTotal">0</h4>
+                <span>Total Projetos</span>
+              </div>
+            </div>
+            <div class="kpi-card andamento">
+              <div class="kpi-icon"><i class="fas fa-spinner"></i></div>
+              <div class="kpi-info">
+                <h4 id="kpiAndamento">0</h4>
+                <span>Em Andamento</span>
+              </div>
+            </div>
+            <div class="kpi-card bloqueio">
+              <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+              <div class="kpi-info">
+                <h4 id="kpiBloqueio">0</h4>
+                <span>Em Bloqueio</span>
+              </div>
+            </div>
+            <div class="kpi-card concluido">
+              <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="kpi-info">
+                <h4 id="kpiConcluido">0</h4>
+                <span>Concluídos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- GRÁFICOS VISUAIS EM HTML/CSS NATIVOS -->
+          <div class="dash-charts-grid">
+            <div class="dash-chart-card">
+              <h3><i class="fas fa-layer-group"></i> Distribuição por Etapa</h3>
+              <div id="barChartsContainer" class="status-bar-container">
+                <p style="font-size:0.75em; color:var(--text-muted);">Sincronizando com a esteira...</p>
+              </div>
+            </div>
+            <div class="dash-chart-card">
+              <h3><i class="fas fa-tasks"></i> Progresso da Esteira (%)</h3>
+              <div id="progressChartsContainer" class="status-bar-container">
+                <p style="font-size:0.75em; color:var(--text-muted);">Calculando porcentagens...</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO NOVA 2: QUADRO DE ACOMPANHAMENTO DE CLIENTES (KANBAN) -->
     <h2><i class="fas fa-users-cog"></i> Acompanhamento de Clientes</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible active">
-        <span class="btn-title"><i class="fas fa-columns"></i> Quadro de Implantação & Indicadores</span>
+        <span class="btn-title"><i class="fas fa-columns"></i> Quadro de Implantação (Google Sheets)</span>
         <i class="fas fa-chevron-down chevron"></i>
       </button>
-      <div class="content" style="max-height: 3000px;">
+      <div class="content" style="max-height: 2500px;">
         <div class="content-inner">
-          
-          <!-- PAINEL ANALÍTICO BI INTEGRADO -->
-          <div class="bi-container">
-            <div class="bi-title"><i class="fas fa-chart-pie"></i> Indicadores & Métricas em Tempo Real</div>
-            
-            <div class="kpi-grid">
-              <div class="kpi-card total">
-                <div class="kpi-icon"><i class="fas fa-project-diagram"></i></div>
-                <div class="kpi-data">
-                  <h4 id="kpiTotal">0</h4>
-                  <span>Total Demandas</span>
-                </div>
-              </div>
-              <div class="kpi-card andamento">
-                <div class="kpi-icon"><i class="fas fa-spinner"></i></div>
-                <div class="kpi-data">
-                  <h4 id="kpiAndamento">0</h4>
-                  <span>Em Andamento</span>
-                </div>
-              </div>
-              <div class="kpi-card bloqueio">
-                <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <div class="kpi-data">
-                  <h4 id="kpiBloqueio">0</h4>
-                  <span>Em Bloqueio</span>
-                </div>
-              </div>
-              <div class="kpi-card concluido">
-                <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
-                <div class="kpi-data">
-                  <h4 id="kpiConcluido">0</h4>
-                  <span>Concluídos</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="charts-grid">
-              <div class="chart-box">
-                <h4><i class="fas fa-chart-pie"></i> Distribuição por Status (%)</h4>
-                <div class="chart-container-wrapper">
-                  <canvas id="donutChart"></canvas>
-                </div>
-              </div>
-              <div class="chart-box">
-                <h4><i class="fas fa-chart-bar"></i> Volume por Etapa da Esteira</h4>
-                <div class="chart-container-wrapper">
-                  <canvas id="barChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- KANBAN COM SCROLL HORIZONTAL -->
           <div class="kanban-board" id="kanban-board">
             <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas da planilha...</p>
           </div>
-
         </div>
       </div>
     </div>
@@ -684,9 +695,6 @@ Empresa:
     let colIndexCriacao = 0;
     let savedRange = null;
 
-    let donutChartInstance = null;
-    let barChartInstance = null;
-
     function mostrarToast(mensagem) {
       const toast = document.getElementById("toast");
       toast.innerText = mensagem;
@@ -840,6 +848,7 @@ Empresa:
       }
     }
 
+    // LÓGICA DO DASHBOARD BI (NATIVA E TOTALMENTE RESILIENTE)
     function atualizarDashboardBI() {
       const colunas = document.querySelectorAll('.kanban-column');
       
@@ -848,19 +857,16 @@ Empresa:
       let totalBloqueio = 0;
       let totalConcluido = 0;
 
-      const labelsColunas = [];
-      const dadosColunas = [];
-      const coresDinamicas = [
-        '#00ffcc', '#38bdf8', '#818cf8', '#a78bfa', 
-        '#f472b6', '#ffb703', '#4ade80', '#ff4a4a'
-      ];
+      const barContainer = document.getElementById('barChartsContainer');
+      const progressContainer = document.getElementById('progressChartsContainer');
+      
+      if (barContainer) barContainer.innerHTML = '';
+      if (progressContainer) progressContainer.innerHTML = '';
 
-      colunas.forEach((col, idx) => {
+      colunas.forEach((col) => {
         const nomeColuna = col.querySelector('.kanban-header').innerText.trim();
         const numCards = col.querySelectorAll('.kanban-card').length;
 
-        labelsColunas.push(nomeColuna);
-        dadosColunas.push(numCards);
         totalGeral += numCards;
 
         const nomeLower = nomeColuna.toLowerCase();
@@ -873,70 +879,46 @@ Empresa:
         }
       });
 
+      // ATUALIZA KPIS
       document.getElementById('kpiTotal').innerText = totalGeral;
       document.getElementById('kpiAndamento').innerText = totalAndamento;
       document.getElementById('kpiBloqueio').innerText = totalBloqueio;
       document.getElementById('kpiConcluido').innerText = totalConcluido;
 
-      // SEGURANÇA PARA RENDERIZAR GRÁFICOS SE O CHART.JS ESTIVER CARREGADO
-      if (typeof Chart !== 'undefined') {
-        try {
-          const ctxDonut = document.getElementById('donutChart').getContext('2d');
-          if (donutChartInstance) donutChartInstance.destroy();
+      // MONTA GRÁFICOS VISUAIS EM HTML/CSS NATIVO
+      colunas.forEach((col) => {
+        const nomeColuna = col.querySelector('.kanban-header').innerText.trim();
+        const numCards = col.querySelectorAll('.kanban-card').length;
+        const pct = totalGeral > 0 ? Math.round((numCards / totalGeral) * 100) : 0;
 
-          donutChartInstance = new Chart(ctxDonut, {
-            type: 'doughnut',
-            data: {
-              labels: labelsColunas,
-              datasets: [{
-                data: dadosColunas,
-                backgroundColor: coresDinamicas.slice(0, labelsColunas.length),
-                borderColor: '#161925',
-                borderWidth: 2
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'right',
-                  labels: { color: '#a0aec0', font: { size: 10 } }
-                }
-              }
-            }
-          });
-
-          const ctxBar = document.getElementById('barChart').getContext('2d');
-          if (barChartInstance) barChartInstance.destroy();
-
-          barChartInstance = new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-              labels: labelsColunas,
-              datasets: [{
-                label: 'Volume de Projetos',
-                data: dadosColunas,
-                backgroundColor: 'rgba(0, 255, 204, 0.4)',
-                borderColor: '#00ffcc',
-                borderWidth: 1.5,
-                borderRadius: 4
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                x: { ticks: { color: '#a0aec0', font: { size: 9 } }, grid: { display: false } },
-                y: { ticks: { color: '#a0aec0', precision: 0 }, grid: { color: '#2d3142' } }
-              },
-              plugins: { legend: { display: false } }
-            }
-          });
-        } catch (e) {
-          console.error("Erro ao desenhar gráficos do Chart.js:", e);
+        if (barContainer) {
+          barContainer.innerHTML += `
+            <div class="status-bar-item">
+              <div class="status-bar-header">
+                <span>${nomeColuna}</span>
+                <span style="color:var(--accent);">${numCards} cards</span>
+              </div>
+              <div class="status-bar-bg">
+                <div class="status-bar-fill" style="width: ${totalGeral > 0 ? (numCards / 10) * 100 : 0}%;"></div>
+              </div>
+            </div>
+          `;
         }
-      }
+
+        if (progressContainer) {
+          progressContainer.innerHTML += `
+            <div class="status-bar-item">
+              <div class="status-bar-header">
+                <span>${nomeColuna}</span>
+                <span style="color:#38bdf8;">${pct}%</span>
+              </div>
+              <div class="status-bar-bg">
+                <div class="status-bar-fill" style="width: ${pct}%; background:#38bdf8;"></div>
+              </div>
+            </div>
+          `;
+        }
+      });
     }
 
     function criarCardHTML(clienteNome, cellIndex, obsText) {
