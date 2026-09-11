@@ -109,6 +109,17 @@
     .btn-copy:hover { color: var(--accent); }
     .btn-copy.copied { color: #00ffcc !important; }
 
+    /* ESTILOS ESPECÍFICOS DOS CARDS DE DID */
+    .did-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+    .did-card { background: #111420; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.2s; }
+    .did-card:hover { border-color: var(--accent); }
+    .did-header { display: flex; justify-content: space-between; align-items: center; }
+    .did-badge { background: rgba(0, 255, 204, 0.1); color: var(--accent); font-size: 0.75em; padding: 3px 8px; border-radius: 4px; font-weight: bold; border: 1px solid rgba(0, 255, 204, 0.3); }
+    .did-number { font-size: 1.25em; font-weight: bold; color: #fff; font-family: monospace; letter-spacing: 0.5px; }
+    .did-actions { display: flex; gap: 8px; margin-top: 5px; }
+    .btn-did-copy { flex: 1; background: #252a3f; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.8em; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+    .btn-did-copy:hover { border-color: var(--accent); color: var(--accent); background: #2a314d; }
+
     .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .custom-link { background: #22273d; padding: 12px; border-radius: 6px; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.9em; border: 1px solid transparent; }
     .custom-link:hover { background: var(--bg-input); border-color: var(--accent); transform: translateY(-2px); }
@@ -280,7 +291,7 @@
     <div class="top-widgets">
       <div class="search-box">
         <i class="fas fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Buscar credencial, link ou comando..." onkeyup="filterItems()">
+        <input type="text" id="searchInput" placeholder="Buscar credencial, DID, link ou comando..." onkeyup="filterItems()">
       </div>
       
       <div class="scratchpad">
@@ -340,6 +351,56 @@
           <h3><i class="fas fa-chart-bar"></i> Volume por Etapa da Esteira</h3>
           <div class="chart-container-wrapper">
             <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOVO CAMPO: LISTA DE DIDS PARA TESTES E HOMOLOGAÇÃO -->
+    <h2><i class="fas fa-phone-alt"></i> Lista de DIDs para Testes e Homologação</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible active">
+        <span class="btn-title"><i class="fas fa-sim-card"></i> DIDs Ativos de Homologação</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content" style="max-height: 500px;">
+        <div class="content-inner">
+          <div class="did-grid">
+            
+            <!-- CARD DID 1 -->
+            <div class="did-card">
+              <div class="did-header">
+                <span class="did-badge"><i class="fas fa-server"></i> Servidor DG</span>
+                <i class="fas fa-headset" style="color: var(--text-muted);"></i>
+              </div>
+              <div class="did-number">41 3075-1379</div>
+              <div class="did-actions">
+                <button class="btn-did-copy" onclick="copyText('4130751379', this)">
+                  <i class="fas fa-copy"></i> Copiar Puro
+                </button>
+                <button class="btn-did-copy" onclick="copyText('41 3075-1379', this)">
+                  <i class="fas fa-asterisk"></i> Formatado
+                </button>
+              </div>
+            </div>
+
+            <!-- CARD DID 2 -->
+            <div class="did-card">
+              <div class="did-header">
+                <span class="did-badge"><i class="fas fa-server"></i> Servidor M2</span>
+                <i class="fas fa-headset" style="color: var(--text-muted);"></i>
+              </div>
+              <div class="did-number">41 3075-1387</div>
+              <div class="did-actions">
+                <button class="btn-did-copy" onclick="copyText('4130751387', this)">
+                  <i class="fas fa-copy"></i> Copiar Puro
+                </button>
+                <button class="btn-did-copy" onclick="copyText('41 3075-1387', this)">
+                  <i class="fas fa-asterisk"></i> Formatado
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -591,11 +652,13 @@ Empresa:
     function copyText(text, btnElement) {
       navigator.clipboard.writeText(text).then(() => {
         const icon = btnElement.querySelector('i');
-        icon.className = 'fas fa-check';
+        const oldClass = icon ? icon.className : '';
+        if(icon) icon.className = 'fas fa-check';
         btnElement.classList.add('copied');
+        mostrarToast("Copiado com sucesso!");
         
         setTimeout(() => {
-          icon.className = 'fas fa-copy';
+          if(icon) icon.className = oldClass;
           btnElement.classList.remove('copied');
         }, 1500);
       });
