@@ -348,7 +348,7 @@
     }
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
 
-    /* KANBAN DINÂMICO E CRIAÇÃO/EXCLUSÃO DE COLUNAS */
+    /* KANBAN DINÂMICO E ARRASTE DE COLUNAS */
     .kanban-toolbar {
       display: flex;
       justify-content: flex-end;
@@ -395,8 +395,12 @@
       padding: 18px; 
       min-width: 270px; 
       flex: 0 0 270px; 
-      transition: background 0.2s, border-color 0.2s; 
+      transition: background 0.2s, border-color 0.2s, opacity 0.2s, transform 0.2s; 
+      cursor: grab;
     }
+    .kanban-column:active { cursor: grabbing; }
+    .kanban-column.dragging-column { opacity: 0.4; transform: scale(0.98); }
+    .kanban-column.drag-over-column { border-left: 3px solid var(--accent); background: rgba(0, 255, 204, 0.05); }
     .kanban-column.drag-over { background: rgba(0, 255, 204, 0.05); border-color: var(--accent); }
 
     .kanban-header { 
@@ -486,7 +490,7 @@
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 600; color: var(--accent); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; }
     .card-expand-hint { font-size: 0.7em; color: var(--text-muted); font-weight: 500; }
 
-    /* MODAL DE EDIÇÃO E CRIAÇÃO DE CARDS E COLUNAS */
+    /* MODAIS */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
     .modal-content { background: #131725; border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 550px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -573,7 +577,6 @@
       <div class="bi-title"><i class="fas fa-chart-pie"></i> Indicadores & Métricas em Tempo Real</div>
       
       <div class="bi-layout-grid">
-        <!-- KPIS DA OPERAÇÃO -->
         <div class="kpi-cards-wrapper">
           <div class="kpi-card total">
             <div class="kpi-icon"><i class="fas fa-project-diagram"></i></div>
@@ -605,7 +608,6 @@
           </div>
         </div>
 
-        <!-- GRÁFICO POLIDO POR STATUS -->
         <div class="chart-box">
           <h3><i class="fas fa-chart-pie"></i> Distribuição por Status</h3>
           <div class="chart-container-wrapper">
@@ -973,6 +975,7 @@ Empresa:
     let savedRange = null;
 
     let donutChartInstance = null;
+    let draggedColumn = null;
 
     function mostrarToast(mensagem) {
       const toast = document.getElementById("toast");
@@ -1107,23 +1110,7 @@ Empresa:
             }
           });
 
-          const colDiv = document.createElement('div');
-          colDiv.className = 'kanban-column';
-          colDiv.setAttribute('data-col-index', col.index);
-          colDiv.setAttribute('ondragover', 'allowDrop(event)');
-          colDiv.setAttribute('ondragleave', 'dragLeave(event)');
-          colDiv.setAttribute('ondrop', 'drop(event)');
-          
-          colDiv.innerHTML = `
-            <div class="kanban-header">
-              <span>${col.nome}</span>
-              <button class="btn-delete-col" onclick="deletarColuna(${col.index}, '${escapeXmlAttr(col.nome)}', this)" title="Excluir Coluna"><i class="fas fa-trash-alt"></i></button>
-            </div>
-            <button class="btn-add-card-col" onclick="abrirModalCriar(${col.index})"><i class="fas fa-plus"></i> Criar Novo Card</button>
-            <div class="cards-container">
-              ${cardsHTML ? cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}
-            </div>
-          `;
+          const colDiv = montarElementoColuna(col.index, col.nome, cardsHTML);
           boardContainer.appendChild(colDiv);
         });
 
@@ -1138,6 +1125,63 @@ Empresa:
       } catch (error) {
         console.error("Erro ao carregar dados do Apps Script:", error);
       }
+    }
+
+    function montarElementoColuna(index, nome, cardsHTML) {
+      const colDiv = document.createElement('div');
+      colDiv.className = 'kanban-column';
+      colDiv.setAttribute('data-col-index', index);
+      colDiv.setAttribute('draggable', 'true');
+      
+      // Eventos Drag e Drop de Cards e de Colunas
+      colDiv.setAttribute('ondragover', 'allowDrop(event)');
+      colDiv.setAttribute('ondragleave', 'dragLeave(event)');
+      colDiv.setAttribute('ondrop', 'drop(event)');
+
+      colDiv.addEventListener('dragstart', colDragStart);
+      colDiv.addEventListener('dragend', colDragEnd);
+      colDiv.addEventListener('dragenter', colDragEnter);
+      colDiv.addEventListener('dragleave', colDragLeave);
+
+      colDiv.innerHTML = `
+        <div class="kanban-header">
+          <span>${nome}</span>
+          <button class="btn-delete-col" onclick="deletarColuna(${index}, '${escapeXmlAttr(nome)}', this)" title="Excluir Coluna"><i class="fas fa-trash-alt"></i></button>
+        </div>
+        <button class="btn-add-card-col" onclick="abrirModalCriar(${index})"><i class="fas fa-plus"></i> Criar Novo Card</button>
+        <div class="cards-container">
+          ${cardsHTML ? cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}
+        </div>
+      `;
+      return colDiv;
+    }
+
+    // ARRASTAR E SOLTAR COLUNAS (REORDENAÇÃO)
+    function colDragStart(e) {
+      if (window.draggedCard) return; // Evita conflito ao arrastar cards
+      draggedColumn = this;
+      this.classList.add('dragging-column');
+      e.dataTransfer.setData('text/column', this.getAttribute('data-col-index'));
+    }
+
+    function colDragEnd(e) {
+      if (draggedColumn) {
+        draggedColumn.classList.remove('dragging-column');
+        draggedColumn = null;
+      }
+      document.querySelectorAll('.kanban-column').forEach(col => {
+        col.classList.remove('drag-over-column');
+      });
+    }
+
+    function colDragEnter(e) {
+      if (draggedColumn && draggedColumn !== this) {
+        this.classList.add('drag-over-column');
+      }
+    }
+
+    function colDragLeave(e) {
+      this.classList.remove('drag-over-column');
     }
 
     // LÓGICA DO DASHBOARD BI
@@ -1175,13 +1219,11 @@ Empresa:
         }
       });
 
-      // ATUALIZA KPIS
       document.getElementById('kpiTotal').innerText = totalGeral;
       document.getElementById('kpiAndamento').innerText = totalAndamento;
       document.getElementById('kpiBloqueio').innerText = totalBloqueio;
       document.getElementById('kpiConcluido').innerText = totalConcluido;
 
-      // RENDERIZA GRÁFICO REFINADO CHART.JS
       if (typeof Chart !== 'undefined') {
         try {
           const ctxDonut = document.getElementById('donutChart').getContext('2d');
@@ -1257,7 +1299,9 @@ Empresa:
 
     function allowDrop(ev) {
       ev.preventDefault();
-      ev.currentTarget.classList.add('drag-over');
+      if (!draggedColumn) {
+        ev.currentTarget.classList.add('drag-over');
+      }
     }
 
     function dragLeave(ev) {
@@ -1265,6 +1309,7 @@ Empresa:
     }
 
     function drag(ev) {
+      ev.stopPropagation(); // Evita ativar a movimentação de coluna ao arrastar card
       const card = ev.currentTarget;
       ev.dataTransfer.setData("text/plain", JSON.stringify({
         cliente: card.getAttribute('data-cliente'),
@@ -1277,29 +1322,52 @@ Empresa:
       ev.preventDefault();
       const column = ev.currentTarget;
       column.classList.remove('drag-over');
+      column.classList.remove('drag-over-column');
 
-      const data = JSON.parse(ev.dataTransfer.getData("text/plain"));
-      const destinoCol = parseInt(column.getAttribute('data-col-index'));
+      // SE FOR REORDENAÇÃO DE COLUNA
+      if (draggedColumn && draggedColumn !== column) {
+        const board = document.getElementById('kanban-board');
+        const allCols = Array.from(board.querySelectorAll('.kanban-column'));
+        const targetIndex = allCols.indexOf(column);
+        const draggedIndex = allCols.indexOf(draggedColumn);
 
-      if (data.origemCol === destinoCol) return;
+        if (draggedIndex < targetIndex) {
+          board.insertBefore(draggedColumn, column.nextSibling);
+        } else {
+          board.insertBefore(draggedColumn, column);
+        }
 
-      const cardsContainer = column.querySelector('.cards-container');
-      const emptyText = cardsContainer.querySelector('p');
-      if (emptyText) emptyText.remove();
+        draggedColumn = null;
+        mostrarToast("Ordem das colunas atualizada!");
+        atualizarDashboardBI();
+        return;
+      }
 
-      cardsContainer.appendChild(window.draggedCard);
-      window.draggedCard.setAttribute('data-col', destinoCol);
+      // SE FOR MOVIMENTAÇÃO DE CARD
+      if (window.draggedCard) {
+        const data = JSON.parse(ev.dataTransfer.getData("text/plain"));
+        const destinoCol = parseInt(column.getAttribute('data-col-index'));
 
-      mostrarToast("Card movido!");
+        if (data.origemCol === destinoCol) return;
 
-      atualizarDashboardBI();
+        const cardsContainer = column.querySelector('.cards-container');
+        const emptyText = cardsContainer.querySelector('p');
+        if (emptyText) emptyText.remove();
 
-      enviarParaGoogleSheets({
-        acao: 'mover',
-        cliente: data.cliente,
-        origemCol: data.origemCol,
-        destinoCol: destinoCol
-      });
+        cardsContainer.appendChild(window.draggedCard);
+        window.draggedCard.setAttribute('data-col', destinoCol);
+
+        window.draggedCard = null;
+        mostrarToast("Card movido!");
+        atualizarDashboardBI();
+
+        enviarParaGoogleSheets({
+          acao: 'mover',
+          cliente: data.cliente,
+          origemCol: data.origemCol,
+          destinoCol: destinoCol
+        });
+      }
     }
 
     // EXCLUSÃO DE CARD (DIRETA E PELO MODAL)
@@ -1370,25 +1438,9 @@ Empresa:
       const totalColunasAtuais = boardContainer.querySelectorAll('.kanban-column').length;
       const novoIndexCol = totalColunasAtuais;
 
-      const colDiv = document.createElement('div');
-      colDiv.className = 'kanban-column';
-      colDiv.setAttribute('data-col-index', novoIndexCol);
-      colDiv.setAttribute('ondragover', 'allowDrop(event)');
-      colDiv.setAttribute('ondragleave', 'dragLeave(event)');
-      colDiv.setAttribute('ondrop', 'drop(event)');
-      
-      colDiv.innerHTML = `
-        <div class="kanban-header">
-          <span>${nomeColuna}</span>
-          <button class="btn-delete-col" onclick="deletarColuna(${novoIndexCol}, '${escapeXmlAttr(nomeColuna)}', this)" title="Excluir Coluna"><i class="fas fa-trash-alt"></i></button>
-        </div>
-        <button class="btn-add-card-col" onclick="abrirModalCriar(${novoIndexCol})"><i class="fas fa-plus"></i> Criar Novo Card</button>
-        <div class="cards-container">
-          <p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>
-        </div>
-      `;
-
+      const colDiv = montarElementoColuna(novoIndexCol, nomeColuna, '');
       boardContainer.appendChild(colDiv);
+
       fecharModalColuna();
       mostrarToast("Nova coluna criada!");
       atualizarDashboardBI();
