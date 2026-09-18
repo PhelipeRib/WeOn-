@@ -187,7 +187,7 @@
       padding-left: 12px; 
     }
 
-    /* ESTILIZAÇÃO REDESENHADA DO PAINEL BI / KPIS E GRÁFICO POLIDO */
+    /* PAINEL BI DA OPERAÇÃO */
     .bi-dashboard-box { 
       background: var(--bg-input); 
       border: 1px solid var(--border-color); 
@@ -348,7 +348,33 @@
     }
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
 
-    /* KANBAN DINÂMICO E ROLAGEM VISÍVEL */
+    /* KANBAN DINÂMICO E CRIAÇÃO/EXCLUSÃO DE COLUNAS */
+    .kanban-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 14px;
+    }
+
+    .btn-add-column {
+      background: var(--accent-glow);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.82em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-add-column:hover {
+      background: var(--accent);
+      color: #090c15;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
     .kanban-board { 
       display: flex; 
       gap: 18px; 
@@ -383,7 +409,21 @@
       border-bottom: 1px solid var(--border-color); 
       padding-bottom: 10px; 
       word-break: break-word; 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+
+    .btn-delete-col {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: color 0.2s;
+      padding: 2px 4px;
+    }
+    .btn-delete-col:hover { color: var(--danger); }
 
     .btn-add-card-col { 
       width: 100%; 
@@ -446,7 +486,7 @@
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 600; color: var(--accent); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; }
     .card-expand-hint { font-size: 0.7em; color: var(--text-muted); font-weight: 500; }
 
-    /* MODAL DE EDIÇÃO E DE CRIAÇÃO */
+    /* MODAL DE EDIÇÃO E CRIAÇÃO DE CARDS E COLUNAS */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
     .modal-content { background: #131725; border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 550px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -527,7 +567,7 @@
       </div>
     </div>
 
-    <!-- SEÇÃO FIXA: PAINEL DE BI & INDICADORES (REORGANIZADO) -->
+    <!-- SEÇÃO FIXA: PAINEL DE BI & INDICADORES -->
     <h2><i class="fas fa-chart-line"></i> Dashboard & Indicadores BI</h2>
     <div class="bi-dashboard-box target-search">
       <div class="bi-title"><i class="fas fa-chart-pie"></i> Indicadores & Métricas em Tempo Real</div>
@@ -584,6 +624,9 @@
       </button>
       <div class="content" style="max-height: 2500px;">
         <div class="content-inner">
+          <div class="kanban-toolbar">
+            <button class="btn-add-column" onclick="abrirModalNovaColuna()"><i class="fas fa-plus"></i> Nova Coluna / Status</button>
+          </div>
           <div class="kanban-board" id="kanban-board">
             <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas da planilha...</p>
           </div>
@@ -805,6 +848,21 @@ Empresa:
           <button class="btn-widget" onclick="fecharModal()">Cancelar</button>
           <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarObservacao()">Salvar Alterações</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CRIAÇÃO DE NOVA COLUNA -->
+  <div id="colunaModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <h3><i class="fas fa-columns"></i> Criar Nova Coluna</h3>
+      <div class="input-title-group">
+        <label>Nome do Status / Etapa:</label>
+        <input type="text" id="colunaTitleInput" class="input-card-title" placeholder="Ex: Setup > Andamento, Testes...">
+      </div>
+      <div class="modal-actions" style="justify-content: flex-end; gap: 10px;">
+        <button class="btn-widget" onclick="fecharModalColuna()">Cancelar</button>
+        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarNovaColuna()">Criar Coluna</button>
       </div>
     </div>
   </div>
@@ -1057,7 +1115,10 @@ Empresa:
           colDiv.setAttribute('ondrop', 'drop(event)');
           
           colDiv.innerHTML = `
-            <div class="kanban-header">${col.nome}</div>
+            <div class="kanban-header">
+              <span>${col.nome}</span>
+              <button class="btn-delete-col" onclick="deletarColuna(${col.index}, '${escapeXmlAttr(col.nome)}', this)" title="Excluir Coluna"><i class="fas fa-trash-alt"></i></button>
+            </div>
             <button class="btn-add-card-col" onclick="abrirModalCriar(${col.index})"><i class="fas fa-plus"></i> Criar Novo Card</button>
             <div class="cards-container">
               ${cardsHTML ? cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}
@@ -1079,7 +1140,7 @@ Empresa:
       }
     }
 
-    // LÓGICA DO DASHBOARD BI (STATUS DOUGHNUT REFINADO + KPIS)
+    // LÓGICA DO DASHBOARD BI
     function atualizarDashboardBI() {
       const colunas = document.querySelectorAll('.kanban-column');
       
@@ -1096,7 +1157,8 @@ Empresa:
       ];
 
       colunas.forEach((col) => {
-        const nomeColuna = col.querySelector('.kanban-header').innerText.trim();
+        const headerSpan = col.querySelector('.kanban-header span');
+        const nomeColuna = headerSpan ? headerSpan.innerText.trim() : 'Sem Título';
         const numCards = col.querySelectorAll('.kanban-card').length;
 
         labelsColunas.push(nomeColuna);
@@ -1287,6 +1349,78 @@ Empresa:
       });
 
       fecharModal();
+    }
+
+    // CRIAR E EXCLUIR COLUNAS
+    function abrirModalNovaColuna() {
+      document.getElementById('colunaTitleInput').value = '';
+      document.getElementById('colunaModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('colunaTitleInput').focus(), 100);
+    }
+
+    function fecharModalColuna() {
+      document.getElementById('colunaModal').style.display = 'none';
+    }
+
+    function salvarNovaColuna() {
+      const nomeColuna = document.getElementById('colunaTitleInput').value.trim();
+      if (!nomeColuna) return alert("Digite o nome da coluna!");
+
+      const boardContainer = document.getElementById('kanban-board');
+      const totalColunasAtuais = boardContainer.querySelectorAll('.kanban-column').length;
+      const novoIndexCol = totalColunasAtuais;
+
+      const colDiv = document.createElement('div');
+      colDiv.className = 'kanban-column';
+      colDiv.setAttribute('data-col-index', novoIndexCol);
+      colDiv.setAttribute('ondragover', 'allowDrop(event)');
+      colDiv.setAttribute('ondragleave', 'dragLeave(event)');
+      colDiv.setAttribute('ondrop', 'drop(event)');
+      
+      colDiv.innerHTML = `
+        <div class="kanban-header">
+          <span>${nomeColuna}</span>
+          <button class="btn-delete-col" onclick="deletarColuna(${novoIndexCol}, '${escapeXmlAttr(nomeColuna)}', this)" title="Excluir Coluna"><i class="fas fa-trash-alt"></i></button>
+        </div>
+        <button class="btn-add-card-col" onclick="abrirModalCriar(${novoIndexCol})"><i class="fas fa-plus"></i> Criar Novo Card</button>
+        <div class="cards-container">
+          <p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>
+        </div>
+      `;
+
+      boardContainer.appendChild(colDiv);
+      fecharModalColuna();
+      mostrarToast("Nova coluna criada!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({
+        acao: 'criarColuna',
+        nomeColuna: nomeColuna,
+        colIndex: novoIndexCol
+      });
+    }
+
+    function deletarColuna(colIndex, nomeColuna, btnEl) {
+      const colDiv = btnEl.closest('.kanban-column');
+      const qtdCards = colDiv.querySelectorAll('.kanban-card').length;
+
+      if (qtdCards > 0) {
+        if (!confirm(`A coluna "${nomeColuna}" contém ${qtdCards} card(s). Se você excluí-la, todos os cards dela serão removidos. Deseja continuar?`)) {
+          return;
+        }
+      } else {
+        if (!confirm(`Tem certeza que deseja excluir a coluna "${nomeColuna}"?`)) return;
+      }
+
+      colDiv.remove();
+      mostrarToast("Coluna removida!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({
+        acao: 'excluirColuna',
+        colIndex: colIndex,
+        nomeColuna: nomeColuna
+      });
     }
 
     function salvarSelecaoTexto() {
