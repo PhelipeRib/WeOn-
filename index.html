@@ -8,7 +8,7 @@
   <!-- Fontes Google & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>    
   
   <!-- CHART.JS PARA GRÁFICOS INTERATIVOS -->
@@ -16,24 +16,27 @@
 
   <style>
     :root {
-      --bg-principal: #090c15;
-      --bg-card: rgba(22, 27, 46, 0.75);
-      --bg-input: rgba(15, 18, 30, 0.85);
+      --bg-principal: #060911;
+      --bg-card: rgba(15, 20, 34, 0.85);
+      --bg-input: rgba(21, 28, 45, 0.9);
       --accent: #00ffcc;
-      --accent-glow: rgba(0, 255, 204, 0.25);
+      --accent-glow: rgba(0, 255, 204, 0.2);
       --accent-hover: #00cca8;
-      --text-main: #f1f5f9;
+      --danger: #ff4a4a;
+      --danger-glow: rgba(255, 74, 74, 0.2);
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --border-color: rgba(255, 255, 255, 0.08);
-      --border-glow: rgba(0, 255, 204, 0.3);
-      --radius-lg: 16px;
-      --radius-md: 10px;
+      --border-glow: rgba(0, 255, 204, 0.25);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
     
     body { 
-      background: radial-gradient(circle at top right, #111827, #090c15 80%);
+      background: radial-gradient(circle at top right, #111827, #060911 85%);
       color: var(--text-main); 
       padding: 40px 20px; 
       display: flex; 
@@ -43,47 +46,47 @@
 
     .container { 
       width: 100%; 
-      max-width: 1000px; 
+      max-width: 1100px; 
       background: var(--bg-card); 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       padding: 40px; 
       border-radius: var(--radius-lg); 
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1); 
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1); 
       border: 1px solid var(--border-color); 
     }
     
-    header { text-align: center; margin-bottom: 30px; }
+    header { text-align: center; margin-bottom: 35px; }
     header h1 { 
       color: var(--accent); 
-      font-size: 2.5em; 
+      font-size: 2.6em; 
       font-weight: 800;
       letter-spacing: -0.5px;
       display: flex; 
       align-items: center; 
       justify-content: center; 
       gap: 14px; 
-      text-shadow: 0 0 20px var(--accent-glow);
+      text-shadow: 0 0 25px var(--accent-glow);
     }
-    header p { color: var(--text-muted); margin-top: 6px; font-size: 0.95em; font-weight: 400; }
+    header p { color: var(--text-muted); margin-top: 8px; font-size: 1em; font-weight: 400; }
 
     .featured-banner {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
       border: 1px solid var(--border-glow);
       border-radius: var(--radius-md);
-      padding: 22px 28px;
-      margin-bottom: 30px;
+      padding: 24px 30px;
+      margin-bottom: 35px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
       text-decoration: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     }
     .featured-banner:hover { 
       transform: translateY(-3px); 
-      box-shadow: 0 12px 35px var(--accent-glow);
+      box-shadow: 0 14px 40px var(--accent-glow);
       border-color: var(--accent);
     }
     .featured-content { display: flex; align-items: center; gap: 20px; }
@@ -92,12 +95,12 @@
       color: var(--accent); 
       width: 58px; 
       height: 58px; 
-      border-radius: 12px; 
+      border-radius: 14px; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
       font-size: 1.6em;
-      border: 1px solid var(--accent-glow);
+      border: 1px solid var(--border-glow);
     }
     .featured-text h3 { color: #fff; font-size: 1.25em; font-weight: 700; margin-bottom: 4px; }
     .featured-text p { color: var(--text-muted); font-size: 0.9em; }
@@ -105,7 +108,7 @@
       background: var(--accent); 
       color: #090c15; 
       padding: 12px 22px; 
-      border-radius: 8px; 
+      border-radius: var(--radius-sm); 
       font-weight: 700; 
       display: flex; 
       align-items: center; 
@@ -142,7 +145,7 @@
     }
     .scratchpad textarea { 
       width: 100%; 
-      height: 80px; 
+      height: 85px; 
       background: transparent; 
       border: none; 
       resize: vertical; 
@@ -156,8 +159,8 @@
       background: rgba(255,255,255,0.05); 
       border: 1px solid var(--border-color); 
       color: var(--text-main); 
-      padding: 6px 12px; 
-      font-size: 0.8em; 
+      padding: 7px 14px; 
+      font-size: 0.82em; 
       font-weight: 600;
       border-radius: 6px; 
       cursor: pointer; 
@@ -167,70 +170,93 @@
       transition: all 0.2s;
     }
     .btn-widget:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
-    .btn-widget.btn-danger:hover { border-color: #ff4a4a; color: #ff4a4a; background: rgba(255, 74, 74, 0.15); }
+    .btn-widget.btn-danger { color: #ff8888; }
+    .btn-widget.btn-danger:hover { border-color: var(--danger); color: #fff; background: var(--danger); }
 
     h2 { 
-      font-size: 1.1em; 
+      font-size: 1.15em; 
       font-weight: 700;
-      margin: 35px 0 18px 0; 
+      margin: 40px 0 20px 0; 
       display: flex; 
       align-items: center; 
       gap: 10px; 
       text-transform: uppercase; 
       letter-spacing: 0.5px;
       color: var(--text-main);
-      border-left: 3px solid var(--accent); 
+      border-left: 4px solid var(--accent); 
       padding-left: 12px; 
     }
 
-    /* ESTILIZAÇÃO DO PAINEL BI / KPIs E GRÁFICOS */
+    /* ESTILIZAÇÃO REDESENHADA DO PAINEL BI / KPIS E GRÁFICO POLIDO */
     .bi-dashboard-box { 
       background: var(--bg-input); 
       border: 1px solid var(--border-color); 
       border-radius: var(--radius-lg); 
-      padding: 24px; 
+      padding: 28px; 
       display: flex; 
       flex-direction: column; 
-      gap: 20px; 
+      gap: 24px; 
       margin-bottom: 25px; 
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
     }
-    .bi-title { font-size: 0.85em; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+    .bi-title { font-size: 0.9em; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
 
-    .kpi-cards-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+    .bi-layout-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+    @media (max-width: 850px) { .bi-layout-grid { grid-template-columns: 1fr; } }
+
+    .kpi-cards-wrapper { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (max-width: 480px) { .kpi-cards-wrapper { grid-template-columns: 1fr; } }
+
     .kpi-card { 
-      background: rgba(15, 20, 32, 0.9); 
+      background: rgba(13, 17, 28, 0.85); 
       border: 1px solid var(--border-color); 
       border-radius: var(--radius-md); 
-      padding: 16px; 
+      padding: 20px; 
       display: flex; 
       align-items: center; 
-      gap: 14px; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+      gap: 16px; 
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25); 
+      transition: transform 0.2s, border-color 0.2s;
     }
-    .kpi-icon { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3em; }
-    .kpi-info h4 { font-size: 1.7em; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 4px; }
-    .kpi-info span { font-size: 0.68em; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+    .kpi-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.2); }
+    .kpi-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4em; }
+    .kpi-info h4 { font-size: 1.8em; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 6px; }
+    .kpi-info span { font-size: 0.72em; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
 
     .kpi-card.total .kpi-icon { color: var(--accent); background: var(--accent-glow); border: 1px solid var(--accent); }
     .kpi-card.andamento .kpi-icon { color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; }
-    .kpi-card.bloqueio .kpi-icon { color: #ff4a4a; background: rgba(255, 74, 74, 0.15); border: 1px solid #ff4a4a; }
+    .kpi-card.bloqueio .kpi-icon { color: var(--danger); background: var(--danger-glow); border: 1px solid var(--danger); }
     .kpi-card.concluido .kpi-icon { color: #4ade80; background: rgba(74, 222, 128, 0.15); border: 1px solid #4ade80; }
 
-    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
-
     .chart-box { 
-      background: rgba(15, 20, 32, 0.9); 
+      background: rgba(13, 17, 28, 0.85); 
       border: 1px solid var(--border-color); 
       border-radius: var(--radius-md); 
-      padding: 18px; 
+      padding: 22px; 
       display: flex; 
       flex-direction: column; 
+      align-items: center;
+      height: 100%;
+      justify-content: center;
     }
-    .chart-box h3 { font-size: 0.8em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-    .chart-container-wrapper { width: 100%; height: 210px; position: relative; }
+    .chart-box h3 { font-size: 0.85em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; margin-bottom: 18px; width: 100%; }
+    
+    .chart-container-wrapper { 
+      width: 100%; 
+      max-width: 320px; 
+      height: 220px; 
+      position: relative; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    .collapsible-wrapper { margin-bottom: 12px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color); transition: border-color 0.2s; }
+    .collapsible-wrapper { margin-bottom: 14px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color); transition: border-color 0.2s; }
     .collapsible-wrapper:hover { border-color: rgba(255,255,255,0.2); }
     
     .collapsible { 
@@ -256,7 +282,7 @@
     .content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background-color: rgba(11, 15, 25, 0.95); }
     .content-inner { padding: 22px; }
 
-    .data-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+    .data-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
     .data-row:last-child { border-bottom: none; }
     .data-label { color: var(--text-muted); font-size: 0.9em; font-weight: 500; }
     .data-value { 
@@ -325,7 +351,7 @@
     /* KANBAN DINÂMICO E ROLAGEM VISÍVEL */
     .kanban-board { 
       display: flex; 
-      gap: 16px; 
+      gap: 18px; 
       overflow-x: auto; 
       padding-bottom: 16px; 
       scroll-behavior: smooth; 
@@ -340,15 +366,15 @@
       background: var(--bg-input); 
       border: 1px solid var(--border-color); 
       border-radius: var(--radius-md); 
-      padding: 16px; 
-      min-width: 260px; 
-      flex: 0 0 260px; 
+      padding: 18px; 
+      min-width: 270px; 
+      flex: 0 0 270px; 
       transition: background 0.2s, border-color 0.2s; 
     }
     .kanban-column.drag-over { background: rgba(0, 255, 204, 0.05); border-color: var(--accent); }
 
     .kanban-header { 
-      font-size: 0.8em; 
+      font-size: 0.82em; 
       font-weight: 700; 
       text-transform: uppercase; 
       letter-spacing: 0.5px; 
@@ -396,8 +422,11 @@
     
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .card-title { color: var(--text-main); font-weight: 700; font-size: 0.95em; word-break: break-word; }
-    .btn-edit-card { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85em; transition: color 0.2s; padding: 2px 4px; }
-    .btn-edit-card:hover { color: var(--accent); }
+    
+    .card-actions-top { display: flex; align-items: center; gap: 6px; }
+    .btn-card-action { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85em; transition: color 0.2s; padding: 2px 4px; }
+    .btn-card-action:hover { color: var(--accent); }
+    .btn-delete-card:hover { color: var(--danger) !important; }
 
     .card-obs-area { 
       color: var(--text-muted); 
@@ -418,8 +447,8 @@
     .card-expand-hint { font-size: 0.7em; color: var(--text-muted); font-weight: 500; }
 
     /* MODAL DE EDIÇÃO E DE CRIAÇÃO */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-    .modal-content { background: #131725; border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 550px; box-shadow: 0 20px 40px rgba(0,0,0,0.9); }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+    .modal-content { background: #131725; border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 550px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
 
     .input-title-group { margin-bottom: 14px; }
@@ -454,7 +483,8 @@
     .rich-editor ol, .card-obs-area ol { list-style-type: decimal !important; padding-left: 20px !important; margin: 6px 0 !important; }
     .rich-editor li, .card-obs-area li { margin-bottom: 2px !important; }
 
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .modal-actions { display: flex; justify-content: space-between; align-items: center; }
+    .modal-actions-right { display: flex; gap: 10px; }
 
     #toast { visibility: hidden; min-width: 200px; background-color: var(--accent); color: #090c15; font-weight: 700; font-size: 0.85em; text-align: center; border-radius: 8px; padding: 12px 20px; position: fixed; z-index: 2000; right: 25px; bottom: 25px; box-shadow: 0 6px 20px rgba(0,255,204,0.4); transition: opacity 0.3s, bottom 0.3s; opacity: 0; }
     #toast.show { visibility: visible; opacity: 1; bottom: 35px; }
@@ -497,53 +527,49 @@
       </div>
     </div>
 
-    <!-- SEÇÃO FIXA: PAINEL DE BI & INDICADORES -->
+    <!-- SEÇÃO FIXA: PAINEL DE BI & INDICADORES (REORGANIZADO) -->
     <h2><i class="fas fa-chart-line"></i> Dashboard & Indicadores BI</h2>
     <div class="bi-dashboard-box target-search">
       <div class="bi-title"><i class="fas fa-chart-pie"></i> Indicadores & Métricas em Tempo Real</div>
       
-      <div class="kpi-cards-wrapper">
-        <div class="kpi-card total">
-          <div class="kpi-icon"><i class="fas fa-project-diagram"></i></div>
-          <div class="kpi-info">
-            <h4 id="kpiTotal">0</h4>
-            <span>Total Demandas</span>
+      <div class="bi-layout-grid">
+        <!-- KPIS DA OPERAÇÃO -->
+        <div class="kpi-cards-wrapper">
+          <div class="kpi-card total">
+            <div class="kpi-icon"><i class="fas fa-project-diagram"></i></div>
+            <div class="kpi-info">
+              <h4 id="kpiTotal">0</h4>
+              <span>Total Demandas</span>
+            </div>
+          </div>
+          <div class="kpi-card andamento">
+            <div class="kpi-icon"><i class="fas fa-spinner"></i></div>
+            <div class="kpi-info">
+              <h4 id="kpiAndamento">0</h4>
+              <span>Em Andamento</span>
+            </div>
+          </div>
+          <div class="kpi-card bloqueio">
+            <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="kpi-info">
+              <h4 id="kpiBloqueio">0</h4>
+              <span>Em Bloqueio</span>
+            </div>
+          </div>
+          <div class="kpi-card concluido">
+            <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="kpi-info">
+              <h4 id="kpiConcluido">0</h4>
+              <span>Concluídos</span>
+            </div>
           </div>
         </div>
-        <div class="kpi-card andamento">
-          <div class="kpi-icon"><i class="fas fa-spinner"></i></div>
-          <div class="kpi-info">
-            <h4 id="kpiAndamento">0</h4>
-            <span>Em Andamento</span>
-          </div>
-        </div>
-        <div class="kpi-card bloqueio">
-          <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
-          <div class="kpi-info">
-            <h4 id="kpiBloqueio">0</h4>
-            <span>Em Bloqueio</span>
-          </div>
-        </div>
-        <div class="kpi-card concluido">
-          <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
-          <div class="kpi-info">
-            <h4 id="kpiConcluido">0</h4>
-            <span>Concluídos</span>
-          </div>
-        </div>
-      </div>
 
-      <div class="charts-grid">
+        <!-- GRÁFICO POLIDO POR STATUS -->
         <div class="chart-box">
-          <h3><i class="fas fa-chart-pie"></i> Distribuição por Status (%)</h3>
+          <h3><i class="fas fa-chart-pie"></i> Distribuição por Status</h3>
           <div class="chart-container-wrapper">
             <canvas id="donutChart"></canvas>
-          </div>
-        </div>
-        <div class="chart-box">
-          <h3><i class="fas fa-chart-bar"></i> Volume por Etapa da Esteira</h3>
-          <div class="chart-container-wrapper">
-            <canvas id="barChart"></canvas>
           </div>
         </div>
       </div>
@@ -774,8 +800,11 @@ Empresa:
       <div id="modalObsEditor" class="rich-editor" contenteditable="true" onkeyup="salvarSelecaoTexto()" onclick="salvarSelecaoTexto()"></div>
 
       <div class="modal-actions">
-        <button class="btn-widget" onclick="fecharModal()">Cancelar</button>
-        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarObservacao()">Salvar Alterações</button>
+        <button id="btnDeleteModal" class="btn-widget btn-danger" style="display:none;" onclick="deletarCardModal()"><i class="fas fa-trash-alt"></i> Excluir Card</button>
+        <div class="modal-actions-right">
+          <button class="btn-widget" onclick="fecharModal()">Cancelar</button>
+          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarObservacao()">Salvar Alterações</button>
+        </div>
       </div>
     </div>
   </div>
@@ -886,7 +915,6 @@ Empresa:
     let savedRange = null;
 
     let donutChartInstance = null;
-    let barChartInstance = null;
 
     function mostrarToast(mensagem) {
       const toast = document.getElementById("toast");
@@ -961,6 +989,9 @@ Empresa:
     function saveObsLocal(cliente, obs) {
       localStorage.setItem('weon_obs_' + cliente, obs);
     }
+    function removeObsLocal(cliente) {
+      localStorage.removeItem('weon_obs_' + cliente);
+    }
 
     function getCardsCriadosLocais() {
       const saved = localStorage.getItem('weon_cards_criados');
@@ -977,6 +1008,13 @@ Empresa:
       }
       localStorage.setItem('weon_cards_criados', JSON.stringify(cards));
       saveObsLocal(cliente, obs);
+    }
+
+    function removeCardCriadoLocal(cliente) {
+      const cards = getCardsCriadosLocais();
+      const novos = cards.filter(c => c.cliente.toLowerCase() !== cliente.toLowerCase());
+      localStorage.setItem('weon_cards_criados', JSON.stringify(novos));
+      removeObsLocal(cliente);
     }
 
     async function carregarKanbanDoSheets() {
@@ -1041,7 +1079,7 @@ Empresa:
       }
     }
 
-    // LÓGICA DO DASHBOARD BI (CHART.JS + KPIS)
+    // LÓGICA DO DASHBOARD BI (STATUS DOUGHNUT REFINADO + KPIS)
     function atualizarDashboardBI() {
       const colunas = document.querySelectorAll('.kanban-column');
       
@@ -1081,7 +1119,7 @@ Empresa:
       document.getElementById('kpiBloqueio').innerText = totalBloqueio;
       document.getElementById('kpiConcluido').innerText = totalConcluido;
 
-      // RENDERIZA GRÁFICOS CHART.JS SE A BIBLIOTECA ESTIVER CARREGADA
+      // RENDERIZA GRÁFICO REFINADO CHART.JS
       if (typeof Chart !== 'undefined') {
         try {
           const ctxDonut = document.getElementById('donutChart').getContext('2d');
@@ -1094,50 +1132,34 @@ Empresa:
               datasets: [{
                 data: dadosColunas,
                 backgroundColor: coresDinamicas.slice(0, labelsColunas.length),
-                borderColor: '#131725',
-                borderWidth: 2
+                borderColor: '#151c2d',
+                borderWidth: 2,
+                hoverOffset: 6
               }]
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              cutout: '70%',
               plugins: {
                 legend: {
-                  position: 'right',
-                  labels: { color: '#94a3b8', font: { size: 10 } }
+                  position: 'bottom',
+                  labels: { color: '#94a3b8', font: { size: 10, family: "'Inter', sans-serif" }, padding: 12, usePointStyle: true }
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      let value = context.raw || 0;
+                      let percentage = totalGeral > 0 ? ((value / totalGeral) * 100).toFixed(1) : 0;
+                      return ` ${context.label}: ${value} (${percentage}%)`;
+                    }
+                  }
                 }
               }
             }
           });
-
-          const ctxBar = document.getElementById('barChart').getContext('2d');
-          if (barChartInstance) barChartInstance.destroy();
-
-          barChartInstance = new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-              labels: labelsColunas,
-              datasets: [{
-                label: 'Volume de Projetos',
-                data: dadosColunas,
-                backgroundColor: 'rgba(0, 255, 204, 0.4)',
-                borderColor: '#00ffcc',
-                borderWidth: 1.5,
-                borderRadius: 4
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { display: false } },
-                y: { ticks: { color: '#94a3b8', precision: 0 }, grid: { color: 'rgba(255,255,255,0.08)' } }
-              },
-              plugins: { legend: { display: false } }
-            }
-          });
         } catch (e) {
-          console.error("Erro ao desenhar gráficos:", e);
+          console.error("Erro ao desenhar gráfico:", e);
         }
       }
     }
@@ -1152,7 +1174,10 @@ Empresa:
              data-obs="${escapeXmlAttr(obsText)}">
           <div class="card-top">
             <span class="card-title">${clienteNome}</span>
-            <button class="btn-edit-card" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
+            <div class="card-actions-top">
+              <button class="btn-card-action btn-delete-card" onclick="deletarCardDirect(event, '${escapeXmlAttr(clienteNome)}', ${cellIndex}, this)" title="Excluir Card"><i class="fas fa-trash-alt"></i></button>
+              <button class="btn-card-action" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
+            </div>
           </div>
           <div class="card-obs-area">${obsText}</div>
           <div class="card-footer-info">
@@ -1215,6 +1240,55 @@ Empresa:
       });
     }
 
+    // EXCLUSÃO DE CARD (DIRETA E PELO MODAL)
+    function deletarCardDirect(event, clienteNome, colIndex, btnEl) {
+      event.stopPropagation();
+      if (!confirm(`Tem certeza que deseja excluir o card "${clienteNome}"?`)) return;
+
+      const cardEl = btnEl.closest('.kanban-card');
+      const container = cardEl.parentElement;
+      cardEl.remove();
+
+      if (container && container.children.length === 0) {
+        container.innerHTML = '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>';
+      }
+
+      removeCardCriadoLocal(clienteNome);
+      mostrarToast("Card removido!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({
+        acao: 'excluirCard',
+        cliente: clienteNome,
+        col: colIndex
+      });
+    }
+
+    function deletarCardModal() {
+      if (!clienteAtualObs.cliente) return;
+      if (!confirm(`Tem certeza que deseja remover o card "${clienteAtualObs.cliente}"?`)) return;
+
+      if (cardElementoAtual) {
+        const container = cardElementoAtual.parentElement;
+        cardElementoAtual.remove();
+        if (container && container.children.length === 0) {
+          container.innerHTML = '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>';
+        }
+      }
+
+      removeCardCriadoLocal(clienteAtualObs.cliente);
+      mostrarToast("Card removido!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({
+        acao: 'excluirCard',
+        cliente: clienteAtualObs.cliente,
+        col: clienteAtualObs.col
+      });
+
+      fecharModal();
+    }
+
     function salvarSelecaoTexto() {
       const sel = window.getSelection();
       if (sel.getRangeAt && sel.rangeCount) {
@@ -1250,6 +1324,8 @@ Empresa:
         statusEl.style.color = "var(--text-muted)";
       }
 
+      document.getElementById('btnDeleteModal').style.display = 'flex';
+
       const obsAtual = cardEl.getAttribute('data-obs') || getObsLocal(clienteNome);
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fab fa-jira"></i> Editar Detalhes do Card`;
       document.getElementById('modalTitleInput').value = clienteNome;
@@ -1265,12 +1341,15 @@ Empresa:
       modoCriacao = true;
       colIndexCriacao = colIndex;
       cardElementoAtual = null;
+      clienteAtualObs = { cliente: '', col: colIndex };
 
       const statusEl = document.getElementById('uploadStatus');
       if (statusEl) {
         statusEl.innerText = "Nenhum anexo novo";
         statusEl.style.color = "var(--text-muted)";
       }
+
+      document.getElementById('btnDeleteModal').style.display = 'none';
 
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Criar Novo Card`;
       document.getElementById('modalTitleInput').value = '';
