@@ -457,7 +457,7 @@
       cursor: pointer; 
       transition: all 0.2s ease; 
       box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-      max-height: 120px; 
+      max-height: 160px; 
       overflow: hidden; 
       position: relative; 
     }
@@ -488,11 +488,135 @@
 
     .card-footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); }
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 600; color: var(--accent); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; }
-    .card-expand-hint { font-size: 0.7em; color: var(--text-muted); font-weight: 500; }
+    .card-checklist-progress { font-size: 0.72em; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 4px; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3); }
+
+    /* ESTILOS DO CHECKLIST DENTRO DO MODAL */
+    .checklist-section {
+      margin-top: 18px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .checklist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .checklist-header h4 {
+      font-size: 0.85em;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checklist-progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .checklist-progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .checklist-container {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+
+    .checklist-container::-webkit-scrollbar { width: 6px; }
+    .checklist-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    .checklist-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(13, 17, 28, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: grab;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .checklist-item:active { cursor: grabbing; }
+    .checklist-item.dragging-item { opacity: 0.4; }
+    .checklist-item.drag-over-item { border-top: 2px solid var(--accent); }
+
+    .checklist-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 90%;
+    }
+    .checklist-item-left i.drag-handle {
+      color: var(--text-muted);
+      font-size: 0.8em;
+      cursor: grab;
+    }
+
+    .checklist-item-left input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .checklist-item-text {
+      font-size: 0.84em;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+    .checklist-item.completed .checklist-item-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .btn-remove-chk {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8em;
+      transition: color 0.2s;
+    }
+    .btn-remove-chk:hover { color: var(--danger); }
+
+    .add-chk-wrapper {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .add-chk-input {
+      flex: 1;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: white;
+      padding: 8px 12px;
+      font-size: 0.82em;
+    }
+    .add-chk-input:focus { outline: none; border-color: var(--accent); }
 
     /* MODAIS */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-    .modal-content { background: #131725; border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 550px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+    .modal-content { background: #131725; border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 600px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
 
     .input-title-group { margin-bottom: 14px; }
@@ -520,14 +644,14 @@
     .editor-btn:hover { background: var(--accent); color: #090c15; font-weight: bold; }
     .editor-select { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
 
-    .rich-editor { width: 100%; min-height: 140px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 14px; margin-bottom: 18px; outline: none; font-size: 0.9em; line-height: 1.5; overflow-y: auto; max-height: 250px; }
+    .rich-editor { width: 100%; min-height: 100px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 14px; margin-bottom: 14px; outline: none; font-size: 0.9em; line-height: 1.5; overflow-y: auto; max-height: 180px; }
     .rich-editor:focus { border-color: var(--accent); }
 
     .rich-editor ul, .card-obs-area ul { list-style-type: disc !important; padding-left: 20px !important; margin: 6px 0 !important; }
     .rich-editor ol, .card-obs-area ol { list-style-type: decimal !important; padding-left: 20px !important; margin: 6px 0 !important; }
     .rich-editor li, .card-obs-area li { margin-bottom: 2px !important; }
 
-    .modal-actions { display: flex; justify-content: space-between; align-items: center; }
+    .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
     .modal-actions-right { display: flex; gap: 10px; }
 
     #toast { visibility: hidden; min-width: 200px; background-color: var(--accent); color: #090c15; font-weight: 700; font-size: 0.85em; text-align: center; border-radius: 8px; padding: 12px 20px; position: fixed; z-index: 2000; right: 25px; bottom: 25px; box-shadow: 0 6px 20px rgba(0,255,204,0.4); transition: opacity 0.3s, bottom 0.3s; opacity: 0; }
@@ -800,7 +924,7 @@ Empresa:
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO COM CHECKLIST -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
@@ -843,6 +967,27 @@ Empresa:
       </div>
 
       <div id="modalObsEditor" class="rich-editor" contenteditable="true" onkeyup="salvarSelecaoTexto()" onclick="salvarSelecaoTexto()"></div>
+
+      <!-- SEÇÃO DO CHECKLIST -->
+      <div class="checklist-section">
+        <div class="checklist-header">
+          <h4><i class="fas fa-tasks"></i> Checklist de Implantação</h4>
+          <span id="checklistProgressText" style="font-size:0.78em; color:var(--text-muted); font-weight:700;">0/0 (0%)</span>
+        </div>
+
+        <div class="checklist-progress-bar-bg">
+          <div id="checklistProgressBarFill" class="checklist-progress-bar-fill"></div>
+        </div>
+
+        <div class="checklist-container" id="checklistContainer">
+          <!-- Itens do checklist renderizados via JS -->
+        </div>
+
+        <div class="add-chk-wrapper">
+          <input type="text" id="addChkInput" class="add-chk-input" placeholder="Adicionar nova tarefa ao checklist..." onkeypress="if(event.key==='Enter') adicionarItemChecklistInput()">
+          <button class="btn-widget" onclick="adicionarItemChecklistInput()"><i class="fas fa-plus"></i> Add</button>
+        </div>
+      </div>
 
       <div class="modal-actions">
         <button id="btnDeleteModal" class="btn-widget btn-danger" style="display:none;" onclick="deletarCardModal()"><i class="fas fa-trash-alt"></i> Excluir Card</button>
@@ -964,6 +1109,38 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
+    // CHECKLIST PADRÃO
+    const CHECKLIST_PADRAO = [
+      "Enviado email boas vindas",
+      "Aguardando cliente marcar kick off",
+      "Kick off realizado",
+      "Responder e-mail do kick off com gravação, envio do BP e da planilha de setup",
+      "Coletar BP assinado e dados preenchidos da Planilha",
+      "Solicitar acesso ao portfólio da Meta/Ver junto do cliente",
+      "Aplicar a verificação no MetaBusiness ao criar um APP",
+      "Criar conta na gupshup",
+      "Iniciar Setup",
+      "Criar UO",
+      "Criar supervisores e agentes",
+      "Criar grupos, calendário, horário, qualificações, tags, quantidade de atendimentos simultâneos",
+      "Solicitar número para Solutions (se aplicável)",
+      "Criar bot (se aplicável)",
+      "Enviar acessos criados aos usuários",
+      "Agendar treinamento de agente e supervisor",
+      "Agendar virada do número",
+      "Criar coex (se aplicável)",
+      "Homologação junto ao cliente pré go live",
+      "Acompanhamento dia 1",
+      "Acompanhamento dia 2",
+      "Acompanhamento dia 3",
+      "Acompanhamento dia 4",
+      "Acompanhamento dia 5",
+      "Assinatura do BP final",
+      "Pesquisa CSAT Implantação",
+      "Handoff cliente",
+      "Enviado para faturamento"
+    ];
+
     // KANBAN + PAINEL BI/DASHBOARD EM TEMPO REAL
     const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxik9ULAs7wfKcp4lY30WtRDbcojU6pV00EthdCZHm7CO25oU2fn1ZxbsTRQQ1T7B4u/exec'; 
@@ -976,6 +1153,7 @@ Empresa:
 
     let donutChartInstance = null;
     let draggedColumn = null;
+    let draggedChecklistItem = null;
 
     function mostrarToast(mensagem) {
       const toast = document.getElementById("toast");
@@ -1054,21 +1232,34 @@ Empresa:
       localStorage.removeItem('weon_obs_' + cliente);
     }
 
+    function getChecklistLocal(cliente) {
+      const saved = localStorage.getItem('weon_chk_' + cliente);
+      if (saved) return JSON.parse(saved);
+      return CHECKLIST_PADRAO.map(texto => ({ texto: texto, done: false }));
+    }
+    function saveChecklistLocal(cliente, items) {
+      localStorage.setItem('weon_chk_' + cliente, JSON.stringify(items));
+    }
+    function removeChecklistLocal(cliente) {
+      localStorage.removeItem('weon_chk_' + cliente);
+    }
+
     function getCardsCriadosLocais() {
       const saved = localStorage.getItem('weon_cards_criados');
       return saved ? JSON.parse(saved) : [];
     }
 
-    function saveCardCriadoLocal(cliente, colIndex, obs) {
+    function saveCardCriadoLocal(cliente, colIndex, obs, chk) {
       const cards = getCardsCriadosLocais();
       const idExistente = cards.findIndex(c => c.cliente.toLowerCase() === cliente.toLowerCase());
       if (idExistente >= 0) {
-        cards[idExistente] = { cliente, colIndex, obs };
+        cards[idExistente] = { cliente, colIndex, obs, chk };
       } else {
-        cards.push({ cliente, colIndex, obs });
+        cards.push({ cliente, colIndex, obs, chk });
       }
       localStorage.setItem('weon_cards_criados', JSON.stringify(cards));
       saveObsLocal(cliente, obs);
+      if (chk) saveChecklistLocal(cliente, chk);
     }
 
     function removeCardCriadoLocal(cliente) {
@@ -1076,6 +1267,7 @@ Empresa:
       const novos = cards.filter(c => c.cliente.toLowerCase() !== cliente.toLowerCase());
       localStorage.setItem('weon_cards_criados', JSON.stringify(novos));
       removeObsLocal(cliente);
+      removeChecklistLocal(cliente);
     }
 
     async function carregarKanbanDoSheets() {
@@ -1097,16 +1289,19 @@ Empresa:
 
           col.cards.forEach(card => {
             let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
-            if (card.obs) {
-              saveObsLocal(card.cliente, card.obs);
-            }
-            cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto);
+            let chkData = card.chk ? card.chk : getChecklistLocal(card.cliente);
+
+            if (card.obs) saveObsLocal(card.cliente, card.obs);
+            if (card.chk) saveChecklistLocal(card.cliente, card.chk);
+
+            cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto, chkData);
           });
 
           const cardsLocais = getCardsCriadosLocais();
           cardsLocais.forEach(cardLoc => {
             if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
-              cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs);
+              let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+              cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
             }
           });
 
@@ -1133,7 +1328,6 @@ Empresa:
       colDiv.setAttribute('data-col-index', index);
       colDiv.setAttribute('draggable', 'true');
       
-      // Eventos Drag e Drop de Cards e de Colunas
       colDiv.setAttribute('ondragover', 'allowDrop(event)');
       colDiv.setAttribute('ondragleave', 'dragLeave(event)');
       colDiv.setAttribute('ondrop', 'drop(event)');
@@ -1156,9 +1350,9 @@ Empresa:
       return colDiv;
     }
 
-    // ARRASTAR E SOLTAR COLUNAS (REORDENAÇÃO)
+    // ARRASTAR E SOLTAR COLUNAS
     function colDragStart(e) {
-      if (window.draggedCard) return; // Evita conflito ao arrastar cards
+      if (window.draggedCard) return;
       draggedColumn = this;
       this.classList.add('dragging-column');
       e.dataTransfer.setData('text/column', this.getAttribute('data-col-index'));
@@ -1268,7 +1462,11 @@ Empresa:
       }
     }
 
-    function criarCardHTML(clienteNome, cellIndex, obsText) {
+    function criarCardHTML(clienteNome, cellIndex, obsText, chkData) {
+      let totalItems = chkData ? chkData.length : 0;
+      let doneItems = chkData ? chkData.filter(i => i.done).length : 0;
+      let pct = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
+
       return `
         <div class="kanban-card" draggable="true" 
              ondragstart="drag(event)" 
@@ -1286,7 +1484,7 @@ Empresa:
           <div class="card-obs-area">${obsText}</div>
           <div class="card-footer-info">
             <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
-            <span class="card-expand-hint"><i class="fas fa-search-plus"></i> Abrir</span>
+            <span class="card-checklist-progress"><i class="fas fa-check-square"></i> ${doneItems}/${totalItems} (${pct}%)</span>
           </div>
         </div>
       `;
@@ -1309,7 +1507,7 @@ Empresa:
     }
 
     function drag(ev) {
-      ev.stopPropagation(); // Evita ativar a movimentação de coluna ao arrastar card
+      ev.stopPropagation();
       const card = ev.currentTarget;
       ev.dataTransfer.setData("text/plain", JSON.stringify({
         cliente: card.getAttribute('data-cliente'),
@@ -1324,7 +1522,6 @@ Empresa:
       column.classList.remove('drag-over');
       column.classList.remove('drag-over-column');
 
-      // SE FOR REORDENAÇÃO DE COLUNA
       if (draggedColumn && draggedColumn !== column) {
         const board = document.getElementById('kanban-board');
         const allCols = Array.from(board.querySelectorAll('.kanban-column'));
@@ -1343,7 +1540,6 @@ Empresa:
         return;
       }
 
-      // SE FOR MOVIMENTAÇÃO DE CARD
       if (window.draggedCard) {
         const data = JSON.parse(ev.dataTransfer.getData("text/plain"));
         const destinoCol = parseInt(column.getAttribute('data-col-index'));
@@ -1370,7 +1566,7 @@ Empresa:
       }
     }
 
-    // EXCLUSÃO DE CARD (DIRETA E PELO MODAL)
+    // EXCLUSÃO DE CARD
     function deletarCardDirect(event, clienteNome, colIndex, btnEl) {
       event.stopPropagation();
       if (!confirm(`Tem certeza que deseja excluir o card "${clienteNome}"?`)) return;
@@ -1417,6 +1613,121 @@ Empresa:
       });
 
       fecharModal();
+    }
+
+    // GERENCIAMENTO E RENDERIZAÇÃO DO CHECKLIST
+    function renderizarChecklistModal(items) {
+      const container = document.getElementById('checklistContainer');
+      container.innerHTML = '';
+
+      items.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = `checklist-item ${item.done ? 'completed' : ''}`;
+        itemDiv.setAttribute('draggable', 'true');
+        itemDiv.setAttribute('data-chk-index', index);
+
+        // Eventos Drag and Drop dos itens do checklist
+        itemDiv.addEventListener('dragstart', chkDragStart);
+        itemDiv.addEventListener('dragend', chkDragEnd);
+        itemDiv.addEventListener('dragover', chkDragOver);
+        itemDiv.addEventListener('drop', chkDrop);
+
+        itemDiv.innerHTML = `
+          <div class="checklist-item-left">
+            <i class="fas fa-grip-vertical drag-handle"></i>
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem(${index})">
+            <span class="checklist-item-text">${item.texto}</span>
+          </div>
+          <button class="btn-remove-chk" onclick="removerItemChecklist(${index})" title="Remover item"><i class="fas fa-times"></i></button>
+        `;
+
+        container.appendChild(itemDiv);
+      });
+
+      atualizarProgressoChecklistUI(items);
+    }
+
+    function atualizarProgressoChecklistUI(items) {
+      const total = items.length;
+      const done = items.filter(i => i.done).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      document.getElementById('checklistProgressText').innerText = `${done}/${total} (${pct}%)`;
+      document.getElementById('checklistProgressBarFill').style.width = `${pct}%`;
+    }
+
+    function obterChecklistModalAtual() {
+      const container = document.getElementById('checklistContainer');
+      const items = [];
+      container.querySelectorAll('.checklist-item').forEach(el => {
+        const done = el.querySelector('input[type="checkbox"]').checked;
+        const texto = el.querySelector('.checklist-item-text').innerText;
+        items.push({ texto: texto, done: done });
+      });
+      return items;
+    }
+
+    function toggleChecklistItem(index) {
+      const items = obterChecklistModalAtual();
+      items[index].done = !items[index].done;
+      renderizarChecklistModal(items);
+    }
+
+    function removerItemChecklist(index) {
+      const items = obterChecklistModalAtual();
+      items.splice(index, 1);
+      renderizarChecklistModal(items);
+    }
+
+    function adicionarItemChecklistInput() {
+      const input = document.getElementById('addChkInput');
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      const items = obterChecklistModalAtual();
+      items.push({ texto: texto, done: false });
+      renderizarChecklistModal(items);
+      input.value = '';
+    }
+
+    // DRAG AND DROP DENTRO DO CHECKLIST
+    function chkDragStart(e) {
+      e.stopPropagation();
+      draggedChecklistItem = this;
+      this.classList.add('dragging-item');
+    }
+
+    function chkDragEnd(e) {
+      if (draggedChecklistItem) {
+        draggedChecklistItem.classList.remove('dragging-item');
+        draggedChecklistItem = null;
+      }
+      document.querySelectorAll('.checklist-item').forEach(el => el.classList.remove('drag-over-item'));
+    }
+
+    function chkDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (draggedChecklistItem && draggedChecklistItem !== this) {
+        this.classList.add('drag-over-item');
+      }
+    }
+
+    function chkDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.classList.remove('drag-over-item');
+
+      if (draggedChecklistItem && draggedChecklistItem !== this) {
+        const items = obterChecklistModalAtual();
+        const fromIndex = parseInt(draggedChecklistItem.getAttribute('data-chk-index'));
+        const toIndex = parseInt(this.getAttribute('data-chk-index'));
+
+        const movedItem = items.splice(fromIndex, 1)[0];
+        items.splice(toIndex, 0, movedItem);
+
+        renderizarChecklistModal(items);
+      }
     }
 
     // CRIAR E EXCLUIR COLUNAS
@@ -1513,9 +1824,14 @@ Empresa:
       document.getElementById('btnDeleteModal').style.display = 'flex';
 
       const obsAtual = cardEl.getAttribute('data-obs') || getObsLocal(clienteNome);
+      const chkAtual = getChecklistLocal(clienteNome);
+
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fab fa-jira"></i> Editar Detalhes do Card`;
       document.getElementById('modalTitleInput').value = clienteNome;
       document.getElementById('modalObsEditor').innerHTML = obsAtual;
+      
+      renderizarChecklistModal(chkAtual);
+
       document.getElementById('obsModal').style.display = 'flex';
 
       setTimeout(() => {
@@ -1540,6 +1856,11 @@ Empresa:
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Criar Novo Card`;
       document.getElementById('modalTitleInput').value = '';
       document.getElementById('modalObsEditor').innerHTML = '';
+      
+      // Carrega o Checklist Padrão com os 28 passos
+      const chkPadrao = CHECKLIST_PADRAO.map(t => ({ texto: t, done: false }));
+      renderizarChecklistModal(chkPadrao);
+
       document.getElementById('obsModal').style.display = 'flex';
 
       setTimeout(() => {
@@ -1554,11 +1875,12 @@ Empresa:
     function salvarObservacao() {
       const novoTitulo = document.getElementById('modalTitleInput').value.trim();
       const obsHtml = document.getElementById('modalObsEditor').innerHTML;
+      const chkItems = obterChecklistModalAtual();
 
       if (!novoTitulo) return alert("Digite um título para o card!");
 
       if (modoCriacao) {
-        saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml);
+        saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml, chkItems);
 
         const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
         if (colDiv) {
@@ -1567,7 +1889,7 @@ Empresa:
           if (emptyP) emptyP.remove();
 
           const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = criarCardHTML(novoTitulo, colIndexCriacao, obsHtml);
+          tempDiv.innerHTML = criarCardHTML(novoTitulo, colIndexCriacao, obsHtml, chkItems);
           container.appendChild(tempDiv.firstElementChild);
         }
 
@@ -1576,7 +1898,8 @@ Empresa:
         enviarParaGoogleSheets({
           acao: 'criarCard',
           cliente: novoTitulo,
-          col: colIndexCriacao
+          col: colIndexCriacao,
+          chk: JSON.stringify(chkItems)
         });
 
       } else {
@@ -1588,7 +1911,14 @@ Empresa:
           const obsArea = cardElementoAtual.querySelector('.card-obs-area');
           obsArea.innerHTML = obsHtml;
 
+          // Atualiza Tag de Progresso do Checklist no Card
+          const total = chkItems.length;
+          const done = chkItems.filter(i => i.done).length;
+          const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+          cardElementoAtual.querySelector('.card-checklist-progress').innerHTML = `<i class="fas fa-check-square"></i> ${done}/${total} (${pct}%)`;
+
           saveObsLocal(novoTitulo, obsHtml);
+          saveChecklistLocal(novoTitulo, chkItems);
         }
 
         mostrarToast("Card atualizado!");
@@ -1597,7 +1927,8 @@ Empresa:
           acao: 'salvarObs',
           cliente: novoTitulo,
           col: clienteAtualObs.col,
-          obs: obsHtml
+          obs: obsHtml,
+          chk: JSON.stringify(chkItems)
         });
       }
 
