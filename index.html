@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard Interno | Auxílio WeON</title>
   
+  <!-- GOOGLE IDENTITY SERVICES (LOGIN OFICIAL GOOGLE) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <!-- Fontes Google & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -793,19 +796,30 @@
 </head>
 <body>
 
-  <!-- MODAL BLOQUEIO DE SEGURANÇA WEON -->
+  <!-- MODAL BLOQUEIO DE SEGURANÇA VIA GOOGLE SIGN-IN -->
   <div id="loginModal" class="modal" style="display:flex;">
     <div class="modal-content" style="max-width:420px; text-align:center;">
       <h3 style="justify-content:center;"><i class="fas fa-shield-alt"></i> Acesso Restrito WeON</h3>
-      <p style="font-size:0.88em; color:var(--text-muted); margin-bottom:20px;">Informe o seu e-mail corporativo para liberar o painel de implantação.</p>
+      <p style="font-size:0.88em; color:var(--text-muted); margin-bottom:20px;">Autentique-se com sua conta Google corporativa para liberar o painel.</p>
       
-      <div class="input-title-group" style="text-align:left;">
-        <label>E-mail Corporativo (@weon.com ou .com.br):</label>
-        <input type="email" id="loginEmailInput" class="input-card-title" placeholder="seu.nome@weon.com.br" onkeypress="if(event.key==='Enter') validarLoginWeon()">
+      <!-- BOTÃO OFICIAL GOOGLE SIGN-IN -->
+      <div style="display:flex; justify-content:center; margin-bottom:15px;">
+        <div id="g_id_onload"
+             data-client_id="839182390192-demo.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
       </div>
 
-      <button class="btn-widget" style="width:100%; justify-content:center; padding:12px; border-color:var(--accent); color:var(--accent); font-size:0.9em; margin-top:10px;" onclick="validarLoginWeon()"><i class="fas fa-unlock"></i> Acessar Dashboard</button>
-      <p id="loginErrorMsg" style="color:var(--danger); font-size:0.78em; margin-top:12px; display:none; font-weight:bold;">Acesso negado. Utilize um e-mail @weon.com ou @weon.com.br.</p>
+      <p id="loginErrorMsg" style="color:var(--danger); font-size:0.8em; margin-top:12px; display:none; font-weight:bold;">Acesso negado. Apenas contas corporativas @weon.com ou @weon.com.br são permitidas.</p>
     </div>
   </div>
 
@@ -1227,25 +1241,38 @@ Empresa:
   <div id="toast">Alteração salva!</div>
 
   <script>
-    // VALIDAÇÃO DE LOGIN E SEGURANÇA WEON
-    function validarEmailWeon(email) {
-      const lower = email.toLowerCase().trim();
-      return lower.endsWith('@weon.com') || lower.endsWith('@weon.com.br');
+    // DECODIFICADOR JWT PARSE PARA TOKEN DO GOOGLE
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
     }
 
-    function validarLoginWeon() {
-      const emailInput = document.getElementById('loginEmailInput').value;
+    // HANDLER DE RESPOSTA OFICIAL DO GOOGLE IDENTITY SIGN-IN
+    function handleCredentialResponse(response) {
+      const responsePayload = parseJwt(response.credential);
       const errorMsg = document.getElementById('loginErrorMsg');
 
-      if (validarEmailWeon(emailInput)) {
-        localStorage.setItem('weon_user_email', emailInput.toLowerCase().trim());
-        document.getElementById('loginModal').style.display = 'none';
-        document.getElementById('mainDashboardApp').style.display = 'block';
-        document.getElementById('currentUserEmail').innerText = emailInput.toLowerCase().trim();
-        errorMsg.style.display = 'none';
-        carregarKanbanDoSheets();
-      } else {
-        errorMsg.style.display = 'block';
+      if (responsePayload && responsePayload.email) {
+        const emailLogged = responsePayload.email.toLowerCase().trim();
+        
+        if (emailLogged.endsWith('@weon.com') || emailLogged.endsWith('@weon.com.br')) {
+          localStorage.setItem('weon_user_email', emailLogged);
+          document.getElementById('loginModal').style.display = 'none';
+          document.getElementById('mainDashboardApp').style.display = 'block';
+          document.getElementById('currentUserEmail').innerText = emailLogged;
+          errorMsg.style.display = 'none';
+          carregarKanbanDoSheets();
+        } else {
+          errorMsg.style.display = 'block';
+        }
       }
     }
 
@@ -1256,7 +1283,7 @@ Empresa:
 
     function verificarSessaoUsuario() {
       const savedEmail = localStorage.getItem('weon_user_email');
-      if (savedEmail && validarEmailWeon(savedEmail)) {
+      if (savedEmail && (savedEmail.endsWith('@weon.com') || savedEmail.endsWith('@weon.com.br'))) {
         document.getElementById('loginModal').style.display = 'none';
         document.getElementById('mainDashboardApp').style.display = 'block';
         document.getElementById('currentUserEmail').innerText = savedEmail;
