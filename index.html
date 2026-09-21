@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -14,7 +14,11 @@
   <!-- CHART.JS PARA GRÁFICOS INTERATIVOS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- HTML2PDF PARA EXPORTAÇÃO DE RELATÓRIOS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
+    /* VARIÁVEIS DE TEMA E CORES */
     :root {
       --bg-principal: #060911;
       --bg-card: rgba(15, 20, 34, 0.85);
@@ -33,15 +37,43 @@
       --radius-sm: 8px;
     }
 
+    /* TEMA CORPORATE WEON */
+    [data-theme="corporate"] {
+      --bg-principal: #0b132b;
+      --bg-card: rgba(28, 37, 65, 0.9);
+      --bg-input: rgba(11, 19, 43, 0.9);
+      --accent: #3a86ff;
+      --accent-glow: rgba(58, 134, 255, 0.25);
+      --accent-hover: #2563eb;
+      --text-main: #ffffff;
+      --text-muted: #cbd5e1;
+      --border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* TEMA CLARO / LIGHT MODE */
+    [data-theme="light"] {
+      --bg-principal: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-input: #f8fafc;
+      --accent: #0284c7;
+      --accent-glow: rgba(2, 132, 199, 0.15);
+      --accent-hover: #0369a1;
+      --danger: #dc2626;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: rgba(0, 0, 0, 0.1);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
     
     body { 
-      background: radial-gradient(circle at top right, #111827, #060911 85%);
+      background: radial-gradient(circle at top right, #111827, var(--bg-principal) 85%);
       color: var(--text-main); 
       padding: 40px 20px; 
       display: flex; 
       justify-content: center; 
       min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
     }
 
     .container { 
@@ -52,10 +84,50 @@
       -webkit-backdrop-filter: blur(20px);
       padding: 40px; 
       border-radius: var(--radius-lg); 
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1); 
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1); 
       border: 1px solid var(--border-color); 
     }
     
+    /* TOPO E CONTROLES DE TEMA / USER */
+    .top-bar-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .user-info-badge {
+      font-size: 0.82em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-selector-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .theme-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 10px;
+      font-size: 0.75em;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover, .theme-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+
     header { text-align: center; margin-bottom: 35px; }
     header h1 { 
       color: var(--accent); 
@@ -128,7 +200,7 @@
       background: var(--bg-input); 
       border: 1px solid var(--border-color); 
       border-radius: var(--radius-md); 
-      color: white; 
+      color: var(--text-main); 
       font-size: 0.95em;
       transition: all 0.2s;
     }
@@ -197,7 +269,7 @@
       flex-direction: column; 
       gap: 24px; 
       margin-bottom: 25px; 
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
     }
     .bi-title { font-size: 0.9em; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
 
@@ -213,19 +285,19 @@
     @media (max-width: 480px) { .kpi-cards-wrapper { grid-template-columns: 1fr; } }
 
     .kpi-card { 
-      background: rgba(13, 17, 28, 0.85); 
+      background: var(--bg-card); 
       border: 1px solid var(--border-color); 
       border-radius: var(--radius-md); 
       padding: 20px; 
       display: flex; 
       align-items: center; 
       gap: 16px; 
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25); 
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15); 
       transition: transform 0.2s, border-color 0.2s;
     }
     .kpi-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.2); }
     .kpi-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4em; }
-    .kpi-info h4 { font-size: 1.8em; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 6px; }
+    .kpi-info h4 { font-size: 1.8em; font-weight: 800; color: var(--text-main); line-height: 1; margin-bottom: 6px; }
     .kpi-info span { font-size: 0.72em; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
 
     .kpi-card.total .kpi-icon { color: var(--accent); background: var(--accent-glow); border: 1px solid var(--accent); }
@@ -234,7 +306,7 @@
     .kpi-card.concluido .kpi-icon { color: #4ade80; background: rgba(74, 222, 128, 0.15); border: 1px solid #4ade80; }
 
     .chart-box { 
-      background: rgba(13, 17, 28, 0.85); 
+      background: var(--bg-card); 
       border: 1px solid var(--border-color); 
       border-radius: var(--radius-md); 
       padding: 22px; 
@@ -273,28 +345,45 @@
       align-items: center; 
       transition: background 0.2s;
     }
-    .collapsible:hover { background-color: rgba(30, 41, 59, 0.6); }
+    .collapsible:hover { background-color: rgba(30, 41, 59, 0.4); }
     .collapsible .btn-title { display: flex; align-items: center; gap: 14px; }
     .collapsible .btn-title i { color: var(--accent); width: 20px; font-size: 1.1em; }
     .collapsible .chevron { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text-muted); }
     .collapsible.active .chevron { transform: rotate(180deg); color: var(--accent); }
 
-    .content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background-color: rgba(11, 15, 25, 0.95); }
+    .content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background-color: var(--bg-card); }
     .content-inner { padding: 22px; }
+
+    /* ESTILO DA AGENDA EMBUTIDA */
+    .calendar-embed-wrapper {
+      position: relative;
+      padding-bottom: 65%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    .calendar-embed-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
 
     .data-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
     .data-row:last-child { border-bottom: none; }
     .data-label { color: var(--text-muted); font-size: 0.9em; font-weight: 500; }
     .data-value { 
       font-family: 'Fira Code', monospace; 
-      background: rgba(0,0,0,0.4); 
+      background: rgba(0,0,0,0.2); 
       padding: 6px 12px; 
       border-radius: 6px; 
       font-size: 0.88em; 
       display: flex; 
       align-items: center; 
       gap: 12px; 
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
       max-width: 65%;
       word-break: break-all;
     }
@@ -305,7 +394,7 @@
 
     .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .custom-link { 
-      background: rgba(30, 41, 59, 0.4); 
+      background: rgba(30, 41, 59, 0.2); 
       padding: 14px; 
       border-radius: 8px; 
       color: var(--text-main); 
@@ -318,14 +407,14 @@
       border: 1px solid var(--border-color); 
       transition: all 0.2s;
     }
-    .custom-link:hover { background: var(--bg-input); border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .custom-link:hover { background: var(--bg-input); border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
     .custom-link i { color: var(--accent); font-size: 1.1em; }
     .link-subtext { display: block; font-size: 0.75em; color: var(--text-muted); margin-top: 2px; }
 
     textarea.ticket-template { 
       width: 100%; 
       height: 180px; 
-      background: rgba(0,0,0,0.4); 
+      background: rgba(0,0,0,0.2); 
       border: 1px solid var(--border-color); 
       border-radius: 8px; 
       color: #38bdf8; 
@@ -336,7 +425,7 @@
       line-height: 1.5;
     }
     pre.code-block { 
-      background: rgba(0,0,0,0.4); 
+      background: rgba(0,0,0,0.2); 
       padding: 16px; 
       border-radius: 8px; 
       font-family: 'Fira Code', monospace; 
@@ -452,7 +541,7 @@
     .cards-container { min-height: 80px; }
 
     .kanban-card { 
-      background: rgba(26, 32, 53, 0.9); 
+      background: var(--bg-card); 
       border: 1px solid var(--border-color); 
       border-left: 3px solid var(--accent); 
       border-radius: 8px; 
@@ -461,12 +550,12 @@
       font-size: 0.85em; 
       cursor: pointer; 
       transition: all 0.2s ease; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
       max-height: 160px; 
       overflow: hidden; 
       position: relative; 
     }
-    .kanban-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
+    .kanban-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.25); }
     .kanban-card:active { cursor: grabbing; }
     
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -491,7 +580,7 @@
 
     .card-obs-area a { color: var(--accent) !important; text-decoration: underline !important; font-weight: 600; }
 
-    .card-footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .card-footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 6px; border-top: 1px solid var(--border-color); }
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 600; color: var(--accent); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; }
     .card-checklist-progress { font-size: 0.72em; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 4px; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
@@ -553,7 +642,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(13, 17, 28, 0.6);
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
       padding: 8px 12px;
       border-radius: 6px;
@@ -610,23 +699,60 @@
     }
     .add-chk-input {
       flex: 1;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.2);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      color: white;
+      color: var(--text-main);
       padding: 8px 12px;
       font-size: 0.82em;
     }
     .add-chk-input:focus { outline: none; border-color: var(--accent); }
 
+    /* SEÇÃO IA & RESUMO NO MODAL */
+    .ai-report-section {
+      margin-top: 18px;
+      background: rgba(0, 255, 204, 0.03);
+      border: 1px solid var(--border-glow);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .ai-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .ai-header h4 {
+      font-size: 0.85em;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-response-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 0.85em;
+      line-height: 1.5;
+      color: var(--text-main);
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+      display: none;
+    }
+
     /* MODAIS */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-    .modal-content { background: #131725; border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 600px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 620px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; color: var(--text-main); }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
 
     .input-title-group { margin-bottom: 14px; }
     .input-title-group label { display: block; font-size: 0.75em; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    .input-card-title { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; font-weight: 600; font-size: 0.95em; }
+    .input-card-title { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); font-weight: 600; font-size: 0.95em; }
     .input-card-title:focus { outline: none; border-color: var(--accent); }
 
     .attachment-box { 
@@ -640,7 +766,7 @@
       justify-content: space-between; 
     }
     .attachment-box label { font-size: 0.82em; color: var(--accent); cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    .attachment-box label:hover { color: #fff; }
+    .attachment-box label:hover { color: var(--text-main); }
     .attachment-box input[type="file"] { display: none; }
     .upload-status { font-size: 0.78em; color: var(--text-muted); font-weight: 600; }
 
@@ -649,7 +775,7 @@
     .editor-btn:hover { background: var(--accent); color: #090c15; font-weight: bold; }
     .editor-select { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
 
-    .rich-editor { width: 100%; min-height: 100px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 14px; margin-bottom: 14px; outline: none; font-size: 0.9em; line-height: 1.5; overflow-y: auto; max-height: 180px; }
+    .rich-editor { width: 100%; min-height: 100px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); padding: 14px; margin-bottom: 14px; outline: none; font-size: 0.9em; line-height: 1.5; overflow-y: auto; max-height: 180px; }
     .rich-editor:focus { border-color: var(--accent); }
 
     .rich-editor ul, .card-obs-area ul { list-style-type: disc !important; padding-left: 20px !important; margin: 6px 0 !important; }
@@ -667,7 +793,40 @@
 </head>
 <body>
 
-  <div class="container">
+  <!-- MODAL BLOQUEIO DE SEGURANÇA WEON -->
+  <div id="loginModal" class="modal" style="display:flex;">
+    <div class="modal-content" style="max-width:420px; text-align:center;">
+      <h3 style="justify-content:center;"><i class="fas fa-shield-alt"></i> Acesso Restrito WeON</h3>
+      <p style="font-size:0.88em; color:var(--text-muted); margin-bottom:20px;">Informe o seu e-mail corporativo para liberar o painel de implantação.</p>
+      
+      <div class="input-title-group" style="text-align:left;">
+        <label>E-mail Corporativo (@weon.com ou .com.br):</label>
+        <input type="email" id="loginEmailInput" class="input-card-title" placeholder="seu.nome@weon.com.br" onkeypress="if(event.key==='Enter') validarLoginWeon()">
+      </div>
+
+      <button class="btn-widget" style="width:100%; justify-content:center; padding:12px; border-color:var(--accent); color:var(--accent); font-size:0.9em; margin-top:10px;" onclick="validarLoginWeon()"><i class="fas fa-unlock"></i> Acessar Dashboard</button>
+      <p id="loginErrorMsg" style="color:var(--danger); font-size:0.78em; margin-top:12px; display:none; font-weight:bold;">Acesso negado. Utilize um e-mail @weon.com ou @weon.com.br.</p>
+    </div>
+  </div>
+
+  <div class="container" id="mainDashboardApp" style="display:none;">
+    
+    <!-- BARRA SUPERIOR DE CONTROLE E TEMA -->
+    <div class="top-bar-controls">
+      <div class="user-info-badge">
+        <i class="fas fa-user-check" style="color:var(--accent);"></i>
+        <span id="currentUserEmail">phelipe.ribeiro@weon.com.br</span>
+        <button class="btn-widget" style="padding:3px 8px; font-size:0.7em;" onclick="logoutWeon()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+      </div>
+
+      <div class="theme-selector-group">
+        <span style="font-size:0.75em; color:var(--text-muted); font-weight:700; margin-right:4px;">TEMA:</span>
+        <button class="theme-btn active" id="btnThemeDark" onclick="setTheme('dark')">Cyberpunk</button>
+        <button class="theme-btn" id="btnThemeCorporate" onclick="setTheme('corporate')">Corporate</button>
+        <button class="theme-btn" id="btnThemeLight" onclick="setTheme('light')">Light</button>
+      </div>
+    </div>
+
     <header>
       <h1><i class="fas fa-cubes"></i> Auxílio WeON</h1>
       <p>Hub central de credenciais, rotinas e acessos operacionais</p>
@@ -760,6 +919,22 @@
           </div>
           <div class="kanban-board" id="kanban-board">
             <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas da planilha...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO AGENDA DO IMPLANTADOR -->
+    <h2><i class="fas fa-calendar-alt"></i> Minha Agenda de Implantação</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-calendar-check"></i> Compromissos & Kick-offs (Google Calendar)</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="calendar-embed-wrapper">
+            <iframe src="https://calendar.google.com/calendar/embed?src=phelipe.ribeiro%40weon.com.br&ctz=America%2FSao_Paulo" style="border:0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
           </div>
         </div>
       </div>
@@ -944,7 +1119,7 @@ Empresa:
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO COM CHECKLIST -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO COM CHECKLIST & IA -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
@@ -999,14 +1174,29 @@ Empresa:
           <div id="checklistProgressBarFill" class="checklist-progress-bar-fill"></div>
         </div>
 
-        <div class="checklist-container" id="checklistContainer">
-          <!-- Itens do checklist renderizados via JS -->
-        </div>
+        <div class="checklist-container" id="checklistContainer"></div>
 
         <div class="add-chk-wrapper">
           <input type="text" id="addChkInput" class="add-chk-input" placeholder="Adicionar nova tarefa ao checklist..." onkeypress="if(event.key==='Enter') adicionarItemChecklistInput()">
           <button class="btn-widget" onclick="adicionarItemChecklistInput()"><i class="fas fa-plus"></i> Add</button>
         </div>
+      </div>
+
+      <!-- SEÇÃO GERADOR DE REPORT COM IA -->
+      <div class="ai-report-section">
+        <div class="ai-header">
+          <h4><i class="fas fa-robot"></i> Status Report Inteligente (Gemini IA)</h4>
+          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportIA()"><i class="fas fa-magic"></i> Gerar Resumo IA</button>
+        </div>
+
+        <div class="input-title-group" style="margin-top:8px;">
+          <label>API Key Gemini (Google AI Studio):</label>
+          <input type="password" id="geminiApiKeyInput" class="input-card-title" placeholder="Cole sua API Key da Gemini aqui..." onchange="salvarGeminiApiKeyLocal(this.value)">
+        </div>
+
+        <div id="aiResponseBox" class="ai-response-box"></div>
+
+        <button id="btnExportPdf" class="btn-widget" style="margin-top:10px; display:none; border-color:#38bdf8; color:#38bdf8;" onclick="exportarRelatorioPDF()"><i class="fas fa-file-pdf"></i> Exportar Resumo em PDF</button>
       </div>
 
       <div class="modal-actions">
@@ -1037,6 +1227,63 @@ Empresa:
   <div id="toast">Alteração salva!</div>
 
   <script>
+    // VALIDAÇÃO DE LOGIN E SEGURANÇA WEON
+    function validarEmailWeon(email) {
+      const lower = email.toLowerCase().trim();
+      return lower.endsWith('@weon.com') || lower.endsWith('@weon.com.br');
+    }
+
+    function validarLoginWeon() {
+      const emailInput = document.getElementById('loginEmailInput').value;
+      const errorMsg = document.getElementById('loginErrorMsg');
+
+      if (validarEmailWeon(emailInput)) {
+        localStorage.setItem('weon_user_email', emailInput.toLowerCase().trim());
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('mainDashboardApp').style.display = 'block';
+        document.getElementById('currentUserEmail').innerText = emailInput.toLowerCase().trim();
+        errorMsg.style.display = 'none';
+        carregarKanbanDoSheets();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    function logoutWeon() {
+      localStorage.removeItem('weon_user_email');
+      location.reload();
+    }
+
+    function verificarSessaoUsuario() {
+      const savedEmail = localStorage.getItem('weon_user_email');
+      if (savedEmail && validarEmailWeon(savedEmail)) {
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('mainDashboardApp').style.display = 'block';
+        document.getElementById('currentUserEmail').innerText = savedEmail;
+      } else {
+        document.getElementById('loginModal').style.display = 'flex';
+        document.getElementById('mainDashboardApp').style.display = 'none';
+      }
+    }
+
+    // GESTÃO DE TEMAS
+    function setTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('weon_theme', themeName);
+
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      if (themeName === 'dark') document.getElementById('btnThemeDark').classList.add('active');
+      if (themeName === 'corporate') document.getElementById('btnThemeCorporate').classList.add('active');
+      if (themeName === 'light') document.getElementById('btnThemeLight').classList.add('active');
+
+      atualizarDashboardBI();
+    }
+
+    function carregarTemaSalvo() {
+      const savedTheme = localStorage.getItem('weon_theme') || 'dark';
+      setTheme(savedTheme);
+    }
+
     const collapsibles = document.querySelectorAll(".collapsible");
     collapsibles.forEach(button => {
       button.addEventListener("click", () => {
@@ -1088,8 +1335,12 @@ Empresa:
     }
 
     window.onload = function() {
+      verificarSessaoUsuario();
+      carregarTemaSalvo();
       const savedNotes = localStorage.getItem('weon_quick_notes');
       if (savedNotes) document.getElementById('quickNotes').value = savedNotes;
+      const savedKey = localStorage.getItem('weon_gemini_key');
+      if (savedKey) document.getElementById('geminiApiKeyInput').value = savedKey;
     }
 
     function saveNotes() {
@@ -1162,7 +1413,6 @@ Empresa:
     ];
 
     // KANBAN + PAINEL BI/DASHBOARD EM TEMPO REAL
-    const SHEET_ID = '1oZarWql1SOswIYMoHQkbVGg5tqjjgKAkp4JYK7qvdj4'; 
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxik9ULAs7wfKcp4lY30WtRDbcojU6pV00EthdCZHm7CO25oU2fn1ZxbsTRQQ1T7B4u/exec'; 
 
     let cardElementoAtual = null;
@@ -1224,22 +1474,26 @@ Empresa:
         .then(res => {
           if (res.status === 'success') {
             statusEl.innerText = "✓ Anexado!";
-            statusEl.style.color = "#00ffcc";
+            statusEl.style.color = "var(--accent)";
 
             const editor = document.getElementById('modalObsEditor');
             const fileLinkHTML = `<p style="margin-top:6px;"><a href="${res.fileUrl}" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:bold;"><i class="fas fa-file-download"></i> ${res.fileName}</a></p>`;
             editor.innerHTML += fileLinkHTML;
           } else {
             statusEl.innerText = "Erro no envio.";
-            statusEl.style.color = "#ff4a4a";
+            statusEl.style.color = "var(--danger)";
           }
         })
         .catch(() => {
           statusEl.innerText = "Erro ao enviar.";
-          statusEl.style.color = "#ff4a4a";
+          statusEl.style.color = "var(--danger)";
         });
       };
       reader.readAsDataURL(file);
+    }
+
+    function salvarGeminiApiKeyLocal(key) {
+      localStorage.setItem('weon_gemini_key', key.trim());
     }
 
     function getObsLocal(cliente) {
@@ -1450,7 +1704,7 @@ Empresa:
               datasets: [{
                 data: dadosColunas,
                 backgroundColor: coresDinamicas.slice(0, labelsColunas.length),
-                borderColor: '#151c2d',
+                borderColor: 'var(--bg-card)',
                 borderWidth: 2,
                 hoverOffset: 6
               }]
@@ -1462,7 +1716,7 @@ Empresa:
               plugins: {
                 legend: {
                   position: 'bottom',
-                  labels: { color: '#94a3b8', font: { size: 10, family: "'Inter', sans-serif" }, padding: 12, usePointStyle: true }
+                  labels: { color: 'var(--text-muted)', font: { size: 10, family: "'Inter', sans-serif" }, padding: 12, usePointStyle: true }
                 },
                 tooltip: {
                   callbacks: {
@@ -1749,6 +2003,82 @@ Empresa:
       }
     }
 
+    // CHAMADA IA GEMINI PARA STATUS REPORT
+    async function gerarStatusReportIA() {
+      const apiKey = localStorage.getItem('weon_gemini_key');
+      if (!apiKey) return alert("Por favor, cole sua API Key do Google Gemini no campo abaixo antes de gerar o relatório.");
+
+      const clienteNome = document.getElementById('modalTitleInput').value.trim();
+      const obsHtml = document.getElementById('modalObsEditor').innerText.trim();
+      const chkItems = obterChecklistModalAtual();
+
+      if (!clienteNome) return alert("Digite o nome do cliente no card.");
+
+      const doneItems = chkItems.filter(i => i.done).map(i => i.texto);
+      const pendingItems = chkItems.filter(i => !i.done).map(i => i.texto);
+
+      const responseBox = document.getElementById('aiResponseBox');
+      const btnExportPdf = document.getElementById('btnExportPdf');
+      responseBox.style.display = 'block';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini IA...</i>';
+
+      const prompt = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente "${clienteNome}".
+      Anotações internas do projeto: "${obsHtml}".
+      Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
+      Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
+      Format o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await res.json();
+
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+          const reportText = data.candidates[0].content.parts[0].text;
+          responseBox.innerText = reportText;
+          btnExportPdf.style.display = 'inline-flex';
+        } else {
+          throw new Error("Erro na resposta da Gemini API");
+        }
+      } catch (err) {
+        console.error(err);
+        responseBox.innerHTML = '<span style="color:var(--danger);">Erro ao gerar o relatório com a IA. Verifique sua API Key e tente novamente.</span>';
+      }
+    }
+
+    function exportarRelatorioPDF() {
+      const clienteNome = document.getElementById('modalTitleInput').value.trim() || 'Cliente';
+      const reportText = document.getElementById('aiResponseBox').innerText;
+
+      const element = document.createElement('div');
+      element.style.padding = '30px';
+      element.style.fontFamily = 'Arial, sans-serif';
+      element.style.color = '#1e293b';
+      element.innerHTML = `
+        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px;">
+          <h1 style="color:#0f172a; margin:0; font-size:22px;">WeON - Relatório Executivo de Implantação</h1>
+          <p style="color:#64748b; font-size:12px; margin-top:4px;">Cliente: <strong>${clienteNome}</strong> | Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+        </div>
+        <div style="font-size: 13px; line-height: 1.6; white-space: pre-wrap;">${reportText}</div>
+        <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: center; font-size: 10px; color: #94a3b8;">
+          Documento gerado automaticamente pelo Hub de Auxílio WeON
+        </div>
+      `;
+
+      const opt = {
+        margin:       10,
+        filename:     `Status_Report_${clienteNome.replace(/\s+/g, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save();
+    }
+
     // CRIAR E EXCLUIR COLUNAS
     function abrirModalNovaColuna() {
       document.getElementById('colunaTitleInput').value = '';
@@ -1848,6 +2178,8 @@ Empresa:
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fab fa-jira"></i> Editar Detalhes do Card`;
       document.getElementById('modalTitleInput').value = clienteNome;
       document.getElementById('modalObsEditor').innerHTML = obsAtual;
+      document.getElementById('aiResponseBox').style.display = 'none';
+      document.getElementById('btnExportPdf').style.display = 'none';
       
       renderizarChecklistModal(chkAtual);
 
@@ -1875,6 +2207,8 @@ Empresa:
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Criar Novo Card`;
       document.getElementById('modalTitleInput').value = '';
       document.getElementById('modalObsEditor').innerHTML = '';
+      document.getElementById('aiResponseBox').style.display = 'none';
+      document.getElementById('btnExportPdf').style.display = 'none';
       
       const chkPadrao = CHECKLIST_PADRAO.map(t => ({ texto: t, done: false }));
       renderizarChecklistModal(chkPadrao);
@@ -1952,8 +2286,6 @@ Empresa:
       atualizarDashboardBI();
       fecharModal();
     }
-
-    window.addEventListener('DOMContentLoaded', carregarKanbanDoSheets);
   </script>
 </body>
 </html>
