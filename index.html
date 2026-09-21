@@ -295,9 +295,11 @@
       align-items: center; 
       gap: 12px; 
       border: 1px solid rgba(255,255,255,0.05);
+      max-width: 65%;
+      word-break: break-all;
     }
 
-    .btn-copy { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; font-size: 1.05em; }
+    .btn-copy { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; font-size: 1.05em; flex-shrink: 0; }
     .btn-copy:hover { color: var(--accent); }
     .btn-copy.copied { color: var(--accent) !important; }
 
@@ -345,8 +347,11 @@
       border-top: 1px solid var(--border-color);
       border-right: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
+      white-space: pre-wrap;
+      word-break: break-all;
     }
-    .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+    .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; margin-top: 14px; }
+    .code-header:first-child { margin-top: 0; }
 
     /* KANBAN DINÂMICO E ARRASTE DE COLUNAS */
     .kanban-toolbar {
@@ -905,6 +910,12 @@ Empresa:
       </button>
       <div class="content">
         <div class="content-inner">
+          <div class="code-header">
+            <span>Para gerar token na Gupshup:</span>
+            <button class="btn-copy" onclick="copyText('eyJraWQiOiI2ODlhZjdmMmUxOTQ2ZWM3IiwiYWxnIjoiRWREU0EiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJDQVMtVjIiLCJ0dCI6IlVUIiwic3ViIjoiMTA2IiwicnRpIjoiaVJiZGFnbVAyS05GIiwianRpIjoidXQtMWt6dmtwOG8yc2Vmb28zeHB5YnpwdWY4YW43IiwiaWF0IjoxNzg0MzA4NTMxLCJleHAiOjE3ODk0NDExNzEsImF1ZCI6ImdzcCIsInJvbGUiOiIqIiwicGEiOnRydWV9.T1kRTVjcW3Kj2ZxmFExHiaynNSls8-4-B8B8_mBu6L83O0-Peami-nO484IHzS6-YevVPeqq_UtLksMSF4ekCg', this)"><i class="fas fa-copy"></i> Copiar Token</button>
+          </div>
+          <pre class="code-block" id="gupshupTokenCode">eyJraWQiOiI2ODlhZjdmMmUxOTQ2ZWM3IiwiYWxnIjoiRWREU0EiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJDQVMtVjIiLCJ0dCI6IlVUIiwic3ViIjoiMTA2IiwicnRpIjoiaVJiZGFnbVAyS05GIiwianRpIjoidXQtMWt6dmtwOG8yc2Vmb28zeHB5YnpwdWY4YW43IiwiaWF0IjoxNzg0MzA4NTMxLCJleHAiOjE3ODk0NDExNzEsImF1ZCI6ImdzcCIsInJvbGUiOiIqIiwicGEiOnRydWV9.T1kRTVjcW3Kj2ZxmFExHiaynNSls8-4-B8B8_mBu6L83O0-Peami-nO484IHzS6-YevVPeqq_UtLksMSF4ekCg</pre>
+
           <div class="code-header">
             <span>Requisição Token cURL</span>
             <button class="btn-copy" onclick="copyCodeBlock(this)"><i class="fas fa-copy"></i> Copiar Código</button>
@@ -1626,7 +1637,6 @@ Empresa:
         itemDiv.setAttribute('draggable', 'true');
         itemDiv.setAttribute('data-chk-index', index);
 
-        // Eventos Drag and Drop dos itens do checklist
         itemDiv.addEventListener('dragstart', chkDragStart);
         itemDiv.addEventListener('dragend', chkDragEnd);
         itemDiv.addEventListener('dragover', chkDragOver);
@@ -1857,7 +1867,6 @@ Empresa:
       document.getElementById('modalTitleInput').value = '';
       document.getElementById('modalObsEditor').innerHTML = '';
       
-      // Carrega o Checklist Padrão com os 28 passos
       const chkPadrao = CHECKLIST_PADRAO.map(t => ({ texto: t, done: false }));
       renderizarChecklistModal(chkPadrao);
 
@@ -1911,7 +1920,6 @@ Empresa:
           const obsArea = cardElementoAtual.querySelector('.card-obs-area');
           obsArea.innerHTML = obsHtml;
 
-          // Atualiza Tag de Progresso do Checklist no Card
           const total = chkItems.length;
           const done = chkItems.filter(i => i.done).length;
           const pct = total > 0 ? Math.round((done / total) * 100) : 0;
