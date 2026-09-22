@@ -349,6 +349,22 @@
     .content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background-color: var(--bg-card); }
     .content-inner { padding: 22px; }
 
+    .calendar-embed-wrapper {
+      position: relative;
+      padding-bottom: 65%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    .calendar-embed-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
     .data-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
     .data-row:last-child { border-bottom: none; }
     .data-row.highlight-group { background: rgba(0, 255, 204, 0.02); padding: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid rgba(0, 255, 204, 0.1); }
@@ -370,6 +386,43 @@
     .btn-copy { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; font-size: 1.05em; flex-shrink: 0; }
     .btn-copy:hover { color: var(--accent); }
     .btn-copy.copied { color: var(--accent) !important; }
+
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .custom-link { 
+      background: rgba(30, 41, 59, 0.2); 
+      padding: 14px; 
+      border-radius: 8px; 
+      color: var(--text-main); 
+      text-decoration: none; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      font-size: 0.88em; 
+      font-weight: 500;
+      border: 1px solid var(--border-color); 
+      transition: all 0.2s;
+    }
+    .custom-link:hover { background: var(--bg-input); border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .custom-link i { color: var(--accent); font-size: 1.1em; }
+    .link-subtext { display: block; font-size: 0.75em; color: var(--text-muted); margin-top: 2px; }
+
+    pre.code-block { 
+      background: rgba(0,0,0,0.2); 
+      padding: 16px; 
+      border-radius: 8px; 
+      font-family: 'Fira Code', monospace; 
+      font-size: 0.85em; 
+      overflow-x: auto; 
+      color: #38bdf8; 
+      border-left: 3px solid var(--accent); 
+      border-top: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; margin-top: 14px; }
+    .code-header:first-child { margin-top: 0; }
 
     .kanban-toolbar {
       display: flex;
@@ -777,7 +830,6 @@
 
     .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 24px; }
 
-    /* ESTILO EXCLUSIVO DE IMPRESSÃO / NATIVO DO NAVEGADOR */
     .printable-preview-container {
       background: #ffffff !important;
       color: #0f172a !important;
@@ -787,6 +839,7 @@
       border: 1px solid #cbd5e1;
     }
 
+    /* REGRAS DE IMPRESSÃO NATIVA SEM CORTE */
     @page {
       size: landscape;
       margin: 8mm;
@@ -966,21 +1019,160 @@
       </div>
     </div>
 
-    <!-- MODAL DE STATUS REPORT GERAL -->
-    <div id="boardReportModal" class="modal">
-      <div class="modal-content">
-        <h3><i class="fas fa-file-contract"></i> Status Report Geral com Pipeline (Dailys & Weeklys)</h3>
-        <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Visão executiva com esteira de progresso por marco para cada cliente.</p>
-
-        <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
-          <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Salvar / Imprimir)</button>
+    <!-- AGENDA -->
+    <h2><i class="fas fa-calendar-alt"></i> Minha Agenda de Implantação</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-calendar-check"></i> Compromissos & Kick-offs (Google Calendar)</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="calendar-embed-wrapper">
+            <iframe src="https://calendar.google.com/calendar/embed?src=phelipe.ribeiro%40weon.com.br&ctz=America%2FSao_Paulo" style="border:0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <!-- ÁREA DE PREVIEW DA TABELA VISÍVEL COM PIPELINE E DATAS -->
-        <div id="boardReportPrintContainer" class="printable-preview-container"></div>
+    <!-- CREDENCIAIS E ACESSOS -->
+    <h2><i class="fas fa-lock"></i> Credenciais e Acessos</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-shield-alt"></i> Acessos, Senhas e JIRA</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="data-row highlight-group">
+            <span class="data-label"><i class="fab fa-jira" style="color: #0052CC; font-size:1.1em;"></i> <strong>JIRA Implantação (Portal Suporte)</strong></span>
+            <span class="data-value">
+              <a href="https://weon.atlassian.net/jira/for-you?tab=recommendedActions" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:700;">Acessar Portal <i class="fas fa-external-link-alt" style="font-size:0.8em;"></i></a>
+            </span>
+          </div>
+          <div class="data-row">
+            <span class="data-label" style="padding-left:15px;"><i class="fas fa-envelope"></i> JIRA E-mail</span>
+            <span class="data-value">comercial@weon.com.br <button class="btn-copy" onclick="copyText('comercial@weon.com.br', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row" style="margin-bottom:12px; border-bottom: 2px dashed var(--border-color); padding-bottom:12px;">
+            <span class="data-label" style="padding-left:15px;"><i class="fas fa-key"></i> JIRA Senha</span>
+            <span class="data-value">Weon@2024* <button class="btn-copy" onclick="copyText('Weon@2024*', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
 
-        <div class="modal-actions" style="justify-content: flex-end; margin-top:14px;">
-          <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar</button>
+          <div class="data-row">
+            <span class="data-label">WeON Admin User</span>
+            <span class="data-value">admin <button class="btn-copy" onclick="copyText('admin', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">WeON Admin Senha</span>
+            <span class="data-value">vah%4ge1E <button class="btn-copy" onclick="copyText('vah%4ge1E', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso para o admin (m3 weon)</span>
+            <span class="data-value">10.0.9.84/weon <button class="btn-copy" onclick="copyText('10.0.9.84/weon', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso weon5m1-dn1</span>
+            <span class="data-value">10.0.8.78 <button class="btn-copy" onclick="copyText('10.0.8.78', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso weon5m2-dn1</span>
+            <span class="data-value">10.0.8.184 <button class="btn-copy" onclick="copyText('10.0.8.184', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso Dg solutions</span>
+            <span class="data-value">10.0.9.175 <button class="btn-copy" onclick="copyText('10.0.9.175', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">weon.supervisor User</span>
+            <span class="data-value">supweon <button class="btn-copy" onclick="copyText('supweon', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">weon.supervisor Senha</span>
+            <span class="data-value">W30N_S3cVrItY <button class="btn-copy" onclick="copyText('W30N_S3cVrItY', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2><i class="fas fa-external-link-alt"></i> Navegação rápida</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-link"></i> Links Importantes</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="link-grid">
+            <a href="https://docs.google.com/spreadsheets/d/1yMYhXJ9JZTmsKo9AkVnRKQRXVluUKItGVkTpkBxhO4A/edit?usp=sharing" target="_blank" class="custom-link"><i class="fas fa-table"></i> Projetos Weon</a>
+            <a href="https://docs.google.com/document/d/1JAgCLbS67m6NICvjwlGDb3mG30wsGmNH/edit?usp=sharing&ouid=114973427241747262319&rtpof=true&sd=true" target="_blank" class="custom-link"><i class="fas fa-robot"></i> Bot de atendimento</a>
+            <a href="https://docs.google.com/spreadsheets/d/1mJ7D98iXfaj85HGFVSixoacgSwWZEY1JglSsG5HkvDI/edit?gid=1891921868#gid=1891921868" target="_blank" class="custom-link"><i class="fas fa-project-diagram"></i> Descritivo Comercial</a>
+            <a href="https://drive.google.com/drive/folders/12lWKbZBbYX66lqhWc7x-KDUrU8P4K7IT?usp=drive_link" target="_blank" class="custom-link"><i class="fab fa-google-drive"></i> Empresas Implantação</a>
+            <a href="https://docs.google.com/spreadsheets/d/1B6YU1bAtcj3IlDBH7tThz53MCGcM58sGbIXZf_Z9lUI/edit?gid=1376319518#gid=1376319518" target="_blank" class="custom-link"><i class="fas fa-table"></i> Dashboard GUPSHUP</a>
+            <a href="http://172.16.0.226/zabbix/zabbix.php?action=dashboard.list" target="_blank" class="custom-link"><i class="fas fa-chart-line"></i> Zabbix</a>
+            <a href="https://docs.google.com/spreadsheets/d/1-VYV3dmdrxgsZy-ZBy-lEDwq1BKh-ZA7Yj6-Kh3-Ysk/edit?gid=150809063#gid=150809063" target="_blank" class="custom-link"><i class="fas fa-shield-virus"></i> Processo ISO</a>
+            <a href="https://drive.google.com/drive/folders/1K2JiILPLgvj3EuVYeD0q0aqQ3ZrZuG_1" target="_blank" class="custom-link"><i class="fab fa-google-drive"></i> ISO GERAL WEON</a>
+            <a href="https://docs.google.com/document/d/1tIQEkCfIJEwFAsGpJ7mHy5vItnCx5WH4OwPOifYuFo8/edit?usp=sharing" class="custom-link"><i class="fas fa-cogs"></i> Configuração Coex</a>
+            <a href="https://docs.google.com/document/d/1lcrsotUPRzp619ojLae1pN6hrRGw-x5suvB1Zt_weBI/edit?usp=sharing" target="_blank" class="custom-link"><i class="fab fa-meta"></i> Meta Docs</a>
+            <a href="https://weon.notion.site/WeAction-API-8cd617e2f0e746359a6e6b3557ed2482" target="_blank" class="custom-link"><i class="fas fa-book"></i> Notion WeAction API</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2><i class="fas fa-book-open"></i> Biblioteca de Artigos</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-graduation-cap"></i> Artigos e Documentações Internas</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="link-grid">
+            <a href="Plano-de-Estudo-Node-RED-WeON.pdf" target="_blank" class="custom-link"><i class="fas fa-file-pdf"></i> Manual NodeRed</a>
+            <a href="https://weon.atlassian.net/wiki/spaces/NBDCS/pages/1673101313/Como+criar+supervisor" target="_blank" class="custom-link">
+              <div><i class="fab fa-confluence"></i> Confluence Jira <span class="link-subtext">⚠️ Requer acesso</span></div>
+            </a>
+            <a href="https://docs.google.com/document/d/1WB6I7U8UVwT7GiIrxQ5tLXKgb5YiDXm9/edit" target="_blank" class="custom-link"><i class="fas fa-file-word"></i> POP Agentes</a>
+            <a href="https://docs.weon.com.br/" target="_blank" class="custom-link"><i class="fas fa-question-circle"></i> FAQ Supervisores</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2><i class="fas fa-code"></i> Desenvolvedor & Integrações</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-terminal"></i> Códigos e Chamadas de API</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="data-row" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+            <span class="data-label"><i class="fas fa-external-link-alt" style="color:var(--accent);"></i> Gerador de Token Gupshup (Docs Oficial)</span>
+            <span class="data-value">
+              <a href="https://partner-docs.gupshup.io/reference/get_partner-app-appid-token" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:600;">
+                Acessar Portal Gupshup API
+              </a>
+            </span>
+          </div>
+
+          <div class="code-header">
+            <span>Token Atual para a Gupshup:</span>
+            <button class="btn-copy" onclick="copyText('eyJraWQiOiI2ODlhZjdmMmUxOTQ2ZWM3IiwiYWxnIjoiRWREU0EiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJDQVMtVjIiLCJ0dCI6IlVUIiwic3ViIjoiMTA2IiwicnRpIjoiaVJiZGFnbVAyS05GIiwianRpIjoidXQtMWt6dmtwOG8yc2Vmb28zeHB5YnpwdWY4YW43IiwiaWF0IjoxNzg0MzA4NTMxLCJleHAiOjE3ODk0NDExNzEsImF1ZCI6ImdzcCIsInJvbGUiOiIqIiwicGEiOnRydWV9.T1kRTVjcW3Kj2ZxmFExHiaynNSls8-4-B8B8_mBu6L83O0-Peami-nO484IHzS6-YevVPeqq_UtLksMSF4ekCg', this)"><i class="fas fa-copy"></i> Copiar Token</button>
+          </div>
+          <pre class="code-block" id="gupshupTokenCode">eyJraWQiOiI2ODlhZjdmMmUxOTQ2ZWM3IiwiYWxnIjoiRWREU0EiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJDQVMtVjIiLCJ0dCI6IlVUIiwic3ViIjoiMTA2IiwicnRpIjoiaVJiZGFnbVAyS05GIiwianRpIjoidXQtMWt6dmtwOG8yc2Vmb28zeHB5YnpwdWY4YW43IiwiaWF0IjoxNzg0MzA4NTMxLCJleHAiOjE3ODk0NDExNzEsImF1ZCI6ImdzcCIsInJvbGUiOiIqIiwicGEiOnRydWV9.T1kRTVjcW3Kj2ZxmFExHiaynNSls8-4-B8B8_mBu6L83O0-Peami-nO484IHzS6-YevVPeqq_UtLksMSF4ekCg</pre>
+
+          <div class="code-header">
+            <span>Requisição Token cURL</span>
+            <button class="btn-copy" onclick="copyCodeBlock(this)"><i class="fas fa-copy"></i> Copiar Código</button>
+          </div>
+          <pre class="code-block" id="curlCode">curl --location 'https://weon5m1.weon.com.br/weaction-api/api/weon/v3/auth/token' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "identifier": "apicontraktor",
+    "password": "Ck@2026"
+}'</pre>
         </div>
       </div>
     </div>
@@ -990,7 +1182,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO E CRIAÇÃO -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
@@ -1087,6 +1279,24 @@
     </div>
   </div>
 
+  <div id="boardReportModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-file-contract"></i> Status Report Geral com Pipeline (Dailys & Weeklys)</h3>
+      <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Visão executiva com esteira de progresso por marco para cada cliente.</p>
+
+      <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+        <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Salvar / Imprimir)</button>
+      </div>
+
+      <!-- ÁREA DE PREVIEW DA TABELA VISÍVEL COM PIPELINE E DATAS -->
+      <div id="boardReportPrintContainer" class="printable-preview-container"></div>
+
+      <div class="modal-actions" style="justify-content: flex-end; margin-top:14px;">
+        <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast">Alteração salva!</div>
 
   <script>
@@ -1098,6 +1308,7 @@
     let modoCriacao = false;
     let colIndexCriacao = 0;
     let savedRange = null;
+
     let donutChartInstance = null;
     let draggedColumn = null;
     let draggedChecklistItem = null;
@@ -1191,6 +1402,11 @@
           btnElement.classList.remove('copied');
         }, 1500);
       });
+    }
+
+    function copyCodeBlock(btnElement) {
+      const code = document.getElementById("curlCode").innerText;
+      copyText(code, btnElement);
     }
 
     function filterItems() {
@@ -1308,6 +1524,50 @@
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: payload.toString()
       }).catch(err => console.error("Erro no envio:", err));
+    }
+
+    function uploadArquivoDrive(inputEl) {
+      const file = inputEl.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById('uploadStatus');
+      statusEl.innerText = "Enviando arquivo...";
+      statusEl.style.color = "#ffb703";
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Data = e.target.result;
+
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            acao: 'uploadArquivo',
+            fileName: file.name,
+            fileData: base64Data,
+            mimeType: file.type
+          })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === 'success') {
+            statusEl.innerText = "✓ Anexado!";
+            statusEl.style.color = "var(--accent)";
+
+            const editor = document.getElementById('modalObsEditor');
+            const fileLinkHTML = `<p style="margin-top:6px;"><a href="${res.fileUrl}" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:bold;"><i class="fas fa-file-download"></i> ${res.fileName}</a></p>`;
+            editor.innerHTML += fileLinkHTML;
+          } else {
+            statusEl.innerText = "Erro no envio.";
+            statusEl.style.color = "var(--danger)";
+          }
+        })
+        .catch(() => {
+          statusEl.innerText = "Erro ao enviar.";
+          statusEl.style.color = "var(--danger)";
+        });
+      };
+      reader.readAsDataURL(file);
     }
 
     function getObsLocal(cliente) { return localStorage.getItem('weon_obs_' + cliente) || ''; }
