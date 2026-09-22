@@ -677,6 +677,12 @@
       text-decoration: line-through;
       color: var(--text-muted);
     }
+    .checklist-item-timestamp {
+      font-size: 0.7em;
+      color: var(--accent);
+      display: block;
+      margin-top: 2px;
+    }
 
     .btn-remove-chk {
       background: none;
@@ -748,6 +754,13 @@
     .input-title-group label { display: block; font-size: 0.75em; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     .input-card-title { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); font-weight: 600; font-size: 0.95em; }
     .input-card-title:focus { outline: none; border-color: var(--accent); }
+
+    .input-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
 
     .attachment-box { 
       margin-bottom: 14px; 
@@ -1126,8 +1139,19 @@ Empresa:
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
       
       <div class="input-title-group">
-        <label>Título do Card / Cliente:</label>
-        <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Ex: Nome da Empresa / Demanda...">
+        <label>Título do Card / Projeto:</label>
+        <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Ex: Implantação Sistema X...">
+      </div>
+
+      <div class="input-grid-2">
+        <div class="input-title-group">
+          <label><i class="fas fa-building"></i> Empresa Cliente:</label>
+          <input type="text" id="modalEmpresaInput" class="input-card-title" placeholder="Ex: Nome da Empresa Ltda">
+        </div>
+        <div class="input-title-group">
+          <label><i class="fas fa-address-book"></i> Contato Responsável:</label>
+          <input type="text" id="modalContatoInput" class="input-card-title" placeholder="Ex: Fulano / (11) 99999-9999 / email@empresa.com">
+        </div>
       </div>
 
       <div class="attachment-box">
@@ -1183,21 +1207,28 @@ Empresa:
         </div>
       </div>
 
-      <!-- GERADOR DE REPORT IA -->
+      <!-- OPÇÕES DE EXPORTAÇÃO PDF -->
       <div class="ai-report-section">
         <div class="ai-header">
-          <h4><i class="fas fa-robot"></i> Status Report Inteligente (Gemini IA)</h4>
-          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportIA()"><i class="fas fa-magic"></i> Gerar Resumo IA</button>
+          <h4><i class="fas fa-file-export"></i> Opções de Relatório & Exportação PDF</h4>
+          <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfDirectoLocal()"><i class="fas fa-file-pdf"></i> Exportar PDF Direto (Plano B - Sem IA)</button>
         </div>
 
-        <div class="input-title-group" style="margin-top:8px;">
-          <label>API Key Gemini (Google AI Studio):</label>
-          <input type="password" id="geminiApiKeyInput" class="input-card-title" placeholder="Cole sua API Key da Gemini..." onchange="salvarGeminiApiKeyLocal(this.value)">
+        <div style="border-top: 1px solid var(--border-color); margin-top: 12px; padding-top: 12px;">
+          <div class="ai-header">
+            <span style="font-size: 0.8em; color: var(--text-muted);"><i class="fas fa-robot"></i> Status Report Resumido por IA (Opcional)</span>
+            <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportIA()"><i class="fas fa-magic"></i> Gerar Resumo IA</button>
+          </div>
+
+          <div class="input-title-group" style="margin-top:8px;">
+            <label>API Key Gemini (Google AI Studio):</label>
+            <input type="password" id="geminiApiKeyInput" class="input-card-title" placeholder="Cole sua API Key da Gemini..." onchange="salvarGeminiApiKeyLocal(this.value)">
+          </div>
+
+          <div id="aiResponseBox" class="ai-response-box"></div>
+
+          <button id="btnExportPdf" class="btn-widget" style="margin-top:10px; display:none; border-color:#38bdf8; color:#38bdf8;" onclick="exportarRelatorioPDF()"><i class="fas fa-file-pdf"></i> Exportar Resumo IA em PDF</button>
         </div>
-
-        <div id="aiResponseBox" class="ai-response-box"></div>
-
-        <button id="btnExportPdf" class="btn-widget" style="margin-top:10px; display:none; border-color:#38bdf8; color:#38bdf8;" onclick="exportarRelatorioPDF()"><i class="fas fa-file-pdf"></i> Exportar Resumo em PDF</button>
       </div>
 
       <div class="modal-actions">
@@ -1518,10 +1549,21 @@ Empresa:
       localStorage.removeItem('weon_obs_' + cliente);
     }
 
+    function getEmpresaLocal(cliente) {
+      return localStorage.getItem('weon_empresa_' + cliente) || '';
+    }
+    function getContatoLocal(cliente) {
+      return localStorage.getItem('weon_contato_' + cliente) || '';
+    }
+    function saveEmpresaContatoLocal(cliente, empresa, contato) {
+      localStorage.setItem('weon_empresa_' + cliente, empresa);
+      localStorage.setItem('weon_contato_' + cliente, contato);
+    }
+
     function getChecklistLocal(cliente) {
       const saved = localStorage.getItem('weon_chk_' + cliente);
       if (saved) return JSON.parse(saved);
-      return CHECKLIST_PADRAO.map(texto => ({ texto: texto, done: false }));
+      return CHECKLIST_PADRAO.map(texto => ({ texto: texto, done: false, date: null }));
     }
     function saveChecklistLocal(cliente, items) {
       localStorage.setItem('weon_chk_' + cliente, JSON.stringify(items));
@@ -1535,16 +1577,17 @@ Empresa:
       return saved ? JSON.parse(saved) : [];
     }
 
-    function saveCardCriadoLocal(cliente, colIndex, obs, chk) {
+    function saveCardCriadoLocal(cliente, colIndex, obs, chk, empresa = '', contato = '') {
       const cards = getCardsCriadosLocais();
       const idExistente = cards.findIndex(c => c.cliente.toLowerCase() === cliente.toLowerCase());
       if (idExistente >= 0) {
-        cards[idExistente] = { cliente, colIndex, obs, chk };
+        cards[idExistente] = { cliente, colIndex, obs, chk, empresa, contato };
       } else {
-        cards.push({ cliente, colIndex, obs, chk });
+        cards.push({ cliente, colIndex, obs, chk, empresa, contato });
       }
       localStorage.setItem('weon_cards_criados', JSON.stringify(cards));
       saveObsLocal(cliente, obs);
+      saveEmpresaContatoLocal(cliente, empresa, contato);
       if (chk) saveChecklistLocal(cliente, chk);
     }
 
@@ -1920,11 +1963,16 @@ Empresa:
         itemDiv.addEventListener('dragover', chkDragOver);
         itemDiv.addEventListener('drop', chkDrop);
 
+        const timeStr = item.date ? `<span class="checklist-item-timestamp"><i class="far fa-clock"></i> Concluído em ${item.date}</span>` : '';
+
         itemDiv.innerHTML = `
           <div class="checklist-item-left">
             <i class="fas fa-grip-vertical drag-handle"></i>
             <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem(${index}, this.checked)">
-            <span class="checklist-item-text" onclick="clickTextToggle(${index})">${item.texto}</span>
+            <div>
+              <span class="checklist-item-text" onclick="clickTextToggle(${index})">${item.texto}</span>
+              ${timeStr}
+            </div>
           </div>
           <button class="btn-remove-chk" onclick="removerItemChecklist(${index})" title="Remover item"><i class="fas fa-times"></i></button>
         `;
@@ -1936,12 +1984,18 @@ Empresa:
     }
 
     function clickTextToggle(index) {
+      const now = new Date();
+      const dateFormatted = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
       currentChecklistCache[index].done = !currentChecklistCache[index].done;
+      currentChecklistCache[index].date = currentChecklistCache[index].done ? dateFormatted : null;
       renderizarChecklistModal(currentChecklistCache);
     }
 
     function toggleChecklistItem(index, isChecked) {
+      const now = new Date();
+      const dateFormatted = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
       currentChecklistCache[index].done = isChecked;
+      currentChecklistCache[index].date = isChecked ? dateFormatted : null;
       renderizarChecklistModal(currentChecklistCache);
     }
 
@@ -1968,7 +2022,7 @@ Empresa:
       const texto = input.value.trim();
       if (!texto) return;
 
-      currentChecklistCache.push({ texto: texto, done: false });
+      currentChecklistCache.push({ texto: texto, done: false, date: null });
       renderizarChecklistModal(currentChecklistCache);
       input.value = '';
     }
@@ -2011,7 +2065,84 @@ Empresa:
       }
     }
 
-    // SISTEMA DE RETENTATIVAS E RESILIÊNCIA PARA CHAMADAS DA IA (PREVINE ERRO HTTP 503 / HIGH DEMAND)
+    // EXPORTAÇÃO COMPLETA DE RELATÓRIO PDF LOCAL (PLANO B - INDEPENDENTE DE IA)
+    function exportarPdfDirectoLocal() {
+      const projetoNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto Sem Título';
+      const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Não Informada';
+      const contatoInfo = document.getElementById('modalContatoInput').value.trim() || 'Não Informado';
+      const obsHtml = document.getElementById('modalObsEditor').innerHTML;
+      const chkItems = obterChecklistModalAtual();
+
+      const doneItems = chkItems.filter(i => i.done);
+      const pendingItems = chkItems.filter(i => !i.done);
+      const total = chkItems.length;
+      const doneCount = doneItems.length;
+      const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+
+      let doneListHtml = doneItems.map(i => `<li style="margin-bottom:4px; color:#15803d;">✔ <strong>${i.texto}</strong> ${i.date ? `<span style="font-size:11px; color:#64748b;">(${i.date})</span>` : ''}</li>`).join('');
+      let pendingListHtml = pendingItems.map(i => `<li style="margin-bottom:4px; color:#b91c1c;">⌛ ${i.texto}</li>`).join('');
+
+      const element = document.createElement('div');
+      element.style.padding = '30px';
+      element.style.fontFamily = 'Arial, sans-serif';
+      element.style.color = '#1e293b';
+      element.style.background = '#ffffff';
+
+      element.innerHTML = `
+        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h1 style="color:#0f172a; margin:0; font-size:20px; font-weight:bold;">WeON - Relatório Completo de Implantação</h1>
+            <p style="color:#64748b; font-size:12px; margin-top:4px;">Projeto: <strong>${projetoNome}</strong></p>
+          </div>
+          <div style="text-align:right;">
+            <p style="font-size:11px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')}</p>
+            <p style="font-size:13px; font-weight:bold; color:#0284c7; margin-top:2px;">Progresso: ${doneCount}/${total} (${pct}%)</p>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 16px; border-radius:6px; margin-bottom:20px;">
+          <h3 style="font-size:13px; color:#0f172a; margin-bottom:6px; text-transform:uppercase;">Informações de Contato e Cliente</h3>
+          <p style="font-size:12px; margin:2px 0;"><strong>Empresa Cliente:</strong> ${empresaNome}</p>
+          <p style="font-size:12px; margin:2px 0;"><strong>Contato Responsável:</strong> ${contatoInfo}</p>
+        </div>
+
+        ${obsHtml.trim() ? `
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:13px; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase;">Descrição / Anotações Gerais</h3>
+          <div style="font-size:12px; line-height:1.5; color:#334155;">${obsHtml}</div>
+        </div>` : ''}
+
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:13px; color:#15803d; border-bottom:1px solid #bbf7d0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase;">Etapas Concluídas (${doneCount})</h3>
+          <ul style="padding-left:18px; font-size:12px; list-style-type:none;">
+            ${doneListHtml || '<li style="color:#94a3b8; font-style:italic;">Nenhuma etapa concluída até o momento.</li>'}
+          </ul>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:13px; color:#b91c1c; border-bottom:1px solid #fecaca; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase;">Etapas Pendentes / Próximos Passos (${pendingItems.length})</h3>
+          <ul style="padding-left:18px; font-size:12px; list-style-type:none;">
+            ${pendingListHtml || '<li style="color:#15803d; font-weight:bold;">🎉 Todas as etapas do checklist foram concluídas!</li>'}
+          </ul>
+        </div>
+
+        <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: center; font-size: 10px; color: #94a3b8;">
+          Documento gerado localmente pelo Hub de Auxílio WeON
+        </div>
+      `;
+
+      const opt = {
+        margin:       10,
+        filename:     `Relatorio_Implantacao_${projetoNome.replace(/\s+/g, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // CHAMADA DA IA COM SISTEMA DE RETENTATIVAS E RESILIÊNCIA (503/429)
     async function gerarStatusReportIA() {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2021,12 +2152,14 @@ Empresa:
       }
 
       const clienteNome = document.getElementById('modalTitleInput').value.trim();
+      const empresaNome = document.getElementById('modalEmpresaInput').value.trim();
+      const contatoInfo = document.getElementById('modalContatoInput').value.trim();
       const obsHtml = document.getElementById('modalObsEditor').innerText.trim();
       const chkItems = obterChecklistModalAtual();
 
       if (!clienteNome) return alert("Digite o nome do cliente no card.");
 
-      const doneItems = chkItems.filter(i => i.done).map(i => i.texto);
+      const doneItems = chkItems.filter(i => i.done).map(i => `${i.texto} (${i.date || 'data não registrada'})`);
       const pendingItems = chkItems.filter(i => !i.done).map(i => i.texto);
 
       const responseBox = document.getElementById('aiResponseBox');
@@ -2034,9 +2167,9 @@ Empresa:
       responseBox.style.display = 'block';
       responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini IA...</i>';
 
-      const promptText = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente "${clienteNome}".
+      const promptText = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente "${clienteNome}" (Empresa: ${empresaNome}, Contato: ${contatoInfo}).
 Anotações internas do projeto: "${obsHtml}".
-Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
+Etapas concluídas da implantação com datas: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
@@ -2085,7 +2218,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       }
 
       if (!success) {
-        responseBox.innerHTML = `<span style="color:var(--danger);">Servidores do Google temporariamente ocupados (Erro 503). Aguarde uns segundos e clique em "Gerar Resumo IA" novamente.</span>`;
+        responseBox.innerHTML = `<span style="color:var(--danger);">Servidores do Google temporariamente ocupados (Erro 503). Você pode usar o botão "Exportar PDF Direto (Plano B)" acima.</span>`;
       }
     }
 
@@ -2213,9 +2346,13 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
 
       const obsAtual = cardEl.getAttribute('data-obs') || getObsLocal(clienteNome);
       const chkAtual = getChecklistLocal(clienteNome);
+      const empresaAtual = getEmpresaLocal(clienteNome);
+      const contatoAtual = getContatoLocal(clienteNome);
 
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fab fa-jira"></i> Editar Detalhes do Card`;
       document.getElementById('modalTitleInput').value = clienteNome;
+      document.getElementById('modalEmpresaInput').value = empresaAtual;
+      document.getElementById('modalContatoInput').value = contatoAtual;
       document.getElementById('modalObsEditor').innerHTML = obsAtual;
       document.getElementById('aiResponseBox').style.display = 'none';
       document.getElementById('btnExportPdf').style.display = 'none';
@@ -2245,11 +2382,13 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
 
       document.getElementById('modalHeaderTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Criar Novo Card`;
       document.getElementById('modalTitleInput').value = '';
+      document.getElementById('modalEmpresaInput').value = '';
+      document.getElementById('modalContatoInput').value = '';
       document.getElementById('modalObsEditor').innerHTML = '';
       document.getElementById('aiResponseBox').style.display = 'none';
       document.getElementById('btnExportPdf').style.display = 'none';
       
-      const chkPadrao = CHECKLIST_PADRAO.map(t => ({ texto: t, done: false }));
+      const chkPadrao = CHECKLIST_PADRAO.map(t => ({ texto: t, done: false, date: null }));
       renderizarChecklistModal(chkPadrao);
 
       document.getElementById('obsModal').style.display = 'flex';
@@ -2265,13 +2404,15 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
 
     function salvarObservacao() {
       const novoTitulo = document.getElementById('modalTitleInput').value.trim();
+      const empresaVal = document.getElementById('modalEmpresaInput').value.trim();
+      const contatoVal = document.getElementById('modalContatoInput').value.trim();
       const obsHtml = document.getElementById('modalObsEditor').innerHTML;
       const chkItems = obterChecklistModalAtual();
 
       if (!novoTitulo) return alert("Digite um título para o card!");
 
       if (modoCriacao) {
-        saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml, chkItems);
+        saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml, chkItems, empresaVal, contatoVal);
 
         const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
         if (colDiv) {
@@ -2290,6 +2431,8 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
           acao: 'criarCard',
           cliente: novoTitulo,
           col: colIndexCriacao,
+          empresa: empresaVal,
+          contato: contatoVal,
           chk: JSON.stringify(chkItems)
         });
 
@@ -2308,6 +2451,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
           cardElementoAtual.querySelector('.card-checklist-progress').innerHTML = `<i class="fas fa-check-square"></i> ${done}/${total} (${pct}%)`;
 
           saveObsLocal(novoTitulo, obsHtml);
+          saveEmpresaContatoLocal(novoTitulo, empresaVal, contatoVal);
           saveChecklistLocal(novoTitulo, chkItems);
         }
 
@@ -2317,8 +2461,21 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
           acao: 'salvarObs',
           cliente: novoTitulo,
           col: clienteAtualObs.col,
+          empresa: empresaVal,
+          contato: contatoVal,
           obs: obsHtml,
           chk: JSON.stringify(chkItems)
+        });
+      }
+
+      // Envia os contatos e empresas para salvar na aba dedicada da planilha
+      if (empresaVal || contatoVal) {
+        enviarParaGoogleSheets({
+          acao: 'salvarContato',
+          projeto: novoTitulo,
+          empresa: empresaVal,
+          contato: contatoVal,
+          dataAtualizacao: new Date().toLocaleDateString('pt-BR')
         });
       }
 
