@@ -17,9 +17,6 @@
   <!-- CHART.JS PARA GRÁFICOS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- HTML2PDF PARA EXPORTAÇÃO DE RELATÓRIOS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
   <style>
     :root {
       --bg-principal: #060911;
@@ -807,7 +804,7 @@
 
     .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 24px; }
 
-    /* ESTILO EXCLUSIVO DE IMPRESSÃO VISÍVEL NO MODAL */
+    /* ESTILO EXCLUSIVO DE IMPRESSÃO / NATIVO DO NAVEGADOR */
     .printable-preview-container {
       background: #ffffff !important;
       color: #0f172a !important;
@@ -815,6 +812,24 @@
       border-radius: 8px;
       margin-top: 15px;
       border: 1px solid #cbd5e1;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #boardReportPrintContainer, #boardReportPrintContainer * {
+        visibility: visible;
+      }
+      #boardReportPrintContainer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: none !important;
+      }
     }
   </style>
 </head>
@@ -1250,16 +1265,16 @@
       <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Resumo consolidado de todas as etapas e projetos ativos no quadro de implantação.</p>
 
       <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
-        <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Plano B - Direto)</button>
+        <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Salvar / Imprimir)</button>
         <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportGeralIA()"><i class="fas fa-magic"></i> Gerar Análise IA Geral (Gemini)</button>
       </div>
 
       <div id="boardAiResponseBox" class="ai-response-box" style="display:none; max-height:280px; margin-bottom:14px;"></div>
 
-      <!-- ÁREA DE PREVIEW DA TABELA VISÍVEL PARA GARANTIR A CAPTURA DO PDF -->
-      <div id="boardReportPrintContainer" class="printable-preview-container" style="display:none;"></div>
+      <!-- ÁREA DE PREVIEW DA TABELA VISÍVEL -->
+      <div id="boardReportPrintContainer" class="printable-preview-container"></div>
 
-      <div class="modal-actions" style="justify-content: flex-end;">
+      <div class="modal-actions" style="justify-content: flex-end; margin-top:14px;">
         <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar</button>
       </div>
     </div>
@@ -2121,85 +2136,7 @@
     }
 
     function exportarPdfDirectoLocal() {
-      const projetoNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto Sem Título';
-      const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Não Informada';
-      const contatoInfo = document.getElementById('modalContatoInput').value.trim() || 'Não Informado';
-      const obsHtml = document.getElementById('modalObsEditor').innerHTML;
-      const chkItems = obterChecklistModalAtual();
-
-      const doneItems = chkItems.filter(i => i.done);
-      const pendingItems = chkItems.filter(i => !i.done);
-      const total = chkItems.length;
-      const doneCount = doneItems.length;
-      const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
-
-      let doneListHtml = doneItems.map(i => `<li style="margin-bottom:4px; color:#15803d;">✔ <strong>${i.texto}</strong> ${i.date ? `<span style="font-size:11px; color:#64748b;">(${i.date})</span>` : ''}</li>`).join('');
-      let pendingListHtml = pendingItems.map(i => `<li style="margin-bottom:4px; color:#b91c1c;">⌛ ${i.texto}</li>`).join('');
-
-      const element = document.createElement('div');
-      element.style.padding = '30px';
-      element.style.fontFamily = 'Arial, sans-serif';
-      element.style.color = '#1e293b';
-      element.style.background = '#ffffff';
-
-      element.innerHTML = `
-        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <h1 style="color:#0f172a; margin:0; font-size:20px; font-weight:bold;">WeON - Relatório Completo de Implantação</h1>
-            <p style="color:#64748b; font-size:12px; margin-top:4px;">Projeto: <strong>${projetoNome}</strong></p>
-          </div>
-          <div style="text-align:right;">
-            <p style="font-size:11px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')}</p>
-            <p style="font-size:13px; font-weight:bold; color:#0284c7; margin-top:2px;">Progresso: ${doneCount}/${total} (${pct}%)</p>
-          </div>
-        </div>
-
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 16px; border-radius:6px; margin-bottom:20px;">
-          <h3 style="font-size:13px; color:#0f172a; margin-bottom:6px; text-transform:uppercase;">Informações de Contato e Cliente</h3>
-          <p style="font-size:12px; margin:2px 0;"><strong>Empresa Cliente:</strong> ${empresaNome}</p>
-          <p style="font-size:12px; margin:2px 0;"><strong>Contato Responsável:</strong> ${contatoInfo}</p>
-        </div>
-
-        ${obsHtml.trim() ? `
-        <div style="margin-bottom:20px;">
-          <h3 style="font-size:13px; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase;">Descrição / Anotações Gerais</h3>
-          <div style="font-size:12px; line-height:1.5; color:#334155;">${obsHtml}</div>
-        </div>` : ''}
-
-        <div style="margin-bottom:20px;">
-          <h3 style="font-size:13px; color:#15803d; border-bottom:1px solid #bbf7d0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase;">Etapas Concluídas (${doneCount})</h3>
-          <ul style="padding-left:18px; font-size:12px; list-style-type:none;">
-            ${doneListHtml || '<li style="color:#94a3b8; font-style:italic;">Nenhuma etapa concluída até o momento.</li>'}
-          </ul>
-        </div>
-
-        <div style="margin-bottom:20px;">
-          <h3 style="font-size:13px; color:#b91c1c; border-bottom:1px solid #fecaca; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase;">Etapas Pendentes / Próximos Passos (${pendingItems.length})</h3>
-          <ul style="padding-left:18px; font-size:12px; list-style-type:none;">
-            ${pendingListHtml || '<li style="color:#15803d; font-weight:bold;">🎉 Todas as etapas do checklist foram concluídas!</li>'}
-          </ul>
-        </div>
-
-        <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: center; font-size: 10px; color: #94a3b8;">
-          Documento gerado localmente pelo Hub de Auxílio WeON
-        </div>
-      `;
-
-      document.body.appendChild(element);
-
-      const opt = {
-        margin:       10,
-        filename:     `Relatorio_Implantacao_${projetoNome.replace(/\s+/g, '_')}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      setTimeout(() => {
-        html2pdf().set(opt).from(element).save().then(() => {
-          document.body.removeChild(element);
-        });
-      }, 200);
+      window.print();
     }
 
     async function gerarStatusReportIA() {
@@ -2276,41 +2213,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
     }
 
     function exportarRelatorioPDF() {
-      const clienteNome = document.getElementById('modalTitleInput').value.trim() || 'Cliente';
-      const reportText = document.getElementById('aiResponseBox').innerText;
-
-      const element = document.createElement('div');
-      element.style.padding = '30px';
-      element.style.fontFamily = 'Arial, sans-serif';
-      element.style.color = '#1e293b';
-      element.style.background = '#ffffff';
-
-      element.innerHTML = `
-        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px;">
-          <h1 style="color:#0f172a; margin:0; font-size:22px;">WeON - Relatório Executivo de Implantação</h1>
-          <p style="color:#64748b; font-size:12px; margin-top:4px;">Cliente: <strong>${clienteNome}</strong> | Data: ${new Date().toLocaleDateString('pt-BR')}</p>
-        </div>
-        <div style="font-size: 13px; line-height: 1.6; white-space: pre-wrap;">${reportText}</div>
-        <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: center; font-size: 10px; color: #94a3b8;">
-          Documento gerado automaticamente pelo Hub de Auxílio WeON
-        </div>
-      `;
-
-      document.body.appendChild(element);
-
-      const opt = {
-        margin:       10,
-        filename:     `Status_Report_${clienteNome.replace(/\s+/g, '_')}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      setTimeout(() => {
-        html2pdf().set(opt).from(element).save().then(() => {
-          document.body.removeChild(element);
-        });
-      }, 200);
+      window.print();
     }
 
     function extrairDadosCompletosDoBoard() {
@@ -2358,20 +2261,20 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
     function abrirModalStatusReportGeral() {
       document.getElementById('boardAiResponseBox').style.display = 'none';
       document.getElementById('boardAiResponseBox').innerText = '';
-      document.getElementById('boardReportPrintContainer').style.display = 'none';
+      
+      // MONTA O PREVIEW VISÍVEL
+      montarPreviewRelatorioPrint();
+
       document.getElementById('boardReportModal').style.display = 'flex';
     }
 
-    function fecharModalBoardReport() {
-      document.getElementById('boardReportModal').style.display = 'none';
-    }
-
-    // EXPORTAÇÃO PDF DO BOARD VISÍVEL NO MODAL
-    function exportarPdfBoardGeralPlanoB() {
+    function montarPreviewRelatorioPrint() {
       const dadosBoard = extrairDadosCompletosDoBoard();
-      
+      const printContainer = document.getElementById('boardReportPrintContainer');
+
       if (dadosBoard.length === 0) {
-        return alert("Não há projetos/cards no quadro para gerar o relatório.");
+        printContainer.innerHTML = '<p style="text-align:center; color:#64748b;">Nenhum card de projeto para listar.</p>';
+        return;
       }
 
       const kpiTotal = document.getElementById('kpiTotal').innerText;
@@ -2390,9 +2293,6 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
           </td>
         </tr>
       `).join('');
-
-      const printContainer = document.getElementById('boardReportPrintContainer');
-      printContainer.style.display = 'block';
 
       printContainer.innerHTML = `
         <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
@@ -2431,18 +2331,16 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
           Relatório consolidado gerado pelo Hub de Implantação WeON
         </div>
       `;
+    }
 
-      const opt = {
-        margin:       6,
-        filename:     `Status_Report_Geral_WeON_${new Date().toISOString().slice(0,10)}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, logging: false, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-      };
+    function fecharModalBoardReport() {
+      document.getElementById('boardReportModal').style.display = 'none';
+    }
 
-      setTimeout(() => {
-        html2pdf().set(opt).from(printContainer).save();
-      }, 200);
+    // IMPRESSÃO / SALVAR PDF NATIVO PERFEITO
+    function exportarPdfBoardGeralPlanoB() {
+      montarPreviewRelatorioPrint();
+      window.print();
     }
 
     async function gerarStatusReportGeralIA() {
