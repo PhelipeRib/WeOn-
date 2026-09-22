@@ -590,11 +590,12 @@
     /* ESTILOS DA PIPELINE DE MARCOS / TRACKER ESTILO IFOOD */
     .pipeline-tracker-container {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      margin: 10px 0;
-      padding: 10px 0;
+      margin: 6px 0;
+      padding: 6px 0;
       position: relative;
+      width: 100%;
     }
     .pipeline-step {
       display: flex;
@@ -609,8 +610,8 @@
       width: 22px;
       height: 22px;
       border-radius: 50%;
-      background: #cbd5e1;
-      color: #0f172a;
+      background: #e2e8f0;
+      color: #64748b;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -632,7 +633,7 @@
     .pipeline-label {
       font-size: 9px;
       font-weight: bold;
-      color: #475569;
+      color: #334155;
       margin-top: 4px;
       text-transform: uppercase;
     }
@@ -644,7 +645,7 @@
     }
     .pipeline-line-bg {
       position: absolute;
-      top: 20px;
+      top: 17px;
       left: 10%;
       right: 10%;
       height: 3px;
@@ -665,21 +666,39 @@
       border: 1px solid #cbd5e1;
     }
 
+    /* REGRAS RÍGIDAS DE IMPRESSÃO - NUNCA CORTA A ESQUERDA */
+    @page {
+      size: landscape;
+      margin: 8mm;
+    }
+
     @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
       body * {
-        visibility: hidden;
+        visibility: hidden !important;
       }
       #boardReportPrintContainer, #boardReportPrintContainer * {
-        visibility: visible;
+        visibility: visible !important;
       }
       #boardReportPrintContainer {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 10px !important;
         border: none !important;
+        box-shadow: none !important;
+      }
+      .printable-preview-container table {
+        width: 100% !important;
+        table-layout: fixed !important;
       }
     }
   </style>
@@ -835,32 +854,13 @@
 
         <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
           <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Salvar / Imprimir)</button>
-          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportGeralIA()"><i class="fas fa-magic"></i> Análise IA Consolidada</button>
         </div>
-
-        <div id="boardAiResponseBox" class="ai-response-box" style="display:none; max-height:280px; margin-bottom:14px;"></div>
 
         <!-- ÁREA DE PREVIEW DA TABELA VISÍVEL COM PIPELINE E DATAS -->
         <div id="boardReportPrintContainer" class="printable-preview-container"></div>
 
         <div class="modal-actions" style="justify-content: flex-end; margin-top:14px;">
           <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- AGENDA -->
-    <h2><i class="fas fa-calendar-alt"></i> Minha Agenda de Implantação</h2>
-    <div class="collapsible-wrapper target-search">
-      <button class="collapsible">
-        <span class="btn-title"><i class="fas fa-calendar-check"></i> Compromissos & Kick-offs (Google Calendar)</span>
-        <i class="fas fa-chevron-down chevron"></i>
-      </button>
-      <div class="content">
-        <div class="content-inner">
-          <div class="calendar-embed-wrapper">
-            <iframe src="https://calendar.google.com/calendar/embed?src=phelipe.ribeiro%40weon.com.br&ctz=America%2FSao_Paulo" style="border:0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
-          </div>
         </div>
       </div>
     </div>
@@ -896,30 +896,6 @@
           <div class="data-row">
             <span class="data-label">WeON Admin Senha</span>
             <span class="data-value">vah%4ge1E <button class="btn-copy" onclick="copyText('vah%4ge1E', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">IP de acesso para o admin (m3 weon)</span>
-            <span class="data-value">10.0.9.84/weon <button class="btn-copy" onclick="copyText('10.0.9.84/weon', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">IP de acesso weon5m1-dn1</span>
-            <span class="data-value">10.0.8.78 <button class="btn-copy" onclick="copyText('10.0.8.78', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">IP de acesso weon5m2-dn1</span>
-            <span class="data-value">10.0.8.184 <button class="btn-copy" onclick="copyText('10.0.8.184', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">IP de acesso Dg solutions</span>
-            <span class="data-value">10.0.9.175 <button class="btn-copy" onclick="copyText('10.0.9.175', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">weon.supervisor User</span>
-            <span class="data-value">supweon <button class="btn-copy" onclick="copyText('supweon', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">weon.supervisor Senha</span>
-            <span class="data-value">W30N_S3cVrItY <button class="btn-copy" onclick="copyText('W30N_S3cVrItY', this)"><i class="fas fa-copy"></i></button></span>
           </div>
         </div>
       </div>
@@ -1026,16 +1002,9 @@
       });
     }
 
-    function copyCodeBlock(btnElement) {
-      const code = document.getElementById("curlCode").innerText;
-      copyText(code, btnElement);
-    }
-
     window.onload = function() {
       verificarSessaoUsuario();
       carregarTemaSalvo();
-      const savedNotes = localStorage.getItem('weon_quick_notes');
-      if (savedNotes) document.getElementById('quickNotes').value = savedNotes;
     }
 
     const CHECKLIST_PADRAO = [
@@ -1073,7 +1042,6 @@
 
     function getObsLocal(cliente) { return localStorage.getItem('weon_obs_' + cliente) || ''; }
     function getEmpresaLocal(cliente) { return localStorage.getItem('weon_empresa_' + cliente) || ''; }
-    function getContatoLocal(cliente) { return localStorage.getItem('weon_contato_' + cliente) || ''; }
     function getEtapaAnteriorLocal(cliente) { return localStorage.getItem('weon_prev_col_' + cliente) || 'Inicial'; }
 
     function getChecklistLocal(cliente) {
@@ -1182,7 +1150,6 @@
       document.getElementById('kpiConcluido').innerText = totalConcluido;
     }
 
-    // LÓGICA DE GERAÇÃO DA PIPELINE ESTILO IFOOD NO STATUS REPORT
     function extrairDadosCompletosDoBoard() {
       const colunas = document.querySelectorAll('.kanban-column');
       const dadosConsolidados = [];
@@ -1196,38 +1163,31 @@
           const obsHtml = card.getAttribute('data-obs') || getObsLocal(nomeCliente);
           const chkItems = getChecklistLocal(nomeCliente);
           const empresa = getEmpresaLocal(nomeCliente);
-          const contato = getContatoLocal(nomeCliente);
           const etapaAnterior = getEtapaAnteriorLocal(nomeCliente);
 
           const totalChk = chkItems.length;
           const doneChk = chkItems.filter(i => i.done).length;
           const pctChk = totalChk > 0 ? Math.round((doneChk / totalChk) * 100) : 0;
-          
-          const doneDates = chkItems.filter(i => i.done && i.date).map(i => i.date);
-          const ultimaAtividade = doneDates.length > 0 ? doneDates[doneDates.length - 1] : 'Sem atividade recente';
 
-          // Mapeia as 5 etapas da Pipeline estilo iFood
-          const dateDemanda = 'Início';
-          const dateKickoff = chkItems.find(i => i.texto.toLowerCase().includes('kick off realizado'))?.date || '--';
-          const dateSetup = chkItems.find(i => i.texto.toLowerCase().includes('iniciar setup'))?.date || '--';
-          const dateHomolog = chkItems.find(i => i.texto.toLowerCase().includes('homologação'))?.date || '--';
-          const dateGolive = chkItems.find(i => i.texto.toLowerCase().includes('handoff'))?.date || '--';
+          // Extrai datas formatadas do checklist
+          const dateKickoffObj = chkItems.find(i => i.texto.toLowerCase().includes('kick off realizado') && i.done);
+          const dateSetupObj = chkItems.find(i => i.texto.toLowerCase().includes('iniciar setup') && i.done);
+          const dateHomologObj = chkItems.find(i => i.texto.toLowerCase().includes('homologação') && i.done);
+          const dateGoliveObj = chkItems.find(i => i.texto.toLowerCase().includes('handoff') && i.done);
 
           dadosConsolidados.push({
             cliente: nomeCliente,
             empresa: empresa,
-            contato: contato,
             etapaAtual: nomeColuna,
             etapaAnterior: etapaAnterior,
             progressoPct: pctChk,
             concluidosCount: `${doneChk}/${totalChk}`,
-            ultimaAtividade: ultimaAtividade,
             pipelineDates: {
-              demanda: dateDemanda,
-              kickoff: dateKickoff,
-              setup: dateSetup,
-              homolog: dateHomolog,
-              golive: dateGolive
+              demanda: 'Início',
+              kickoff: dateKickoffObj ? dateKickoffObj.date.split('às')[0].trim() : '--',
+              setup: dateSetupObj ? dateSetupObj.date.split('às')[0].trim() : '--',
+              homolog: dateHomologObj ? dateHomologObj.date.split('às')[0].trim() : '--',
+              golive: dateGoliveObj ? dateGoliveObj.date.split('às')[0].trim() : '--'
             },
             pendencias: chkItems.filter(i => !i.done).map(i => i.texto)
           });
@@ -1238,7 +1198,6 @@
     }
 
     function abrirModalStatusReportGeral() {
-      document.getElementById('boardAiResponseBox').style.display = 'none';
       montarPreviewRelatorioPrint();
       document.getElementById('boardReportModal').style.display = 'flex';
     }
@@ -1262,14 +1221,12 @@
       const kpiConcluido = document.getElementById('kpiConcluido').innerText;
 
       let tabelaProjetosHtml = dadosBoard.map(p => {
-        // Lógica de cálculo da etapa ativa no pipeline estilo iFood
         let step1Class = 'completed', step2Class = '', step3Class = '', step4Class = '', step5Class = '';
         if (p.pipelineDates.kickoff !== '--') step2Class = 'completed';
         if (p.pipelineDates.setup !== '--') step3Class = 'completed';
         if (p.pipelineDates.homolog !== '--') step4Class = 'completed';
         if (p.pipelineDates.golive !== '--') step5Class = 'completed';
 
-        // Destaca a etapa atual
         if (p.etapaAtual.toLowerCase().includes('kick')) step2Class = 'active';
         else if (p.etapaAtual.toLowerCase().includes('setup')) step3Class = 'active';
         else if (p.etapaAtual.toLowerCase().includes('homolog')) step4Class = 'active';
@@ -1278,14 +1235,13 @@
 
         return `
         <tr style="border-bottom: 1px solid #cbd5e1;">
-          <td style="padding: 10px; font-weight: bold; color: #0f172a; width: 22%;">
+          <td style="padding: 10px 8px; font-weight: bold; color: #0f172a; width: 20%;">
             ${p.cliente}<br>
             <span style="font-size:10px; font-weight:normal; color:#64748b;">${p.empresa || 'Cliente'}</span><br>
             <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:bold;">${p.etapaAtual}</span>
           </td>
           
-          <!-- COMPONENTE PIPELINE ESTILO IFOOD -->
-          <td style="padding: 10px; width: 50%;">
+          <td style="padding: 10px 4px; width: 55%;">
             <div class="pipeline-tracker-container">
               <div class="pipeline-line-bg"></div>
               
@@ -1321,41 +1277,41 @@
             </div>
           </td>
 
-          <td style="padding: 10px; font-weight: bold; color: #0284c7; width: 13%;">
+          <td style="padding: 10px 8px; font-weight: bold; color: #0284c7; width: 10%;">
             ${p.progressoPct}%<br><span style="font-size:9px; color:#64748b;">(${p.concluidosCount})</span>
           </td>
 
-          <td style="padding: 10px; font-size: 10px; color: #334155; width: 15%;">
+          <td style="padding: 10px 8px; font-size: 10px; color: #334155; width: 15%;">
             <strong>Pendências:</strong> ${p.pendencias.slice(0, 2).join(', ')}${p.pendencias.length > 2 ? '...' : ''}
           </td>
         </tr>
       `}).join('');
 
       printContainer.innerHTML = `
-        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 15px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 10px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
           <div>
             <h1 style="color:#0f172a; margin:0; font-size:18px; font-weight:bold;">WeON - Status Report Geral com Esteira / Pipeline (Daily & Weekly)</h1>
-            <p style="color:#64748b; font-size:11px; margin-top:4px;">Acompanhamento visual de marcos operacionais por cliente</p>
+            <p style="color:#64748b; font-size:11px; margin-top:2px;">Acompanhamento visual de marcos operacionais por cliente</p>
           </div>
           <div style="text-align:right;">
             <p style="font-size:10px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</p>
           </div>
         </div>
 
-        <div style="display:flex; gap:10px; margin-bottom:15px; background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #cbd5e1; justify-content:space-around; text-align:center;">
-          <div><span style="font-size:16px; font-weight:bold; color:#0284c7;">${kpiTotal}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">TOTAL PROJETOS</span></div>
-          <div><span style="font-size:16px; font-weight:bold; color:#0369a1;">${kpiAndamento}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">EM ANDAMENTO</span></div>
-          <div><span style="font-size:16px; font-weight:bold; color:#dc2626;">${kpiBloqueio}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">BLOQUEIOS / ATENÇÃO</span></div>
-          <div><span style="font-size:16px; font-weight:bold; color:#15803d;">${kpiConcluido}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">CONCLUÍDOS</span></div>
+        <div style="display:flex; gap:10px; margin-bottom:12px; background:#f8fafc; padding:8px; border-radius:6px; border:1px solid #cbd5e1; justify-content:space-around; text-align:center;">
+          <div><span style="font-size:15px; font-weight:bold; color:#0284c7;">${kpiTotal}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">TOTAL PROJETOS</span></div>
+          <div><span style="font-size:15px; font-weight:bold; color:#0369a1;">${kpiAndamento}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">EM ANDAMENTO</span></div>
+          <div><span style="font-size:15px; font-weight:bold; color:#dc2626;">${kpiBloqueio}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">BLOQUEIOS / ATENÇÃO</span></div>
+          <div><span style="font-size:15px; font-weight:bold; color:#15803d;">${kpiConcluido}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">CONCLUÍDOS</span></div>
         </div>
 
-        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:15px;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px; table-layout:fixed;">
           <thead>
             <tr style="background:#f1f5f9; text-align:left; color:#0f172a; border-bottom:2px solid #cbd5e1;">
-              <th style="padding:8px;">Projeto / Cliente</th>
-              <th style="padding:8px; text-align:center;">Esteira de Implantação (Pipeline com Datas)</th>
-              <th style="padding:8px;">Progresso</th>
-              <th style="padding:8px;">Próximos Passos</th>
+              <th style="padding:8px 8px; width:20%;">Projeto / Cliente</th>
+              <th style="padding:8px 4px; text-align:center; width:55%;">Esteira de Implantação (Pipeline com Datas)</th>
+              <th style="padding:8px 8px; width:10%;">Progresso</th>
+              <th style="padding:8px 8px; width:15%;">Próximos Passos</th>
             </tr>
           </thead>
           <tbody>
@@ -1363,7 +1319,7 @@
           </tbody>
         </table>
 
-        <div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 8px; text-align: center; font-size: 9px; color: #94a3b8;">
+        <div style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 6px; text-align: center; font-size: 9px; color: #94a3b8;">
           Relatório gerado pelo Hub de Implantação WeON
         </div>
       `;
