@@ -921,7 +921,9 @@
           <div class="kanban-toolbar">
             <button class="btn-add-column" onclick="abrirModalNovaColuna()"><i class="fas fa-plus"></i> Nova Coluna / Status</button>
           </div>
-          <div class="kanban-board" id="kanban-board"></div>
+          <div class="kanban-board" id="kanban-board">
+            <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas da planilha...</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1565,7 +1567,7 @@
         const response = await fetch(APPS_SCRIPT_URL);
         const resData = await response.json();
 
-        if (resData.status === 'success' && resData.colunas) {
+        if (resData.status === 'success' && resData.colunas && resData.colunas.length > 0) {
           boardContainer.innerHTML = '';
           const colunasMap = resData.colunas;
 
@@ -1593,24 +1595,35 @@
             const colDiv = montarElementoColuna(col.index, col.nome, cardsHTML);
             boardContainer.appendChild(colDiv);
           });
+
+          atualizarDashboardBI();
+          return;
         }
       } catch (error) {
         console.error("Erro ao carregar dados remotos:", error);
       }
 
-      if (boardContainer.querySelectorAll('.kanban-column').length === 0) {
+      // Renderiza as colunas e cards salvos no ambiente local se a planilha demorar a responder
+      const cardsLocais = getCardsCriadosLocais();
+      if (cardsLocais.length > 0) {
         boardContainer.innerHTML = '';
-        const cardsLocais = getCardsCriadosLocais();
-        let colDiv = montarElementoColuna(0, 'NOVA DEMANDA', '');
-        let container = colDiv.querySelector('.cards-container');
-        container.innerHTML = '';
-        
+        const colunasAgrupadas = {};
+
         cardsLocais.forEach(cardLoc => {
-          let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
-          container.innerHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
+          const colIdx = cardLoc.colIndex || 0;
+          if (!colunasAgrupadas[colIdx]) colunasAgrupadas[colIdx] = [];
+          colunasAgrupadas[colIdx].push(cardLoc);
         });
 
-        boardContainer.appendChild(colDiv);
+        Object.keys(colunasAgrupadas).forEach(colIdx => {
+          let cardsHTML = '';
+          colunasAgrupadas[colIdx].forEach(cardLoc => {
+            let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+            cardsHTML += criarCardHTML(cardLoc.cliente, parseInt(colIdx), cardLoc.obs, chkDataLoc);
+          });
+          const colDiv = montarElementoColuna(parseInt(colIdx), colIdx == 0 ? 'NOVA DEMANDA' : `COLUNA ${colIdx}`, cardsHTML);
+          boardContainer.appendChild(colDiv);
+        });
       }
 
       atualizarDashboardBI();
@@ -2130,7 +2143,7 @@ Etapas concluídas da implantação com datas: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      const models = ['gemini-3.6-flash', 'gemini-2.5-flash'];
+      const models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
       let success = false;
 
       for (const modelName of models) {
@@ -2161,10 +2174,6 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
               btnExportPdf.style.display = 'inline-flex';
               success = true;
               break;
-            } else if (data.error) {
-              if (res.status !== 503 && res.status !== 429) {
-                break; 
-              }
             }
           } catch (err) {
             console.error("Falha na requisição da IA:", err);
@@ -2173,7 +2182,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       }
 
       if (!success) {
-        responseBox.innerHTML = `<span style="color:var(--danger);">Servidores do Google temporariamente ocupados (Erro 503). Você pode usar o botão "Exportar PDF Direto (Plano B)" acima.</span>`;
+        responseBox.innerHTML = `<span style="color:var(--danger);">Servidores do Google temporariamente ocupados. Você pode usar o botão "Exportar PDF Direto (Plano B)" acima.</span>`;
       }
     }
 
