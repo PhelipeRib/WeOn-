@@ -2011,7 +2011,7 @@ Empresa:
       }
     }
 
-    // CHAMADA DA IA ATUALIZADA PARA O MODELO GEMINI-2.5-FLASH
+    // CHAMADA DA IA 100% ATUALIZADA PARA O MODELO OFICIAL GEMINI 3.6 FLASH
     async function gerarStatusReportIA() {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2032,7 +2032,7 @@ Empresa:
       const responseBox = document.getElementById('aiResponseBox');
       const btnExportPdf = document.getElementById('btnExportPdf');
       responseBox.style.display = 'block';
-      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini IA...</i>';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini 3.6 IA...</i>';
 
       const promptText = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente "${clienteNome}".
 Anotações internas do projeto: "${obsHtml}".
@@ -2040,48 +2040,34 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      // MODELOS ATUAIS GERENCIADOS DO GOOGLE AI STUDIO
-      const apiUrls = [
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
-      ];
+      // MODELO EXIGIDO NA SUA CONTA/API DO GOOGLE
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
-      let success = false;
-      let lastErrorMessage = "";
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{ text: promptText }]
+            }]
+          })
+        });
 
-      for (const url of apiUrls) {
-        try {
-          const res = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{ text: promptText }]
-              }]
-            })
-          });
+        const data = await res.json();
 
-          const data = await res.json();
-
-          if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-            const reportText = data.candidates[0].content.parts[0].text;
-            responseBox.innerText = reportText;
-            btnExportPdf.style.display = 'inline-flex';
-            success = true;
-            break;
-          } else if (data.error) {
-            lastErrorMessage = data.error.message;
-            console.warn("Erro ao tentar endpoint:", data.error.message);
-          }
-        } catch (err) {
-          console.error("Falha na requisição da IA:", err);
+        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+          const reportText = data.candidates[0].content.parts[0].text;
+          responseBox.innerText = reportText;
+          btnExportPdf.style.display = 'inline-flex';
+        } else if (data.error) {
+          responseBox.innerHTML = `<span style="color:var(--danger);">Erro na API: ${data.error.message}</span>`;
         }
-      }
-
-      if (!success) {
-        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório com a IA: ${lastErrorMessage || 'Verifique se a sua chave do AI Studio está ativa.'}</span>`;
+      } catch (err) {
+        console.error("Falha na requisição da IA:", err);
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro de conexão ao gerar o relatório.</span>`;
       }
     }
 
