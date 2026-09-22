@@ -1205,7 +1205,7 @@ Empresa:
 
         <div class="input-title-group" style="margin-top:8px;">
           <label>API Key Gemini (Google AI Studio):</label>
-          <input type="password" id="geminiApiKeyInput" class="input-card-title" placeholder="Cole sua API Key da Gemini aqui..." onchange="salvarGeminiApiKeyLocal(this.value)">
+          <input type="password" id="geminiApiKeyInput" class="input-card-title" placeholder="Cole sua API Key da Gemini..." onchange="salvarGeminiApiKeyLocal(this.value)">
         </div>
 
         <div id="aiResponseBox" class="ai-response-box"></div>
@@ -2030,10 +2030,12 @@ Empresa:
       }
     }
 
-    // CHAMADA IA GEMINI PARA STATUS REPORT
+    // CHAMADA IA GEMINI PARA STATUS REPORT COM ACEITAÇÃO DE CHAVES DIVERSAS
     async function gerarStatusReportIA() {
       const apiKey = localStorage.getItem('weon_gemini_key');
-      if (!apiKey) return alert("Por favor, cole sua API Key do Google Gemini no campo abaixo antes de gerar o relatório.");
+      if (!apiKey || apiKey.trim().length < 10) {
+        return alert("Por favor, cole sua API Key do Google Gemini no campo abaixo.");
+      }
 
       const clienteNome = document.getElementById('modalTitleInput').value.trim();
       const obsHtml = document.getElementById('modalObsEditor').innerText.trim();
@@ -2049,30 +2051,47 @@ Empresa:
       responseBox.style.display = 'block';
       responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini IA...</i>';
 
-      const prompt = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente "${clienteNome}".
-      Anotações internas do projeto: "${obsHtml}".
-      Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
-      Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
-      Format o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
+      const promptText = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente "${clienteNome}".
+Anotações internas do projeto: "${obsHtml}".
+Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
+Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
+Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-        });
-        const data = await res.json();
+      // MODELOS DE TENTATIVA (FALLBACK)
+      const modelEndpoints = [
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`
+      ];
 
-        if (data.candidates && data.candidates[0].content.parts[0].text) {
-          const reportText = data.candidates[0].content.parts[0].text;
-          responseBox.innerText = reportText;
-          btnExportPdf.style.display = 'inline-flex';
-        } else {
-          throw new Error("Erro na resposta da Gemini API");
+      let success = false;
+      let lastErrorMessage = "";
+
+      for (const endpoint of modelEndpoints) {
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+          });
+          const data = await res.json();
+
+          if (data.candidates && data.candidates[0].content.parts[0].text) {
+            const reportText = data.candidates[0].content.parts[0].text;
+            responseBox.innerText = reportText;
+            btnExportPdf.style.display = 'inline-flex';
+            success = true;
+            break;
+          } else if (data.error) {
+            lastErrorMessage = data.error.message;
+            console.warn("Erro no modelo:", data.error.message);
+          }
+        } catch (err) {
+          console.error("Erro na requisição Gemini:", err);
         }
-      } catch (err) {
-        console.error(err);
-        responseBox.innerHTML = '<span style="color:var(--danger);">Erro ao gerar o relatório com a IA. Verifique sua API Key e tente novamente.</span>';
+      }
+
+      if (!success) {
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar o relatório com a IA: ${lastErrorMessage || 'Verifique sua API Key e tente novamente.'}</span>`;
       }
     }
 
