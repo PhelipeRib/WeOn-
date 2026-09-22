@@ -945,7 +945,7 @@
             <button class="btn-add-column" onclick="abrirModalNovaColuna()"><i class="fas fa-plus"></i> Nova Coluna / Status</button>
           </div>
           <div class="kanban-board" id="kanban-board">
-            <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas da planilha...</p>
+            <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas...</p>
           </div>
         </div>
       </div>
@@ -967,7 +967,7 @@
       </div>
     </div>
 
-    <!-- CREDENCIAIS E ACESSOS (COM JIRA INTEGRADO) -->
+    <!-- CREDENCIAIS E ACESSOS -->
     <h2><i class="fas fa-lock"></i> Credenciais e Acessos</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible">
@@ -1114,7 +1114,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO E CRIAÇÃO DE CARD INDIVIDUAL -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
@@ -1169,7 +1169,6 @@
 
       <div id="modalObsEditor" class="rich-editor" contenteditable="true" onkeyup="salvarSelecaoTexto()" onclick="salvarSelecaoTexto()"></div>
 
-      <!-- CHECKLIST -->
       <div class="checklist-section">
         <div class="checklist-header">
           <h4><i class="fas fa-tasks"></i> Checklist de Implantação</h4>
@@ -1188,7 +1187,6 @@
         </div>
       </div>
 
-      <!-- OPÇÕES DE EXPORTAÇÃO PDF -->
       <div class="ai-report-section">
         <div class="ai-header">
           <h4><i class="fas fa-file-export"></i> Opções de Relatório & Exportação PDF</h4>
@@ -1222,7 +1220,6 @@
     </div>
   </div>
 
-  <!-- MODAL DE CRIAÇÃO DE NOVA COLUNA -->
   <div id="colunaModal" class="modal">
     <div class="modal-content" style="max-width: 400px;">
       <h3><i class="fas fa-columns"></i> Criar Nova Coluna</h3>
@@ -1237,7 +1234,6 @@
     </div>
   </div>
 
-  <!-- MODAL DE STATUS REPORT GERAL (GERAL DO BOARD / DAILYS & WEEKLYS) -->
   <div id="boardReportModal" class="modal">
     <div class="modal-content">
       <h3><i class="fas fa-file-contract"></i> Status Report Geral (Dailys & Weeklys)</h3>
@@ -1261,7 +1257,7 @@
   <script>
     let currentChecklistCache = [];
 
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
 
     function parseJwt(token) {
       try {
@@ -1609,73 +1605,94 @@
       removeChecklistLocal(cliente);
     }
 
+    // FUNÇÃO GARANTIDA COM TIMEOUT DE RESPOSTA
     async function carregarKanbanDoSheets() {
       const boardContainer = document.getElementById('kanban-board');
+      let renderizadoSucesso = false;
+
+      const fetchPromise = new Promise(async (resolve, reject) => {
+        try {
+          const response = await fetch(APPS_SCRIPT_URL);
+          const resData = await response.json();
+          if (resData && resData.status === 'success' && resData.colunas && resData.colunas.length > 0) {
+            resolve(resData.colunas);
+          } else {
+            reject("Sem colunas na resposta");
+          }
+        } catch (e) {
+          reject(e);
+        }
+      });
+
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject("Timeout na conexão do Google Sheets"), 3500)
+      );
 
       try {
-        const response = await fetch(APPS_SCRIPT_URL);
-        const resData = await response.json();
-
-        if (resData.status === 'success' && resData.colunas && resData.colunas.length > 0) {
-          boardContainer.innerHTML = '';
-          const colunasMap = resData.colunas;
-
-          colunasMap.forEach(col => {
-            let cardsHTML = '';
-
-            col.cards.forEach(card => {
-              let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
-              let chkData = card.chk ? card.chk : getChecklistLocal(card.cliente);
-
-              if (card.obs) saveObsLocal(card.cliente, card.obs);
-              if (card.chk) saveChecklistLocal(card.cliente, card.chk);
-
-              cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto, chkData);
-            });
-
-            const cardsLocais = getCardsCriadosLocais();
-            cardsLocais.forEach(cardLoc => {
-              if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
-                let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
-                cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
-              }
-            });
-
-            const colDiv = montarElementoColuna(col.index, col.nome, cardsHTML);
-            boardContainer.appendChild(colDiv);
-          });
-
-          atualizarDashboardBI();
-          return;
-        }
-      } catch (error) {
-        console.error("Erro ao carregar dados remotos:", error);
-      }
-
-      // FUSÃO DE SEGURANÇA (MANTÉM CARDS LOCAIS SEM LIMPAR A TELA COM 1 COLUNA)
-      const cardsLocais = getCardsCriadosLocais();
-      if (cardsLocais.length > 0 && boardContainer.querySelectorAll('.kanban-column').length === 0) {
+        const colunasMap = await Promise.race([fetchPromise, timeoutPromise]);
         boardContainer.innerHTML = '';
-        const colunasAgrupadas = {};
 
-        cardsLocais.forEach(cardLoc => {
-          const colIdx = cardLoc.colIndex || 0;
-          if (!colunasAgrupadas[colIdx]) colunasAgrupadas[colIdx] = [];
-          colunasAgrupadas[colIdx].push(cardLoc);
-        });
-
-        Object.keys(colunasAgrupadas).forEach(colIdx => {
+        colunasMap.forEach(col => {
           let cardsHTML = '';
-          colunasAgrupadas[colIdx].forEach(cardLoc => {
-            let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
-            cardsHTML += criarCardHTML(cardLoc.cliente, parseInt(colIdx), cardLoc.obs, chkDataLoc);
+
+          col.cards.forEach(card => {
+            let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
+            let chkData = card.chk ? card.chk : getChecklistLocal(card.cliente);
+
+            if (card.obs) saveObsLocal(card.cliente, card.obs);
+            if (card.chk) saveChecklistLocal(card.cliente, card.chk);
+
+            cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto, chkData);
           });
-          const colDiv = montarElementoColuna(parseInt(colIdx), parseInt(colIdx) === 0 ? 'NOVA DEMANDA' : `COLUNA ${parseInt(colIdx) + 1}`, cardsHTML);
+
+          const cardsLocais = getCardsCriadosLocais();
+          cardsLocais.forEach(cardLoc => {
+            if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
+              let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+              cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
+            }
+          });
+
+          const colDiv = montarElementoColuna(col.index, col.nome, cardsHTML);
           boardContainer.appendChild(colDiv);
         });
+
+        renderizadoSucesso = true;
+        atualizarDashboardBI();
+      } catch (err) {
+        console.warn("Carregando modo offline/fallback local:", err);
       }
 
-      atualizarDashboardBI();
+      // RENDERIZAÇÃO FALLBACK DE SEGURANÇA SE A REQUISIÇÃO REMOTA FALHAR OU DAR TIMEOUT
+      if (!renderizadoSucesso && boardContainer.querySelectorAll('.kanban-column').length === 0) {
+        boardContainer.innerHTML = '';
+        const cardsLocais = getCardsCriadosLocais();
+
+        if (cardsLocais.length > 0) {
+          const colunasAgrupadas = {};
+
+          cardsLocais.forEach(cardLoc => {
+            const colIdx = cardLoc.colIndex || 0;
+            if (!colunasAgrupadas[colIdx]) colunasAgrupadas[colIdx] = [];
+            colunasAgrupadas[colIdx].push(cardLoc);
+          });
+
+          Object.keys(colunasAgrupadas).forEach(colIdx => {
+            let cardsHTML = '';
+            colunasAgrupadas[colIdx].forEach(cardLoc => {
+              let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+              cardsHTML += criarCardHTML(cardLoc.cliente, parseInt(colIdx), cardLoc.obs, chkDataLoc);
+            });
+            const colDiv = montarElementoColuna(parseInt(colIdx), parseInt(colIdx) === 0 ? 'NOVA DEMANDA' : `COLUNA ${parseInt(colIdx) + 1}`, cardsHTML);
+            boardContainer.appendChild(colDiv);
+          });
+        } else {
+          let colDiv = montarElementoColuna(0, 'NOVA DEMANDA', '');
+          boardContainer.appendChild(colDiv);
+        }
+
+        atualizarDashboardBI();
+      }
     }
 
     function montarElementoColuna(index, nome, cardsHTML) {
