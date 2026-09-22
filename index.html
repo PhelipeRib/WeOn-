@@ -1605,7 +1605,6 @@
       removeChecklistLocal(cliente);
     }
 
-    // FUNÇÃO GARANTIDA COM TIMEOUT DE RESPOSTA
     async function carregarKanbanDoSheets() {
       const boardContainer = document.getElementById('kanban-board');
       let renderizadoSucesso = false;
@@ -1663,7 +1662,6 @@
         console.warn("Carregando modo offline/fallback local:", err);
       }
 
-      // RENDERIZAÇÃO FALLBACK DE SEGURANÇA SE A REQUISIÇÃO REMOTA FALHAR OU DAR TIMEOUT
       if (!renderizadoSucesso && boardContainer.querySelectorAll('.kanban-column').length === 0) {
         boardContainer.innerHTML = '';
         const cardsLocais = getCardsCriadosLocais();
@@ -2174,6 +2172,9 @@
         </div>
       `;
 
+      // INJEÇÃO TEMPORÁRIA NO DOM
+      document.body.appendChild(element);
+
       const opt = {
         margin:       10,
         filename:     `Relatorio_Implantacao_${projetoNome.replace(/\s+/g, '_')}.pdf`,
@@ -2182,7 +2183,9 @@
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(element).save();
+      html2pdf().set(opt).from(element).save().then(() => {
+        document.body.removeChild(element);
+      });
     }
 
     async function gerarStatusReportIA() {
@@ -2266,6 +2269,8 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       element.style.padding = '30px';
       element.style.fontFamily = 'Arial, sans-serif';
       element.style.color = '#1e293b';
+      element.style.background = '#ffffff';
+
       element.innerHTML = `
         <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px;">
           <h1 style="color:#0f172a; margin:0; font-size:22px;">WeON - Relatório Executivo de Implantação</h1>
@@ -2277,6 +2282,8 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
         </div>
       `;
 
+      document.body.appendChild(element);
+
       const opt = {
         margin:       10,
         filename:     `Status_Report_${clienteNome.replace(/\s+/g, '_')}.pdf`,
@@ -2285,7 +2292,9 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(element).save();
+      html2pdf().set(opt).from(element).save().then(() => {
+        document.body.removeChild(element);
+      });
     }
 
     function extrairDadosCompletosDoBoard() {
@@ -2340,6 +2349,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       document.getElementById('boardReportModal').style.display = 'none';
     }
 
+    // EXPORTAÇÃO PDF DO BOARD COM INJEÇÃO NO DOM CORRIGIDA
     function exportarPdfBoardGeralPlanoB() {
       const dadosBoard = extrairDadosCompletosDoBoard();
       
@@ -2353,24 +2363,28 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       const kpiConcluido = document.getElementById('kpiConcluido').innerText;
 
       let tabelaProjetosHtml = dadosBoard.map(p => `
-        <tr style="border-bottom: 1px solid #e2e8f0;">
-          <td style="padding: 10px; font-weight: bold; color: #0f172a;">${p.cliente}<br><span style="font-size:10px; font-weight:normal; color:#64748b;">${p.empresa || 'Cliente'}</span></td>
-          <td style="padding: 10px; color: #1e293b;"><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold;">${p.etapaAtual}</span><br><span style="font-size:9px; color:#94a3b8;">Anterior: ${p.etapaAnterior}</span></td>
-          <td style="padding: 10px; font-weight: bold; color: #0284c7;">${p.progressoPct}% (${p.concluidosCount})</td>
-          <td style="padding: 10px; font-size: 10px; color: #64748b;">${p.ultimaAtividade}</td>
-          <td style="padding: 10px; font-size: 10px; color: #334155;">
+        <tr style="border-bottom: 1px solid #cbd5e1;">
+          <td style="padding: 8px 10px; font-weight: bold; color: #0f172a;">${p.cliente}<br><span style="font-size:10px; font-weight:normal; color:#64748b;">${p.empresa || 'Cliente'}</span></td>
+          <td style="padding: 8px 10px; color: #1e293b;"><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold;">${p.etapaAtual}</span><br><span style="font-size:9px; color:#94a3b8;">Anterior: ${p.etapaAnterior}</span></td>
+          <td style="padding: 8px 10px; font-weight: bold; color: #0284c7;">${p.progressoPct}% (${p.concluidosCount})</td>
+          <td style="padding: 8px 10px; font-size: 10px; color: #64748b;">${p.ultimaAtividade}</td>
+          <td style="padding: 8px 10px; font-size: 10px; color: #334155;">
             <strong>Pendências:</strong> ${p.pendencias.slice(0, 3).join(', ')}${p.pendencias.length > 3 ? '...' : ''}
           </td>
         </tr>
       `).join('');
 
-      const element = document.createElement('div');
-      element.style.padding = '30px';
-      element.style.fontFamily = 'Arial, sans-serif';
-      element.style.color = '#1e293b';
-      element.style.background = '#ffffff';
+      const containerPrint = document.createElement('div');
+      containerPrint.style.position = 'fixed';
+      containerPrint.style.top = '-9999px';
+      containerPrint.style.left = '-9999px';
+      containerPrint.style.width = '1000px';
+      containerPrint.style.padding = '30px';
+      containerPrint.style.fontFamily = 'Arial, sans-serif';
+      containerPrint.style.color = '#1e293b';
+      containerPrint.style.background = '#ffffff';
 
-      element.innerHTML = `
+      containerPrint.innerHTML = `
         <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
           <div>
             <h1 style="color:#0f172a; margin:0; font-size:20px; font-weight:bold;">WeON - Relatório Geral de Acompanhamento (Daily/Weekly)</h1>
@@ -2381,7 +2395,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
           </div>
         </div>
 
-        <div style="display:flex; gap:10px; margin-bottom:20px; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0; justify-content:space-around; text-align:center;">
+        <div style="display:flex; gap:10px; margin-bottom:20px; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #cbd5e1; justify-content:space-around; text-align:center;">
           <div><span style="font-size:18px; font-weight:bold; color:#0284c7;">${kpiTotal}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">TOTAL PROJETOS</span></div>
           <div><span style="font-size:18px; font-weight:bold; color:#0369a1;">${kpiAndamento}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">EM ANDAMENTO</span></div>
           <div><span style="font-size:18px; font-weight:bold; color:#dc2626;">${kpiBloqueio}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">BLOQUEIOS / ATENÇÃO</span></div>
@@ -2408,15 +2422,19 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
         </div>
       `;
 
+      document.body.appendChild(containerPrint);
+
       const opt = {
         margin:       8,
         filename:     `Status_Report_Geral_WeON_${new Date().toISOString().slice(0,10)}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, logging: false },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
       };
 
-      html2pdf().set(opt).from(element).save();
+      html2pdf().set(opt).from(containerPrint).save().then(() => {
+        document.body.removeChild(containerPrint);
+      });
     }
 
     async function gerarStatusReportGeralIA() {
