@@ -370,6 +370,7 @@
 
     .data-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
     .data-row:last-child { border-bottom: none; }
+    .data-row.highlight-group { background: rgba(0, 255, 204, 0.02); padding: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid rgba(0, 255, 204, 0.1); }
     .data-label { color: var(--text-muted); font-size: 0.9em; font-weight: 500; }
     .data-value { 
       font-family: 'Fira Code', monospace; 
@@ -408,19 +409,6 @@
     .custom-link i { color: var(--accent); font-size: 1.1em; }
     .link-subtext { display: block; font-size: 0.75em; color: var(--text-muted); margin-top: 2px; }
 
-    textarea.ticket-template { 
-      width: 100%; 
-      height: 180px; 
-      background: rgba(0,0,0,0.2); 
-      border: 1px solid var(--border-color); 
-      border-radius: 8px; 
-      color: #38bdf8; 
-      font-family: 'Fira Code', monospace; 
-      padding: 14px; 
-      font-size: 0.88em; 
-      resize: vertical; 
-      line-height: 1.5;
-    }
     pre.code-block { 
       background: rgba(0,0,0,0.2); 
       padding: 16px; 
@@ -954,39 +942,33 @@
       </div>
     </div>
 
-    <h2><i class="fas fa-tasks"></i> Rotinas</h2>
-    <div class="collapsible-wrapper target-search">
-      <button class="collapsible">
-        <span class="btn-title"><i class="fas fa-file-alt"></i> Template: Abertura de Chamado</span>
-        <i class="fas fa-chevron-down chevron"></i>
-      </button>
-      <div class="content">
-        <div class="content-inner">
-          <textarea class="ticket-template" readonly>[ ] Incidente [ ] Bug release
-
-Empresa:
-
-1. Erro:
-
-2. Solicitação:
-
-3. Diagnóstico:
-
-4. Solução:
-
-5. Prevenção:</textarea>
-        </div>
-      </div>
-    </div>
-
+    <!-- CREDENCIAIS E ACESSOS (COM JIRA INTEGRADO) -->
     <h2><i class="fas fa-lock"></i> Credenciais e Acessos</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible">
-        <span class="btn-title"><i class="fas fa-shield-alt"></i> Acessos e Senhas Gerais</span>
+        <span class="btn-title"><i class="fas fa-shield-alt"></i> Acessos, Senhas e JIRA</span>
         <i class="fas fa-chevron-down chevron"></i>
       </button>
       <div class="content">
         <div class="content-inner">
+          
+          <!-- BLOCO JIRA OTIMIZADO -->
+          <div class="data-row highlight-group">
+            <span class="data-label"><i class="fab fa-jira" style="color: #0052CC; font-size:1.1em;"></i> <strong>JIRA Implantação (Portal Suporte)</strong></span>
+            <span class="data-value">
+              <a href="https://weon.atlassian.net/jira/for-you?tab=recommendedActions" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:700;">Acessar Portal <i class="fas fa-external-link-alt" style="font-size:0.8em;"></i></a>
+            </span>
+          </div>
+          <div class="data-row">
+            <span class="data-label" style="padding-left:15px;"><i class="fas fa-envelope"></i> JIRA E-mail</span>
+            <span class="data-value">comercial@weon.com.br <button class="btn-copy" onclick="copyText('comercial@weon.com.br', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row" style="margin-bottom:12px; border-bottom: 2px dashed var(--border-color); padding-bottom:12px;">
+            <span class="data-label" style="padding-left:15px;"><i class="fas fa-key"></i> JIRA Senha</span>
+            <span class="data-value">Weon@2024* <button class="btn-copy" onclick="copyText('Weon@2024*', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+
+          <!-- DEMAIS ACESSOS DE SERVIDORES E ADMIN -->
           <div class="data-row">
             <span class="data-label">WeON Admin User</span>
             <span class="data-value">admin <button class="btn-copy" onclick="copyText('admin', this)"><i class="fas fa-copy"></i></button></span>
@@ -1018,29 +1000,6 @@ Empresa:
           <div class="data-row">
             <span class="data-label">weon.supervisor Senha</span>
             <span class="data-value">W30N_S3cVrItY <button class="btn-copy" onclick="copyText('W30N_S3cVrItY', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="collapsible-wrapper target-search">
-      <button class="collapsible">
-        <span class="btn-title"><i class="fab fa-jira"></i> JIRA - Implantação</span>
-        <i class="fas fa-chevron-down chevron"></i>
-      </button>
-      <div class="content">
-        <div class="content-inner">
-          <div class="data-row">
-            <span class="data-label">Link do Portal</span>
-            <span class="data-value"><a href="https://weon.atlassian.net/jira/for-you?tab=recommendedActions" target="_blank" style="color:var(--accent); text-decoration:underline;">Suporte WeON - Resumo</a></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">E-mail</span>
-            <span class="data-value">comercial@weon.com.br <button class="btn-copy" onclick="copyText('comercial@weon.com.br', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">Senha</span>
-            <span class="data-value">Weon@2024* <button class="btn-copy" onclick="copyText('Weon@2024*', this)"><i class="fas fa-copy"></i></button></span>
           </div>
         </div>
       </div>
@@ -1456,7 +1415,7 @@ Empresa:
       "Enviado para faturamento"
     ];
 
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec'; 
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec'; 
 
     let cardElementoAtual = null;
     let clienteAtualObs = { cliente: '', col: 0 };
@@ -2065,7 +2024,6 @@ Empresa:
       }
     }
 
-    // EXPORTAÇÃO COMPLETA DE RELATÓRIO PDF LOCAL (PLANO B - INDEPENDENTE DE IA)
     function exportarPdfDirectoLocal() {
       const projetoNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto Sem Título';
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Não Informada';
@@ -2142,7 +2100,6 @@ Empresa:
       html2pdf().set(opt).from(element).save();
     }
 
-    // CHAMADA DA IA COM SISTEMA DE RETENTATIVAS E RESILIÊNCIA (503/429)
     async function gerarStatusReportIA() {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2175,7 +2132,6 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
 
       const models = ['gemini-3.6-flash', 'gemini-2.5-flash'];
       let success = false;
-      let lastErrorMessage = "";
 
       for (const modelName of models) {
         if (success) break;
@@ -2206,7 +2162,6 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
               success = true;
               break;
             } else if (data.error) {
-              lastErrorMessage = data.error.message;
               if (res.status !== 503 && res.status !== 429) {
                 break; 
               }
@@ -2468,7 +2423,6 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
         });
       }
 
-      // Envia os contatos e empresas para salvar na aba dedicada da planilha
       if (empresaVal || contatoVal) {
         enviarParaGoogleSheets({
           acao: 'salvarContato',
