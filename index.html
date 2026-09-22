@@ -2011,7 +2011,7 @@ Empresa:
       }
     }
 
-    // CHAMADA ATUALIZADA E UNIVERSAL PARA O MODELO GEMINI 2.0/1.5 FLASH
+    // CHAMADA DA IA ATUALIZADA PARA O MODELO GEMINI-2.5-FLASH
     async function gerarStatusReportIA() {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2040,9 +2040,10 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
+      // MODELOS ATUAIS GERENCIADOS DA GOOGLE AI STUDIO
       const apiUrls = [
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
       ];
 
       let success = false;
