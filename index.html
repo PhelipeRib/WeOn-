@@ -1274,6 +1274,9 @@ Empresa:
         document.getElementById('loginModal').style.display = 'none';
         document.getElementById('mainDashboardApp').style.display = 'block';
         document.getElementById('currentUserEmail').innerText = savedEmail;
+        
+        // Garante a execução do Kanban após o DOM estar pronto na sessão persistida
+        setTimeout(carregarKanbanDoSheets, 100);
       } else {
         document.getElementById('loginModal').style.display = 'flex';
         document.getElementById('mainDashboardApp').style.display = 'none';
@@ -2010,6 +2013,7 @@ Empresa:
       }
     }
 
+    // CHAMADA IA COM MODELO GEMINI 2.0 FLASH OFICIAL DA API V1BETA
     async function gerarStatusReportIA() {
       const apiKey = localStorage.getItem('weon_gemini_key');
       if (!apiKey || apiKey.trim().length < 10) {
@@ -2036,10 +2040,10 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
+      // MODELOS ATIVOS E SUPORTADOS NA ROTA V1BETA DO AI STUDIO
       const modelEndpoints = [
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey.trim()}`,
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey.trim()}`
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`
       ];
 
       let success = false;
