@@ -1561,7 +1561,6 @@
       localStorage.setItem('weon_contato_' + cliente, contato);
     }
 
-    // ARMAZENAMENTO HISTÓRICO DE ETAPA ANTERIOR E ATUAL
     function getEtapaAnteriorLocal(cliente) {
       return localStorage.getItem('weon_prev_col_' + cliente) || 'Inicial';
     }
@@ -1653,11 +1652,10 @@
         console.error("Erro ao carregar dados remotos:", error);
       }
 
-      // FALLBACK SE CONEXÃO DEMORAR
+      // FUSÃO DE SEGURANÇA (MANTÉM CARDS LOCAIS SEM LIMPAR A TELA COM 1 COLUNA)
       const cardsLocais = getCardsCriadosLocais();
-      boardContainer.innerHTML = '';
-      
-      if (cardsLocais.length > 0) {
+      if (cardsLocais.length > 0 && boardContainer.querySelectorAll('.kanban-column').length === 0) {
+        boardContainer.innerHTML = '';
         const colunasAgrupadas = {};
 
         cardsLocais.forEach(cardLoc => {
@@ -1675,9 +1673,6 @@
           const colDiv = montarElementoColuna(parseInt(colIdx), parseInt(colIdx) === 0 ? 'NOVA DEMANDA' : `COLUNA ${parseInt(colIdx) + 1}`, cardsHTML);
           boardContainer.appendChild(colDiv);
         });
-      } else {
-        let colDiv = montarElementoColuna(0, 'NOVA DEMANDA', '');
-        boardContainer.appendChild(colDiv);
       }
 
       atualizarDashboardBI();
@@ -1905,7 +1900,6 @@
 
         if (data.origemCol === destinoCol) return;
 
-        // Salvar Histórico da Etapa Anterior antes de mudar
         const colOrigemDiv = document.querySelector(`.kanban-column[data-col-index="${data.origemCol}"]`);
         if (colOrigemDiv) {
           const nomeColOrigem = colOrigemDiv.querySelector('.kanban-header span').innerText.trim();
@@ -2277,7 +2271,6 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       html2pdf().set(opt).from(element).save();
     }
 
-    // LÓGICA DO STATUS REPORT GERAL DO BOARD (DAILYS/WEEKLYS)
     function extrairDadosCompletosDoBoard() {
       const colunas = document.querySelectorAll('.kanban-column');
       const dadosConsolidados = [];
