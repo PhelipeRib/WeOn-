@@ -349,22 +349,6 @@
     .content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background-color: var(--bg-card); }
     .content-inner { padding: 22px; }
 
-    .calendar-embed-wrapper {
-      position: relative;
-      padding-bottom: 65%;
-      height: 0;
-      overflow: hidden;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-    .calendar-embed-wrapper iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
     .data-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
     .data-row:last-child { border-bottom: none; }
     .data-row.highlight-group { background: rgba(0, 255, 204, 0.02); padding: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid rgba(0, 255, 204, 0.1); }
@@ -386,43 +370,6 @@
     .btn-copy { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; font-size: 1.05em; flex-shrink: 0; }
     .btn-copy:hover { color: var(--accent); }
     .btn-copy.copied { color: var(--accent) !important; }
-
-    .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-    .custom-link { 
-      background: rgba(30, 41, 59, 0.2); 
-      padding: 14px; 
-      border-radius: 8px; 
-      color: var(--text-main); 
-      text-decoration: none; 
-      display: flex; 
-      align-items: center; 
-      gap: 12px; 
-      font-size: 0.88em; 
-      font-weight: 500;
-      border: 1px solid var(--border-color); 
-      transition: all 0.2s;
-    }
-    .custom-link:hover { background: var(--bg-input); border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-    .custom-link i { color: var(--accent); font-size: 1.1em; }
-    .link-subtext { display: block; font-size: 0.75em; color: var(--text-muted); margin-top: 2px; }
-
-    pre.code-block { 
-      background: rgba(0,0,0,0.2); 
-      padding: 16px; 
-      border-radius: 8px; 
-      font-family: 'Fira Code', monospace; 
-      font-size: 0.85em; 
-      overflow-x: auto; 
-      color: #38bdf8; 
-      border-left: 3px solid var(--accent); 
-      border-top: 1px solid var(--border-color);
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-    .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; margin-top: 14px; }
-    .code-header:first-child { margin-top: 0; }
 
     .kanban-toolbar {
       display: flex;
@@ -657,6 +604,180 @@
     .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 720px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; color: var(--text-main); }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
 
+    .checklist-section {
+      margin-top: 18px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .checklist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .checklist-header h4 {
+      font-size: 0.85em;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checklist-progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .checklist-progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .checklist-container {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+
+    .checklist-container::-webkit-scrollbar { width: 6px; }
+    .checklist-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    .checklist-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: grab;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .checklist-item:active { cursor: grabbing; }
+    .checklist-item.dragging-item { opacity: 0.4; }
+    .checklist-item.drag-over-item { border-top: 2px solid var(--accent); }
+
+    .checklist-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 90%;
+    }
+    .checklist-item-left i.drag-handle {
+      color: var(--text-muted);
+      font-size: 0.8em;
+      cursor: grab;
+    }
+
+    .checklist-item-left input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .checklist-item-text {
+      font-size: 0.84em;
+      color: var(--text-main);
+      word-break: break-word;
+      cursor: pointer;
+    }
+    .checklist-item.completed .checklist-item-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .checklist-item-timestamp {
+      font-size: 0.7em;
+      color: var(--accent);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .btn-remove-chk {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8em;
+      transition: color 0.2s;
+    }
+    .btn-remove-chk:hover { color: var(--danger); }
+
+    .add-chk-wrapper {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .add-chk-input {
+      flex: 1;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 8px 12px;
+      font-size: 0.82em;
+    }
+    .add-chk-input:focus { outline: none; border-color: var(--accent); }
+
+    .input-title-group { margin-bottom: 14px; }
+    .input-title-group label { display: block; font-size: 0.75em; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .input-card-title { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); font-weight: 600; font-size: 0.95em; }
+    .input-card-title:focus { outline: none; border-color: var(--accent); }
+
+    .input-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .attachment-box { 
+      margin-bottom: 14px; 
+      background: rgba(255,255,255,0.02); 
+      padding: 12px 16px; 
+      border-radius: 8px; 
+      border: 1px dashed var(--accent); 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+    }
+    .attachment-box label { font-size: 0.82em; color: var(--accent); cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .attachment-box label:hover { color: var(--text-main); }
+    .attachment-box input[type="file"] { display: none; }
+    .upload-status { font-size: 0.78em; color: var(--text-muted); font-weight: 600; }
+
+    .editor-toolbar { display: flex; gap: 6px; margin-bottom: 8px; background: var(--bg-input); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap; align-items: center; }
+    .editor-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
+    .editor-btn:hover { background: var(--accent); color: #090c15; font-weight: bold; }
+    .editor-select { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
+
+    .rich-editor { width: 100%; min-height: 100px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); padding: 14px; margin-bottom: 14px; outline: none; font-size: 0.9em; line-height: 1.5; overflow-y: auto; max-height: 180px; }
+    .rich-editor:focus { border-color: var(--accent); }
+
+    .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
+    .modal-actions-right { display: flex; gap: 10px; }
+
+    #toast { visibility: hidden; min-width: 200px; background-color: var(--accent); color: #090c15; font-weight: 700; font-size: 0.85em; text-align: center; border-radius: 8px; padding: 12px 20px; position: fixed; z-index: 2000; right: 25px; bottom: 25px; box-shadow: 0 6px 20px rgba(0,255,204,0.4); transition: opacity 0.3s, bottom 0.3s; opacity: 0; }
+    #toast.show { visibility: visible; opacity: 1; bottom: 35px; }
+
+    .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 24px; }
+
+    /* ESTILO EXCLUSIVO DE IMPRESSÃO / NATIVO DO NAVEGADOR */
     .printable-preview-container {
       background: #ffffff !important;
       color: #0f172a !important;
@@ -666,7 +787,6 @@
       border: 1px solid #cbd5e1;
     }
 
-    /* REGRAS RÍGIDAS DE IMPRESSÃO - NUNCA CORTA A ESQUERDA */
     @page {
       size: landscape;
       margin: 8mm;
@@ -865,44 +985,105 @@
       </div>
     </div>
 
-    <!-- CREDENCIAIS E ACESSOS -->
-    <h2><i class="fas fa-lock"></i> Credenciais e Acessos</h2>
-    <div class="collapsible-wrapper target-search">
-      <button class="collapsible">
-        <span class="btn-title"><i class="fas fa-shield-alt"></i> Acessos, Senhas e JIRA</span>
-        <i class="fas fa-chevron-down chevron"></i>
-      </button>
-      <div class="content">
-        <div class="content-inner">
-          <div class="data-row highlight-group">
-            <span class="data-label"><i class="fab fa-jira" style="color: #0052CC; font-size:1.1em;"></i> <strong>JIRA Implantação (Portal Suporte)</strong></span>
-            <span class="data-value">
-              <a href="https://weon.atlassian.net/jira/for-you?tab=recommendedActions" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:700;">Acessar Portal <i class="fas fa-external-link-alt" style="font-size:0.8em;"></i></a>
-            </span>
-          </div>
-          <div class="data-row">
-            <span class="data-label" style="padding-left:15px;"><i class="fas fa-envelope"></i> JIRA E-mail</span>
-            <span class="data-value">comercial@weon.com.br <button class="btn-copy" onclick="copyText('comercial@weon.com.br', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row" style="margin-bottom:12px; border-bottom: 2px dashed var(--border-color); padding-bottom:12px;">
-            <span class="data-label" style="padding-left:15px;"><i class="fas fa-key"></i> JIRA Senha</span>
-            <span class="data-value">Weon@2024* <button class="btn-copy" onclick="copyText('Weon@2024*', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
+    <div class="footer">
+      <p><i class="fas fa-info-circle"></i> Este documento foi estilizado para facilitar o dia a dia operacional interno.</p>
+    </div>
+  </div>
 
-          <div class="data-row">
-            <span class="data-label">WeON Admin User</span>
-            <span class="data-value">admin <button class="btn-copy" onclick="copyText('admin', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">WeON Admin Senha</span>
-            <span class="data-value">vah%4ge1E <button class="btn-copy" onclick="copyText('vah%4ge1E', this)"><i class="fas fa-copy"></i></button></span>
-          </div>
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO -->
+  <div id="obsModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
+      
+      <div class="input-title-group">
+        <label>Título do Card / Projeto:</label>
+        <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Ex: Implantação Sistema X...">
+      </div>
+
+      <div class="input-grid-2">
+        <div class="input-title-group">
+          <label><i class="fas fa-building"></i> Empresa Cliente:</label>
+          <input type="text" id="modalEmpresaInput" class="input-card-title" placeholder="Ex: Nome da Empresa Ltda">
+        </div>
+        <div class="input-title-group">
+          <label><i class="fas fa-address-book"></i> Contato Responsável:</label>
+          <input type="text" id="modalContatoInput" class="input-card-title" placeholder="Ex: Fulano / (11) 99999-9999 / email@empresa.com">
+        </div>
+      </div>
+
+      <div class="attachment-box">
+        <label for="fileInput"><i class="fas fa-paperclip"></i> Anexar Arquivo (PDF, DOCX, Imagem...)</label>
+        <input type="file" id="fileInput" onchange="uploadArquivoDrive(this)">
+        <span id="uploadStatus" class="upload-status">Nenhum anexo novo</span>
+      </div>
+
+      <label style="display:block; font-size:0.75em; color:var(--text-muted); margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Descrição / Anotações:</label>
+      
+      <div class="editor-toolbar">
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('bold')" title="Negrito"><b>B</b></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('italic')" title="Itálico"><i>I</i></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('underline')" title="Sublinhado"><u>U</u></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Lista de Marcadores"><i class="fas fa-list-ul"></i></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('removeFormat')" title="Limpar Formatação"><i class="fas fa-remove-format"></i> Tx</button>
+        
+        <select class="editor-select" onmousedown="salvarSelecaoTexto()" onchange="formatDoc('fontSize', this.value); this.selectedIndex=0;">
+          <option value="" disabled selected>Tamanho Fonte</option>
+          <option value="2">Pequena</option>
+          <option value="3">Normal</option>
+          <option value="5">Grande</option>
+          <option value="6">Gigante</option>
+        </select>
+
+        <select class="editor-select" onmousedown="salvarSelecaoTexto()" onchange="formatDoc('foreColor', this.value); this.selectedIndex=0;">
+          <option value="" disabled selected>Cor da Fonte</option>
+          <option value="#f8f9fa">Branco</option>
+          <option value="#00ffcc">Ciano Destaque</option>
+          <option value="#ffb703">Amarelo Alerta</option>
+          <option value="#ff4a4a">Vermelho Bloqueio</option>
+        </select>
+      </div>
+
+      <div id="modalObsEditor" class="rich-editor" contenteditable="true" onkeyup="salvarSelecaoTexto()" onclick="salvarSelecaoTexto()"></div>
+
+      <div class="checklist-section">
+        <div class="checklist-header">
+          <h4><i class="fas fa-tasks"></i> Checklist de Implantação</h4>
+          <span id="checklistProgressText" style="font-size:0.78em; color:var(--text-muted); font-weight:700;">0/0 (0%)</span>
+        </div>
+
+        <div class="checklist-progress-bar-bg">
+          <div id="checklistProgressBarFill" class="checklist-progress-bar-fill"></div>
+        </div>
+
+        <div class="checklist-container" id="checklistContainer"></div>
+
+        <div class="add-chk-wrapper">
+          <input type="text" id="addChkInput" class="add-chk-input" placeholder="Adicionar nova tarefa ao checklist..." onkeypress="if(event.key==='Enter') adicionarItemChecklistInput()">
+          <button class="btn-widget" onclick="adicionarItemChecklistInput()"><i class="fas fa-plus"></i> Add</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnDeleteModal" class="btn-widget btn-danger" style="display:none;" onclick="deletarCardModal()"><i class="fas fa-trash-alt"></i> Excluir Card</button>
+        <div class="modal-actions-right">
+          <button class="btn-widget" onclick="fecharModal()">Cancelar</button>
+          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarObservacao()">Salvar Alterações</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="footer">
-      <p><i class="fas fa-info-circle"></i> Este documento foi estilizado para facilitar o dia a dia operacional interno.</p>
+  <div id="colunaModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <h3><i class="fas fa-columns"></i> Criar Nova Coluna</h3>
+      <div class="input-title-group">
+        <label>Nome do Status / Etapa:</label>
+        <input type="text" id="colunaTitleInput" class="input-card-title" placeholder="Ex: Setup > Andamento, Testes...">
+      </div>
+      <div class="modal-actions" style="justify-content: flex-end; gap: 10px;">
+        <button class="btn-widget" onclick="fecharModalColuna()">Cancelar</button>
+        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarNovaColuna()">Criar Coluna</button>
+      </div>
     </div>
   </div>
 
@@ -910,6 +1091,16 @@
 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
+
+    let currentChecklistCache = [];
+    let cardElementoAtual = null;
+    let clienteAtualObs = { cliente: '', col: 0 };
+    let modoCriacao = false;
+    let colIndexCriacao = 0;
+    let savedRange = null;
+    let donutChartInstance = null;
+    let draggedColumn = null;
+    let draggedChecklistItem = null;
 
     function parseJwt(token) {
       try {
@@ -1002,9 +1193,71 @@
       });
     }
 
+    function filterItems() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const wrappers = document.querySelectorAll('.target-search');
+
+      wrappers.forEach(wrapper => {
+        const textContent = wrapper.innerText.toLowerCase();
+        const btn = wrapper.querySelector('.collapsible');
+        const content = wrapper.querySelector('.content');
+
+        if (textContent.includes(input) && input.trim() !== '') {
+          wrapper.style.display = "block";
+          if (btn) btn.classList.add('active');
+          if (content) content.style.maxHeight = content.scrollHeight + "px";
+        } else if (input.trim() === '') {
+          wrapper.style.display = "block";
+          if (btn) btn.classList.remove('active');
+          if (content) content.style.maxHeight = null;
+        } else {
+          wrapper.style.display = "none";
+        }
+      });
+    }
+
     window.onload = function() {
       verificarSessaoUsuario();
       carregarTemaSalvo();
+      const savedNotes = localStorage.getItem('weon_quick_notes');
+      if (savedNotes) document.getElementById('quickNotes').value = savedNotes;
+    }
+
+    function saveNotes() {
+      localStorage.setItem('weon_quick_notes', document.getElementById('quickNotes').value);
+    }
+
+    function clearNotes() {
+      if(confirm("Tem certeza que deseja limpar as anotações atuais?")) {
+        document.getElementById('quickNotes').value = "";
+        localStorage.removeItem('weon_quick_notes');
+      }
+    }
+
+    function downloadTXT() {
+      const text = document.getElementById('quickNotes').value;
+      if (!text.trim()) return alert("O bloco de notas está vazio!");
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'notas_weon.txt';
+      link.click();
+    }
+
+    function downloadDOCX() {
+      const text = document.getElementById('quickNotes').value;
+      if (!text.trim()) return alert("O bloco de notas está vazio!");
+      const formattedText = text.split('\n').map(line => `<w:p><w:r><w:t>${escapeXml(line)}</w:t></w:r></w:p>`).join('');
+      const docxTemplate = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${formattedText}</w:body></w:document>`;
+      const blob = new Blob([docxTemplate], { type: 'application/msword' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'notas_weon.docx';
+      link.click();
+    }
+
+    function escapeXml(unsafe) {
+      return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
     const CHECKLIST_PADRAO = [
@@ -1038,21 +1291,74 @@
       "Enviado para faturamento"
     ];
 
-    let donutChartInstance = null;
+    function mostrarToast(mensagem) {
+      const toast = document.getElementById("toast");
+      toast.innerText = mensagem;
+      toast.className = "show";
+      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2200);
+    }
+
+    function enviarParaGoogleSheets(dados) {
+      if (!APPS_SCRIPT_URL) return;
+      const payload = new URLSearchParams();
+      for (const key in dados) { payload.append(key, dados[key]); }
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: payload.toString()
+      }).catch(err => console.error("Erro no envio:", err));
+    }
 
     function getObsLocal(cliente) { return localStorage.getItem('weon_obs_' + cliente) || ''; }
+    function saveObsLocal(cliente, obs) { localStorage.setItem('weon_obs_' + cliente, obs); }
+    function removeObsLocal(cliente) { localStorage.removeItem('weon_obs_' + cliente); }
+
     function getEmpresaLocal(cliente) { return localStorage.getItem('weon_empresa_' + cliente) || ''; }
+    function getContatoLocal(cliente) { return localStorage.getItem('weon_contato_' + cliente) || ''; }
+    function saveEmpresaContatoLocal(cliente, empresa, contato) {
+      localStorage.setItem('weon_empresa_' + cliente, empresa);
+      localStorage.setItem('weon_contato_' + cliente, contato);
+    }
+
     function getEtapaAnteriorLocal(cliente) { return localStorage.getItem('weon_prev_col_' + cliente) || 'Inicial'; }
+    function saveEtapaAnteriorLocal(cliente, nomeColunaAnterior) {
+      if (nomeColunaAnterior) { localStorage.setItem('weon_prev_col_' + cliente, nomeColunaAnterior); }
+    }
 
     function getChecklistLocal(cliente) {
       const saved = localStorage.getItem('weon_chk_' + cliente);
       if (saved) return JSON.parse(saved);
       return CHECKLIST_PADRAO.map(texto => ({ texto: texto, done: false, date: null }));
     }
+    function saveChecklistLocal(cliente, items) { localStorage.setItem('weon_chk_' + cliente, JSON.stringify(items)); }
+    function removeChecklistLocal(cliente) { localStorage.removeItem('weon_chk_' + cliente); }
 
     function getCardsCriadosLocais() {
       const saved = localStorage.getItem('weon_cards_criados');
       return saved ? JSON.parse(saved) : [];
+    }
+
+    function saveCardCriadoLocal(cliente, colIndex, obs, chk, empresa = '', contato = '') {
+      const cards = getCardsCriadosLocais();
+      const idExistente = cards.findIndex(c => c.cliente.toLowerCase() === cliente.toLowerCase());
+      if (idExistente >= 0) {
+        cards[idExistente] = { cliente, colIndex, obs, chk, empresa, contato };
+      } else {
+        cards.push({ cliente, colIndex, obs, chk, empresa, contato });
+      }
+      localStorage.setItem('weon_cards_criados', JSON.stringify(cards));
+      saveObsLocal(cliente, obs);
+      saveEmpresaContatoLocal(cliente, empresa, contato);
+      if (chk) saveChecklistLocal(cliente, chk);
+    }
+
+    function removeCardCriadoLocal(cliente) {
+      const cards = getCardsCriadosLocais();
+      const novos = cards.filter(c => c.cliente.toLowerCase() !== cliente.toLowerCase());
+      localStorage.setItem('weon_cards_criados', JSON.stringify(novos));
+      removeObsLocal(cliente);
+      removeChecklistLocal(cliente);
     }
 
     async function carregarKanbanDoSheets() {
@@ -1069,8 +1375,21 @@
             col.cards.forEach(card => {
               let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
               let chkData = card.chk ? card.chk : getChecklistLocal(card.cliente);
+
+              if (card.obs) saveObsLocal(card.cliente, card.obs);
+              if (card.chk) saveChecklistLocal(card.cliente, card.chk);
+
               cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto, chkData);
             });
+
+            const cardsLocais = getCardsCriadosLocais();
+            cardsLocais.forEach(cardLoc => {
+              if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
+                let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+                cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
+              }
+            });
+
             const colDiv = montarElementoColuna(col.index, col.nome, cardsHTML);
             boardContainer.appendChild(colDiv);
           });
@@ -1078,20 +1397,32 @@
           atualizarDashboardBI();
         }
       } catch (err) {
-        console.warn("Fallback offline:", err);
+        console.warn("Fallback offline ativo:", err);
       }
 
       if (!renderizadoSucesso) {
         boardContainer.innerHTML = '';
         const cardsLocais = getCardsCriadosLocais();
-        let colDiv = montarElementoColuna(0, 'NOVA DEMANDA', '');
-        let container = colDiv.querySelector('.cards-container');
-        container.innerHTML = '';
-        cardsLocais.forEach(cardLoc => {
-          let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
-          container.innerHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
-        });
-        boardContainer.appendChild(colDiv);
+        if (cardsLocais.length > 0) {
+          const colunasAgrupadas = {};
+          cardsLocais.forEach(cardLoc => {
+            const colIdx = cardLoc.colIndex || 0;
+            if (!colunasAgrupadas[colIdx]) colunasAgrupadas[colIdx] = [];
+            colunasAgrupadas[colIdx].push(cardLoc);
+          });
+          Object.keys(colunasAgrupadas).forEach(colIdx => {
+            let cardsHTML = '';
+            colunasAgrupadas[colIdx].forEach(cardLoc => {
+              let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+              cardsHTML += criarCardHTML(cardLoc.cliente, parseInt(colIdx), cardLoc.obs, chkDataLoc);
+            });
+            const colDiv = montarElementoColuna(parseInt(colIdx), parseInt(colIdx) === 0 ? 'NOVA DEMANDA' : `COLUNA ${parseInt(colIdx) + 1}`, cardsHTML);
+            boardContainer.appendChild(colDiv);
+          });
+        } else {
+          let colDiv = montarElementoColuna(0, 'NOVA DEMANDA', '');
+          boardContainer.appendChild(colDiv);
+        }
         atualizarDashboardBI();
       }
     }
@@ -1100,40 +1431,64 @@
       const colDiv = document.createElement('div');
       colDiv.className = 'kanban-column';
       colDiv.setAttribute('data-col-index', index);
+      colDiv.setAttribute('draggable', 'true');
+      
+      colDiv.setAttribute('ondragover', 'allowDrop(event)');
+      colDiv.setAttribute('ondragleave', 'dragLeave(event)');
+      colDiv.setAttribute('ondrop', 'drop(event)');
+
+      colDiv.addEventListener('dragstart', colDragStart);
+      colDiv.addEventListener('dragend', colDragEnd);
+      colDiv.addEventListener('dragenter', colDragEnter);
+      colDiv.addEventListener('dragleave', colDragLeave);
+
       colDiv.innerHTML = `
-        <div class="kanban-header"><span>${nome}</span></div>
-        <div class="cards-container">${cardsHTML ? cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}</div>
+        <div class="kanban-header">
+          <span>${nome}</span>
+          <button class="btn-delete-col" onclick="deletarColuna(${index}, '${escapeXmlAttr(nome)}', this)" title="Excluir Coluna"><i class="fas fa-trash-alt"></i></button>
+        </div>
+        <button class="btn-add-card-col" onclick="abrirModalCriar(${index})"><i class="fas fa-plus"></i> Criar Novo Card</button>
+        <div class="cards-container">
+          ${cardsHTML ? cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}
+        </div>
       `;
       return colDiv;
     }
 
-    function criarCardHTML(clienteNome, cellIndex, obsText, chkData) {
-      let totalItems = chkData ? chkData.length : 0;
-      let doneItems = chkData ? chkData.filter(i => i.done).length : 0;
-      let pct = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
-
-      return `
-        <div class="kanban-card" data-cliente="${clienteNome}" data-col="${cellIndex}" data-obs="${escapeXmlAttr(obsText)}">
-          <div class="card-top"><span class="card-title">${clienteNome}</span></div>
-          <div class="card-obs-area">${obsText}</div>
-          <div class="card-footer-info">
-            <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
-            <span class="card-checklist-progress"><i class="fas fa-check-square"></i> ${doneItems}/${totalItems} (${pct}%)</span>
-          </div>
-        </div>
-      `;
+    function colDragStart(e) {
+      if (window.draggedCard) return;
+      draggedColumn = this;
+      this.classList.add('dragging-column');
+      e.dataTransfer.setData('text/column', this.getAttribute('data-col-index'));
     }
 
-    function escapeXmlAttr(unsafe) { return unsafe ? unsafe.replace(/"/g, '&quot;') : ''; }
+    function colDragEnd(e) {
+      if (draggedColumn) {
+        draggedColumn.classList.remove('dragging-column');
+        draggedColumn = null;
+      }
+      document.querySelectorAll('.kanban-column').forEach(col => {
+        col.classList.remove('drag-over-column');
+      });
+    }
+
+    function colDragEnter(e) {
+      if (draggedColumn && draggedColumn !== this) { this.classList.add('drag-over-column'); }
+    }
+
+    function colDragLeave(e) { this.classList.remove('drag-over-column'); }
 
     function atualizarDashboardBI() {
       const colunas = document.querySelectorAll('.kanban-column');
       let totalGeral = 0, totalAndamento = 0, totalBloqueio = 0, totalConcluido = 0;
       const labelsColunas = [], dadosColunas = [];
+      const coresDinamicas = ['#00ffcc', '#38bdf8', '#818cf8', '#a78bfa', '#f472b6', '#ffb703', '#4ade80', '#ff4a4a'];
 
       colunas.forEach((col) => {
-        const nomeColuna = col.querySelector('.kanban-header span').innerText.trim();
+        const headerSpan = col.querySelector('.kanban-header span');
+        const nomeColuna = headerSpan ? headerSpan.innerText.trim() : 'Sem Título';
         const numCards = col.querySelectorAll('.kanban-card').length;
+
         labelsColunas.push(nomeColuna);
         dadosColunas.push(numCards);
         totalGeral += numCards;
@@ -1148,6 +1503,474 @@
       document.getElementById('kpiAndamento').innerText = totalAndamento;
       document.getElementById('kpiBloqueio').innerText = totalBloqueio;
       document.getElementById('kpiConcluido').innerText = totalConcluido;
+
+      if (typeof Chart !== 'undefined') {
+        try {
+          const ctxDonut = document.getElementById('donutChart').getContext('2d');
+          if (donutChartInstance) donutChartInstance.destroy();
+
+          donutChartInstance = new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+              labels: labelsColunas,
+              datasets: [{
+                data: dadosColunas,
+                backgroundColor: coresDinamicas.slice(0, labelsColunas.length),
+                borderColor: 'var(--bg-card)',
+                borderWidth: 2,
+                hoverOffset: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '70%',
+              plugins: {
+                legend: { position: 'bottom', labels: { color: 'var(--text-muted)', font: { size: 10, family: "'Inter', sans-serif" }, padding: 12, usePointStyle: true } }
+              }
+            }
+          });
+        } catch (e) { console.error("Erro no gráfico:", e); }
+      }
+    }
+
+    function criarCardHTML(clienteNome, cellIndex, obsText, chkData) {
+      let totalItems = chkData ? chkData.length : 0;
+      let doneItems = chkData ? chkData.filter(i => i.done).length : 0;
+      let pct = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
+
+      return `
+        <div class="kanban-card" draggable="true" 
+             ondragstart="drag(event)" 
+             onclick="abrirModalObs(this, ${cellIndex})"
+             data-cliente="${clienteNome}" 
+             data-col="${cellIndex}"
+             data-obs="${escapeXmlAttr(obsText)}">
+          <div class="card-top">
+            <span class="card-title">${clienteNome}</span>
+            <div class="card-actions-top">
+              <button class="btn-card-action btn-delete-card" onclick="deletarCardDirect(event, '${escapeXmlAttr(clienteNome)}', ${cellIndex}, this)" title="Excluir Card"><i class="fas fa-trash-alt"></i></button>
+              <button class="btn-card-action" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
+            </div>
+          </div>
+          <div class="card-obs-area">${obsText}</div>
+          <div class="card-footer-info">
+            <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
+            <span class="card-checklist-progress"><i class="fas fa-check-square"></i> ${doneItems}/${totalItems} (${pct}%)</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeXmlAttr(unsafe) { return unsafe ? unsafe.replace(/"/g, '&quot;') : ''; }
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+      if (!draggedColumn) { ev.currentTarget.classList.add('drag-over'); }
+    }
+
+    function dragLeave(ev) { ev.currentTarget.classList.remove('drag-over'); }
+
+    function drag(ev) {
+      ev.stopPropagation();
+      const card = ev.currentTarget;
+      ev.dataTransfer.setData("text/plain", JSON.stringify({
+        cliente: card.getAttribute('data-cliente'),
+        origemCol: parseInt(card.getAttribute('data-col'))
+      }));
+      window.draggedCard = card;
+    }
+
+    async function drop(ev) {
+      ev.preventDefault();
+      const column = ev.currentTarget;
+      column.classList.remove('drag-over');
+      column.classList.remove('drag-over-column');
+
+      if (draggedColumn && draggedColumn !== column) {
+        const board = document.getElementById('kanban-board');
+        const allCols = Array.from(board.querySelectorAll('.kanban-column'));
+        const targetIndex = allCols.indexOf(column);
+        const draggedIndex = allCols.indexOf(draggedColumn);
+
+        if (draggedIndex < targetIndex) { board.insertBefore(draggedColumn, column.nextSibling); }
+        else { board.insertBefore(draggedColumn, column); }
+
+        draggedColumn = null;
+        mostrarToast("Ordem das colunas atualizada!");
+        atualizarDashboardBI();
+        return;
+      }
+
+      if (window.draggedCard) {
+        const data = JSON.parse(ev.dataTransfer.getData("text/plain"));
+        const destinoCol = parseInt(column.getAttribute('data-col-index'));
+
+        if (data.origemCol === destinoCol) return;
+
+        const colOrigemDiv = document.querySelector(`.kanban-column[data-col-index="${data.origemCol}"]`);
+        if (colOrigemDiv) {
+          const nomeColOrigem = colOrigemDiv.querySelector('.kanban-header span').innerText.trim();
+          saveEtapaAnteriorLocal(data.cliente, nomeColOrigem);
+        }
+
+        const cardsContainer = column.querySelector('.cards-container');
+        const emptyText = cardsContainer.querySelector('p');
+        if (emptyText) emptyText.remove();
+
+        cardsContainer.appendChild(window.draggedCard);
+        window.draggedCard.setAttribute('data-col', destinoCol);
+
+        window.draggedCard = null;
+        mostrarToast("Card movido!");
+        atualizarDashboardBI();
+
+        enviarParaGoogleSheets({
+          acao: 'mover',
+          cliente: data.cliente,
+          origemCol: data.origemCol,
+          destinoCol: destinoCol
+        });
+      }
+    }
+
+    function deletarCardDirect(event, clienteNome, colIndex, btnEl) {
+      event.stopPropagation();
+      if (!confirm(`Tem certeza que deseja excluir o card "${clienteNome}"?`)) return;
+
+      const cardEl = btnEl.closest('.kanban-card');
+      const container = cardEl.parentElement;
+      cardEl.remove();
+
+      if (container && container.children.length === 0) {
+        container.innerHTML = '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>';
+      }
+
+      removeCardCriadoLocal(clienteNome);
+      mostrarToast("Card removido!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({ acao: 'excluirCard', cliente: clienteNome, col: colIndex });
+    }
+
+    function deletarCardModal() {
+      if (!clienteAtualObs.cliente) return;
+      if (!confirm(`Tem certeza que deseja remover o card "${clienteAtualObs.cliente}"?`)) return;
+
+      if (cardElementoAtual) {
+        const container = cardElementoAtual.parentElement;
+        cardElementoAtual.remove();
+        if (container && container.children.length === 0) {
+          container.innerHTML = '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>';
+        }
+      }
+
+      removeCardCriadoLocal(clienteAtualObs.cliente);
+      mostrarToast("Card removido!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({ acao: 'excluirCard', cliente: clienteAtualObs.cliente, col: clienteAtualObs.col });
+      fecharModal();
+    }
+
+    function renderizarChecklistModal(items) {
+      currentChecklistCache = items;
+      const container = document.getElementById('checklistContainer');
+      container.innerHTML = '';
+
+      items.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = `checklist-item ${item.done ? 'completed' : ''}`;
+        itemDiv.setAttribute('draggable', 'true');
+        itemDiv.setAttribute('data-chk-index', index);
+
+        itemDiv.addEventListener('dragstart', chkDragStart);
+        itemDiv.addEventListener('dragend', chkDragEnd);
+        itemDiv.addEventListener('dragover', chkDragOver);
+        itemDiv.addEventListener('drop', chkDrop);
+
+        const timeStr = item.date ? `<span class="checklist-item-timestamp"><i class="far fa-clock"></i> Concluído em ${item.date}</span>` : '';
+
+        itemDiv.innerHTML = `
+          <div class="checklist-item-left">
+            <i class="fas fa-grip-vertical drag-handle"></i>
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem(${index}, this.checked)">
+            <div>
+              <span class="checklist-item-text" onclick="clickTextToggle(${index})">${item.texto}</span>
+              ${timeStr}
+            </div>
+          </div>
+          <button class="btn-remove-chk" onclick="removerItemChecklist(${index})" title="Remover item"><i class="fas fa-times"></i></button>
+        `;
+        container.appendChild(itemDiv);
+      });
+
+      atualizarProgressoChecklistUI(items);
+    }
+
+    function clickTextToggle(index) {
+      const now = new Date();
+      const dateFormatted = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+      currentChecklistCache[index].done = !currentChecklistCache[index].done;
+      currentChecklistCache[index].date = currentChecklistCache[index].done ? dateFormatted : null;
+      renderizarChecklistModal(currentChecklistCache);
+    }
+
+    function toggleChecklistItem(index, isChecked) {
+      const now = new Date();
+      const dateFormatted = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+      currentChecklistCache[index].done = isChecked;
+      currentChecklistCache[index].date = isChecked ? dateFormatted : null;
+      renderizarChecklistModal(currentChecklistCache);
+    }
+
+    function atualizarProgressoChecklistUI(items) {
+      const total = items.length;
+      const done = items.filter(i => i.done).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      document.getElementById('checklistProgressText').innerText = `${done}/${total} (${pct}%)`;
+      document.getElementById('checklistProgressBarFill').style.width = `${pct}%`;
+    }
+
+    function obterChecklistModalAtual() { return currentChecklistCache; }
+
+    function removerItemChecklist(index) {
+      currentChecklistCache.splice(index, 1);
+      renderizarChecklistModal(currentChecklistCache);
+    }
+
+    function adicionarItemChecklistInput() {
+      const input = document.getElementById('addChkInput');
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      currentChecklistCache.push({ texto: texto, done: false, date: null });
+      renderizarChecklistModal(currentChecklistCache);
+      input.value = '';
+    }
+
+    function chkDragStart(e) {
+      e.stopPropagation();
+      draggedChecklistItem = this;
+      this.classList.add('dragging-item');
+    }
+
+    function chkDragEnd(e) {
+      if (draggedChecklistItem) {
+        draggedChecklistItem.classList.remove('dragging-item');
+        draggedChecklistItem = null;
+      }
+      document.querySelectorAll('.checklist-item').forEach(el => el.classList.remove('drag-over-item'));
+    }
+
+    function chkDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (draggedChecklistItem && draggedChecklistItem !== this) { this.classList.add('drag-over-item'); }
+    }
+
+    function chkDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.classList.remove('drag-over-item');
+
+      if (draggedChecklistItem && draggedChecklistItem !== this) {
+        const fromIndex = parseInt(draggedChecklistItem.getAttribute('data-chk-index'));
+        const toIndex = parseInt(this.getAttribute('data-chk-index'));
+
+        const movedItem = currentChecklistCache.splice(fromIndex, 1)[0];
+        currentChecklistCache.splice(toIndex, 0, movedItem);
+
+        renderizarChecklistModal(currentChecklistCache);
+      }
+    }
+
+    function abrirModalObs(cardEl, col) {
+      modoCriacao = false;
+      cardElementoAtual = cardEl;
+      const clienteNome = cardEl.getAttribute('data-cliente');
+      clienteAtualObs = { cliente: clienteNome, col: col };
+      
+      const statusEl = document.getElementById('uploadStatus');
+      if (statusEl) { statusEl.innerText = "Nenhum anexo novo"; statusEl.style.color = "var(--text-muted)"; }
+
+      document.getElementById('btnDeleteModal').style.display = 'flex';
+
+      const obsAtual = cardEl.getAttribute('data-obs') || getObsLocal(clienteNome);
+      const chkAtual = getChecklistLocal(clienteNome);
+      const empresaAtual = getEmpresaLocal(clienteNome);
+      const contatoAtual = getContatoLocal(clienteNome);
+
+      document.getElementById('modalHeaderTitle').innerHTML = `<i class="fab fa-jira"></i> Editar Detalhes do Card`;
+      document.getElementById('modalTitleInput').value = clienteNome;
+      document.getElementById('modalEmpresaInput').value = empresaAtual;
+      document.getElementById('modalContatoInput').value = contatoAtual;
+      document.getElementById('modalObsEditor').innerHTML = obsAtual;
+      
+      renderizarChecklistModal(chkAtual);
+      document.getElementById('obsModal').style.display = 'flex';
+
+      setTimeout(() => { document.getElementById('modalObsEditor').focus(); }, 100);
+    }
+
+    function abrirModalCriar(colIndex) {
+      modoCriacao = true;
+      colIndexCriacao = colIndex;
+      cardElementoAtual = null;
+      clienteAtualObs = { cliente: '', col: colIndex };
+
+      const statusEl = document.getElementById('uploadStatus');
+      if (statusEl) { statusEl.innerText = "Nenhum anexo novo"; statusEl.style.color = "var(--text-muted)"; }
+
+      document.getElementById('btnDeleteModal').style.display = 'none';
+
+      document.getElementById('modalHeaderTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Criar Novo Card`;
+      document.getElementById('modalTitleInput').value = '';
+      document.getElementById('modalEmpresaInput').value = '';
+      document.getElementById('modalContatoInput').value = '';
+      document.getElementById('modalObsEditor').innerHTML = '';
+      
+      const chkPadrao = CHECKLIST_PADRAO.map(t => ({ texto: t, done: false, date: null }));
+      renderizarChecklistModal(chkPadrao);
+
+      document.getElementById('obsModal').style.display = 'flex';
+
+      setTimeout(() => { document.getElementById('modalTitleInput').focus(); }, 100);
+    }
+
+    function fecharModal() { document.getElementById('obsModal').style.display = 'none'; }
+
+    function salvarObservacao() {
+      const novoTitulo = document.getElementById('modalTitleInput').value.trim();
+      const empresaVal = document.getElementById('modalEmpresaInput').value.trim();
+      const contatoVal = document.getElementById('modalContatoInput').value.trim();
+      const obsHtml = document.getElementById('modalObsEditor').innerHTML;
+      const chkItems = obterChecklistModalAtual();
+
+      if (!novoTitulo) return alert("Digite um título para o card!");
+
+      if (modoCriacao) {
+        saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml, chkItems, empresaVal, contatoVal);
+
+        const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
+        if (colDiv) {
+          const container = colDiv.querySelector('.cards-container');
+          const emptyP = container.querySelector('p');
+          if (emptyP) emptyP.remove();
+
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = criarCardHTML(novoTitulo, colIndexCriacao, obsHtml, chkItems);
+          container.appendChild(tempDiv.firstElementChild);
+        }
+
+        mostrarToast("Novo card criado!");
+        enviarParaGoogleSheets({
+          acao: 'criarCard',
+          cliente: novoTitulo,
+          col: colIndexCriacao,
+          empresa: empresaVal,
+          contato: contatoVal,
+          chk: JSON.stringify(chkItems)
+        });
+
+      } else {
+        if (cardElementoAtual) {
+          cardElementoAtual.setAttribute('data-cliente', novoTitulo);
+          cardElementoAtual.querySelector('.card-title').innerText = novoTitulo;
+          cardElementoAtual.setAttribute('data-obs', obsHtml);
+          
+          const obsArea = cardElementoAtual.querySelector('.card-obs-area');
+          obsArea.innerHTML = obsHtml;
+
+          const total = chkItems.length;
+          const done = chkItems.filter(i => i.done).length;
+          const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+          cardElementoAtual.querySelector('.card-checklist-progress').innerHTML = `<i class="fas fa-check-square"></i> ${done}/${total} (${pct}%)`;
+
+          saveObsLocal(novoTitulo, obsHtml);
+          saveEmpresaContatoLocal(novoTitulo, empresaVal, contatoVal);
+          saveChecklistLocal(novoTitulo, chkItems);
+        }
+
+        mostrarToast("Card atualizado!");
+        enviarParaGoogleSheets({
+          acao: 'salvarObs',
+          cliente: novoTitulo,
+          col: clienteAtualObs.col,
+          empresa: empresaVal,
+          contato: contatoVal,
+          obs: obsHtml,
+          chk: JSON.stringify(chkItems)
+        });
+      }
+
+      atualizarDashboardBI();
+      fecharModal();
+    }
+
+    function abrirModalNovaColuna() {
+      document.getElementById('colunaTitleInput').value = '';
+      document.getElementById('colunaModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('colunaTitleInput').focus(), 100);
+    }
+
+    function fecharModalColuna() { document.getElementById('colunaModal').style.display = 'none'; }
+
+    function salvarNovaColuna() {
+      const nomeColuna = document.getElementById('colunaTitleInput').value.trim();
+      if (!nomeColuna) return alert("Digite o nome da coluna!");
+
+      const boardContainer = document.getElementById('kanban-board');
+      const totalColunasAtuais = boardContainer.querySelectorAll('.kanban-column').length;
+      const novoIndexCol = totalColunasAtuais;
+
+      const colDiv = montarElementoColuna(novoIndexCol, nomeColuna, '');
+      boardContainer.appendChild(colDiv);
+
+      fecharModalColuna();
+      mostrarToast("Nova coluna criada!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({ acao: 'criarColuna', nomeColuna: nomeColuna, colIndex: novoIndexCol });
+    }
+
+    function deletarColuna(colIndex, nomeColuna, btnEl) {
+      const colDiv = btnEl.closest('.kanban-column');
+      const qtdCards = colDiv.querySelectorAll('.kanban-card').length;
+
+      if (qtdCards > 0) {
+        if (!confirm(`A coluna "${nomeColuna}" contém ${qtdCards} card(s). Se você excluí-la, todos os cards dela serão removidos. Deseja continuar?`)) return;
+      } else {
+        if (!confirm(`Tem certeza que deseja excluir a coluna "${nomeColuna}"?`)) return;
+      }
+
+      colDiv.remove();
+      mostrarToast("Coluna removida!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({ acao: 'excluirColuna', colIndex: colIndex, nomeColuna: nomeColuna });
+    }
+
+    function salvarSelecaoTexto() {
+      const sel = window.getSelection();
+      if (sel.getRangeAt && sel.rangeCount) { savedRange = sel.getRangeAt(0); }
+    }
+
+    function restaurarSelecaoTexto() {
+      if (savedRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedRange);
+      }
+    }
+
+    function formatDoc(cmd, value = null) {
+      const editor = document.getElementById('modalObsEditor');
+      editor.focus();
+      restaurarSelecaoTexto();
+      document.execCommand(cmd, false, value);
+      salvarSelecaoTexto();
     }
 
     function extrairDadosCompletosDoBoard() {
@@ -1169,7 +1992,6 @@
           const doneChk = chkItems.filter(i => i.done).length;
           const pctChk = totalChk > 0 ? Math.round((doneChk / totalChk) * 100) : 0;
 
-          // Extrai datas formatadas do checklist
           const dateKickoffObj = chkItems.find(i => i.texto.toLowerCase().includes('kick off realizado') && i.done);
           const dateSetupObj = chkItems.find(i => i.texto.toLowerCase().includes('iniciar setup') && i.done);
           const dateHomologObj = chkItems.find(i => i.texto.toLowerCase().includes('homologação') && i.done);
@@ -1202,9 +2024,7 @@
       document.getElementById('boardReportModal').style.display = 'flex';
     }
 
-    function fecharModalBoardReport() {
-      document.getElementById('boardReportModal').style.display = 'none';
-    }
+    function fecharModalBoardReport() { document.getElementById('boardReportModal').style.display = 'none'; }
 
     function montarPreviewRelatorioPrint() {
       const dadosBoard = extrairDadosCompletosDoBoard();
