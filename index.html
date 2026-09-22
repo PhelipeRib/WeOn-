@@ -1221,6 +1221,9 @@
   <script>
     let currentChecklistCache = [];
 
+    // URL ATUALIZADA DO SEU APPS SCRIPT
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
+
     function parseJwt(token) {
       try {
         const base64Url = token.split('.')[1];
@@ -1417,8 +1420,6 @@
       "Enviado para faturamento"
     ];
 
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec'; 
-
     let cardElementoAtual = null;
     let clienteAtualObs = { cliente: '', col: 0 };
     let modoCriacao = false;
@@ -1603,10 +1604,11 @@
         console.error("Erro ao carregar dados remotos:", error);
       }
 
-      // Renderiza as colunas e cards salvos no ambiente local se a planilha demorar a responder
+      // FALLBACK SE A CONEXÃO FALHAR OU NÃO RETORNAR COLUNAS
       const cardsLocais = getCardsCriadosLocais();
+      boardContainer.innerHTML = '';
+      
       if (cardsLocais.length > 0) {
-        boardContainer.innerHTML = '';
         const colunasAgrupadas = {};
 
         cardsLocais.forEach(cardLoc => {
@@ -1621,9 +1623,12 @@
             let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
             cardsHTML += criarCardHTML(cardLoc.cliente, parseInt(colIdx), cardLoc.obs, chkDataLoc);
           });
-          const colDiv = montarElementoColuna(parseInt(colIdx), colIdx == 0 ? 'NOVA DEMANDA' : `COLUNA ${colIdx}`, cardsHTML);
+          const colDiv = montarElementoColuna(parseInt(colIdx), parseInt(colIdx) === 0 ? 'NOVA DEMANDA' : `COLUNA ${parseInt(colIdx) + 1}`, cardsHTML);
           boardContainer.appendChild(colDiv);
         });
+      } else {
+        let colDiv = montarElementoColuna(0, 'NOVA DEMANDA', '');
+        boardContainer.appendChild(colDiv);
       }
 
       atualizarDashboardBI();
