@@ -1275,8 +1275,7 @@ Empresa:
         document.getElementById('mainDashboardApp').style.display = 'block';
         document.getElementById('currentUserEmail').innerText = savedEmail;
         
-        // Garante a execução do Kanban após o DOM estar pronto na sessão persistida
-        setTimeout(carregarKanbanDoSheets, 100);
+        setTimeout(carregarKanbanDoSheets, 150);
       } else {
         document.getElementById('loginModal').style.display = 'flex';
         document.getElementById('mainDashboardApp').style.display = 'none';
@@ -1601,7 +1600,7 @@ Empresa:
       if (boardContainer.querySelectorAll('.kanban-column').length === 0) {
         boardContainer.innerHTML = '';
         const cardsLocais = getCardsCriadosLocais();
-        let colDiv = montarElementoColuna(0, 'TESTE', '');
+        let colDiv = montarElementoColuna(0, 'NOVA DEMANDA', '');
         let container = colDiv.querySelector('.cards-container');
         container.innerHTML = '';
         
@@ -1858,6 +1857,7 @@ Empresa:
       }
     }
 
+    // EXCLUSÃO LIMPA SEM DEIXAR RASTRO NO CACHE LOCAL
     function deletarCardDirect(event, clienteNome, colIndex, btnEl) {
       event.stopPropagation();
       if (!confirm(`Tem certeza que deseja excluir o card "${clienteNome}"?`)) return;
@@ -2013,7 +2013,7 @@ Empresa:
       }
     }
 
-    // CHAMADA IA COM MODELO GEMINI 2.0 FLASH OFICIAL DA API V1BETA
+    // SUPORTE AO GEMINI 2.0 FLASH / 1.5 FLASH (MÉTODOS SUPORTADOS)
     async function gerarStatusReportIA() {
       const apiKey = localStorage.getItem('weon_gemini_key');
       if (!apiKey || apiKey.trim().length < 10) {
@@ -2040,10 +2040,10 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      // MODELOS ATIVOS E SUPORTADOS NA ROTA V1BETA DO AI STUDIO
+      // ROTAS VÁLIDAS DO GOOGLE AI STUDIO PARA GENERATECONTENT
       const modelEndpoints = [
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey.trim()}`,
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`
+        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`
       ];
 
       let success = false;
