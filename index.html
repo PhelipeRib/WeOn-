@@ -806,6 +806,16 @@
     #toast.show { visibility: visible; opacity: 1; bottom: 35px; }
 
     .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 24px; }
+
+    /* ESTILO EXCLUSIVO DE IMPRESSÃO VISÍVEL NO MODAL */
+    .printable-preview-container {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border: 1px solid #cbd5e1;
+    }
   </style>
 </head>
 <body>
@@ -1245,6 +1255,9 @@
       </div>
 
       <div id="boardAiResponseBox" class="ai-response-box" style="display:none; max-height:280px; margin-bottom:14px;"></div>
+
+      <!-- ÁREA DE PREVIEW DA TABELA VISÍVEL PARA GARANTIR A CAPTURA DO PDF -->
+      <div id="boardReportPrintContainer" class="printable-preview-container" style="display:none;"></div>
 
       <div class="modal-actions" style="justify-content: flex-end;">
         <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar</button>
@@ -2172,7 +2185,6 @@
         </div>
       `;
 
-      // INJEÇÃO TEMPORÁRIA NO DOM
       document.body.appendChild(element);
 
       const opt = {
@@ -2183,9 +2195,11 @@
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(element).save().then(() => {
-        document.body.removeChild(element);
-      });
+      setTimeout(() => {
+        html2pdf().set(opt).from(element).save().then(() => {
+          document.body.removeChild(element);
+        });
+      }, 200);
     }
 
     async function gerarStatusReportIA() {
@@ -2292,9 +2306,11 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(element).save().then(() => {
-        document.body.removeChild(element);
-      });
+      setTimeout(() => {
+        html2pdf().set(opt).from(element).save().then(() => {
+          document.body.removeChild(element);
+        });
+      }, 200);
     }
 
     function extrairDadosCompletosDoBoard() {
@@ -2342,6 +2358,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
     function abrirModalStatusReportGeral() {
       document.getElementById('boardAiResponseBox').style.display = 'none';
       document.getElementById('boardAiResponseBox').innerText = '';
+      document.getElementById('boardReportPrintContainer').style.display = 'none';
       document.getElementById('boardReportModal').style.display = 'flex';
     }
 
@@ -2349,7 +2366,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       document.getElementById('boardReportModal').style.display = 'none';
     }
 
-    // EXPORTAÇÃO PDF DO BOARD COM INJEÇÃO NO DOM CORRIGIDA
+    // EXPORTAÇÃO PDF DO BOARD VISÍVEL NO MODAL
     function exportarPdfBoardGeralPlanoB() {
       const dadosBoard = extrairDadosCompletosDoBoard();
       
@@ -2374,42 +2391,35 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
         </tr>
       `).join('');
 
-      const containerPrint = document.createElement('div');
-      containerPrint.style.position = 'fixed';
-      containerPrint.style.top = '-9999px';
-      containerPrint.style.left = '-9999px';
-      containerPrint.style.width = '1000px';
-      containerPrint.style.padding = '30px';
-      containerPrint.style.fontFamily = 'Arial, sans-serif';
-      containerPrint.style.color = '#1e293b';
-      containerPrint.style.background = '#ffffff';
+      const printContainer = document.getElementById('boardReportPrintContainer');
+      printContainer.style.display = 'block';
 
-      containerPrint.innerHTML = `
+      printContainer.innerHTML = `
         <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <h1 style="color:#0f172a; margin:0; font-size:20px; font-weight:bold;">WeON - Relatório Geral de Acompanhamento (Daily/Weekly)</h1>
-            <p style="color:#64748b; font-size:12px; margin-top:4px;">Visão Consolidada de Todos os Projetos em Implantação</p>
+            <h1 style="color:#0f172a; margin:0; font-size:18px; font-weight:bold;">WeON - Relatório Geral de Acompanhamento (Daily/Weekly)</h1>
+            <p style="color:#64748b; font-size:11px; margin-top:4px;">Visão Consolidada de Todos os Projetos em Implantação</p>
           </div>
           <div style="text-align:right;">
-            <p style="font-size:11px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</p>
+            <p style="font-size:10px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</p>
           </div>
         </div>
 
-        <div style="display:flex; gap:10px; margin-bottom:20px; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #cbd5e1; justify-content:space-around; text-align:center;">
-          <div><span style="font-size:18px; font-weight:bold; color:#0284c7;">${kpiTotal}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">TOTAL PROJETOS</span></div>
-          <div><span style="font-size:18px; font-weight:bold; color:#0369a1;">${kpiAndamento}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">EM ANDAMENTO</span></div>
-          <div><span style="font-size:18px; font-weight:bold; color:#dc2626;">${kpiBloqueio}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">BLOQUEIOS / ATENÇÃO</span></div>
-          <div><span style="font-size:18px; font-weight:bold; color:#15803d;">${kpiConcluido}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">CONCLUÍDOS</span></div>
+        <div style="display:flex; gap:10px; margin-bottom:15px; background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #cbd5e1; justify-content:space-around; text-align:center;">
+          <div><span style="font-size:16px; font-weight:bold; color:#0284c7;">${kpiTotal}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">TOTAL PROJETOS</span></div>
+          <div><span style="font-size:16px; font-weight:bold; color:#0369a1;">${kpiAndamento}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">EM ANDAMENTO</span></div>
+          <div><span style="font-size:16px; font-weight:bold; color:#dc2626;">${kpiBloqueio}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">BLOQUEIOS / ATENÇÃO</span></div>
+          <div><span style="font-size:16px; font-weight:bold; color:#15803d;">${kpiConcluido}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">CONCLUÍDOS</span></div>
         </div>
 
-        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:20px;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:15px;">
           <thead>
             <tr style="background:#f1f5f9; text-align:left; color:#0f172a; border-bottom:2px solid #cbd5e1;">
-              <th style="padding:10px;">Projeto / Cliente</th>
-              <th style="padding:10px;">Etapa Atual / Anterior</th>
-              <th style="padding:10px;">Progresso</th>
-              <th style="padding:10px;">Última Atividade</th>
-              <th style="padding:10px;">Próximas Etapas</th>
+              <th style="padding:8px;">Projeto / Cliente</th>
+              <th style="padding:8px;">Etapa Atual / Anterior</th>
+              <th style="padding:8px;">Progresso</th>
+              <th style="padding:8px;">Última Atividade</th>
+              <th style="padding:8px;">Próximas Etapas</th>
             </tr>
           </thead>
           <tbody>
@@ -2417,24 +2427,22 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
           </tbody>
         </table>
 
-        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: center; font-size: 10px; color: #94a3b8;">
+        <div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 8px; text-align: center; font-size: 9px; color: #94a3b8;">
           Relatório consolidado gerado pelo Hub de Implantação WeON
         </div>
       `;
 
-      document.body.appendChild(containerPrint);
-
       const opt = {
-        margin:       8,
+        margin:       6,
         filename:     `Status_Report_Geral_WeON_${new Date().toISOString().slice(0,10)}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, logging: false },
+        html2canvas:  { scale: 2, logging: false, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
       };
 
-      html2pdf().set(opt).from(containerPrint).save().then(() => {
-        document.body.removeChild(containerPrint);
-      });
+      setTimeout(() => {
+        html2pdf().set(opt).from(printContainer).save();
+      }, 200);
     }
 
     async function gerarStatusReportGeralIA() {
