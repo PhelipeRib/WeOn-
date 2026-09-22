@@ -1620,6 +1620,10 @@ Empresa:
 
       } catch (error) {
         console.error("Erro ao carregar dados do Apps Script:", error);
+        // Exibe feedback visual ao falhar no servidor
+        if (boardContainer.querySelectorAll('.kanban-column').length === 0) {
+          boardContainer.innerHTML = `<p style="font-size:0.85em; color:var(--text-muted); opacity:0.8; padding:10px;"><i class="fas fa-exclamation-circle" style="color:var(--danger)"></i> Não foi possível conectar ao Google Sheets. Verifique as colunas locais ou autorizações.</p>`;
+        }
       }
     }
 
@@ -2030,11 +2034,11 @@ Empresa:
       }
     }
 
-    // CHAMADA IA GEMINI PARA STATUS REPORT COM ACEITAÇÃO DE CHAVES DIVERSAS
+    // CHAMADA IA GEMINI REORDENADA E ATUALIZADA (ROTA v1beta E v1 COM MODELOS RECENTES)
     async function gerarStatusReportIA() {
       const apiKey = localStorage.getItem('weon_gemini_key');
       if (!apiKey || apiKey.trim().length < 10) {
-        return alert("Por favor, cole sua API Key do Google Gemini no campo abaixo.");
+        return alert("Por favor, cole a sua API Key do Google Gemini no campo abaixo.");
       }
 
       const clienteNome = document.getElementById('modalTitleInput').value.trim();
@@ -2057,9 +2061,10 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      // MODELOS DE TENTATIVA (FALLBACK)
+      // ROTAS VÁLIDAS DO GEMINI (TESTA 2.5-flash e 1.5-flash)
       const modelEndpoints = [
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
+        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`,
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`
       ];
 
@@ -2091,7 +2096,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       }
 
       if (!success) {
-        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar o relatório com a IA: ${lastErrorMessage || 'Verifique sua API Key e tente novamente.'}</span>`;
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório: ${lastErrorMessage || 'Verifique sua API Key.'}</span>`;
       }
     }
 
