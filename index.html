@@ -2011,11 +2011,13 @@ Empresa:
       }
     }
 
-    // INTEGRAÇÃO COM GEMINI IA - MODELOS VIGENTES
+    // FUNÇÃO DA IA ATUALIZADA PARA ACEITAR AS CHAVES CHAVE "AQ..."
     async function gerarStatusReportIA() {
-      const apiKey = localStorage.getItem('weon_gemini_key');
-      if (!apiKey || apiKey.trim().length < 10) {
-        return alert("Por favor, cole a sua API Key do Google Gemini no campo abaixo.");
+      const rawKey = localStorage.getItem('weon_gemini_key') || '';
+      const apiKey = rawKey.trim();
+
+      if (!apiKey || apiKey.length < 10) {
+        return alert("Por favor, cole a sua API Key do Google AI Studio no campo abaixo.");
       }
 
       const clienteNome = document.getElementById('modalTitleInput').value.trim();
@@ -2038,11 +2040,11 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      // MODELOS VIGENTES DO GEMINI (ROTA DA V1BETA)
+      // MODELOS ACEITOS NAS CHAVES DO AI STUDIO
       const modelsToTry = [
+        'gemini-2.5-flash',
         'gemini-1.5-flash',
-        'gemini-1.5-pro',
-        'gemini-flash'
+        'gemini-1.5-pro'
       ];
 
       let success = false;
@@ -2050,11 +2052,14 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
 
       for (const modelName of modelsToTry) {
         try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey.trim()}`;
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
           
           const res = await fetch(endpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'x-goog-api-key': apiKey
+            },
             body: JSON.stringify({
               contents: [{
                 parts: [{ text: promptText }]
@@ -2080,7 +2085,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       }
 
       if (!success) {
-        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório com a IA: ${lastErrorMessage || 'Verifique se a sua API Key do Google AI Studio está correta e ativa.'}</span>`;
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório com a IA: ${lastErrorMessage || 'Verifique se sua API Key possui permissão ativa.'}</span>`;
       }
     }
 
