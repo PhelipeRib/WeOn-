@@ -2011,7 +2011,7 @@ Empresa:
       }
     }
 
-    // FUNÇÃO DA IA ATUALIZADA PARA ACEITAR AS CHAVES CHAVE "AQ..."
+    // CHAMADA ATUALIZADA E UNIVERSAL PARA O MODELO GEMINI 2.0/1.5 FLASH
     async function gerarStatusReportIA() {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2040,25 +2040,20 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      // MODELOS ACEITOS NAS CHAVES DO AI STUDIO
-      const modelsToTry = [
-        'gemini-2.5-flash',
-        'gemini-1.5-flash',
-        'gemini-1.5-pro'
+      const apiUrls = [
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
       ];
 
       let success = false;
       let lastErrorMessage = "";
 
-      for (const modelName of modelsToTry) {
+      for (const url of apiUrls) {
         try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-          
-          const res = await fetch(endpoint, {
+          const res = await fetch(url, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
-              'x-goog-api-key': apiKey
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify({
               contents: [{
@@ -2077,15 +2072,15 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
             break;
           } else if (data.error) {
             lastErrorMessage = data.error.message;
-            console.warn(`Tentativa com ${modelName} falhou:`, data.error.message);
+            console.warn("Erro ao tentar endpoint:", data.error.message);
           }
         } catch (err) {
-          console.error(`Erro na requisição para ${modelName}:`, err);
+          console.error("Falha na requisição da IA:", err);
         }
       }
 
       if (!success) {
-        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório com a IA: ${lastErrorMessage || 'Verifique se sua API Key possui permissão ativa.'}</span>`;
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório com a IA: ${lastErrorMessage || 'Verifique se a sua chave do AI Studio está ativa.'}</span>`;
       }
     }
 
