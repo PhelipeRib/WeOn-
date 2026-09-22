@@ -429,8 +429,10 @@
 
     .kanban-toolbar {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 14px;
+      gap: 10px;
     }
 
     .btn-add-column {
@@ -451,6 +453,26 @@
       background: var(--accent);
       color: #090c15;
       box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .btn-board-report {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.82em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-board-report:hover {
+      background: #38bdf8;
+      color: #090c15;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
     }
 
     .kanban-board { 
@@ -728,14 +750,14 @@
       font-size: 0.85em;
       line-height: 1.5;
       color: var(--text-main);
-      max-height: 200px;
+      max-height: 250px;
       overflow-y: auto;
       margin-top: 10px;
       display: none;
     }
 
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-    .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 620px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; color: var(--text-main); }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 650px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; color: var(--text-main); }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
 
     .input-title-group { margin-bottom: 14px; }
@@ -919,6 +941,7 @@
       <div class="content" style="max-height: 2500px;">
         <div class="content-inner">
           <div class="kanban-toolbar">
+            <button class="btn-board-report" onclick="abrirModalStatusReportGeral()"><i class="fas fa-file-contract"></i> Status Report Geral (Dailys/Weeklys)</button>
             <button class="btn-add-column" onclick="abrirModalNovaColuna()"><i class="fas fa-plus"></i> Nova Coluna / Status</button>
           </div>
           <div class="kanban-board" id="kanban-board">
@@ -953,8 +976,6 @@
       </button>
       <div class="content">
         <div class="content-inner">
-          
-          <!-- BLOCO JIRA OTIMIZADO -->
           <div class="data-row highlight-group">
             <span class="data-label"><i class="fab fa-jira" style="color: #0052CC; font-size:1.1em;"></i> <strong>JIRA Implantação (Portal Suporte)</strong></span>
             <span class="data-value">
@@ -970,7 +991,6 @@
             <span class="data-value">Weon@2024* <button class="btn-copy" onclick="copyText('Weon@2024*', this)"><i class="fas fa-copy"></i></button></span>
           </div>
 
-          <!-- DEMAIS ACESSOS DE SERVIDORES E ADMIN -->
           <div class="data-row">
             <span class="data-label">WeON Admin User</span>
             <span class="data-value">admin <button class="btn-copy" onclick="copyText('admin', this)"><i class="fas fa-copy"></i></button></span>
@@ -1094,7 +1114,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO E CRIAÇÃO -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO DE CARD INDIVIDUAL -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
@@ -1202,6 +1222,7 @@
     </div>
   </div>
 
+  <!-- MODAL DE CRIAÇÃO DE NOVA COLUNA -->
   <div id="colunaModal" class="modal">
     <div class="modal-content" style="max-width: 400px;">
       <h3><i class="fas fa-columns"></i> Criar Nova Coluna</h3>
@@ -1216,13 +1237,31 @@
     </div>
   </div>
 
+  <!-- MODAL DE STATUS REPORT GERAL (GERAL DO BOARD / DAILYS & WEEKLYS) -->
+  <div id="boardReportModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-file-contract"></i> Status Report Geral (Dailys & Weeklys)</h3>
+      <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Resumo consolidado de todas as etapas e projetos ativos no quadro de implantação.</p>
+
+      <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+        <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Plano B - Direto)</button>
+        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportGeralIA()"><i class="fas fa-magic"></i> Gerar Análise IA Geral (Gemini)</button>
+      </div>
+
+      <div id="boardAiResponseBox" class="ai-response-box" style="display:none; max-height:280px; margin-bottom:14px;"></div>
+
+      <div class="modal-actions" style="justify-content: flex-end;">
+        <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast">Alteração salva!</div>
 
   <script>
     let currentChecklistCache = [];
 
-    // URL ATUALIZADA DO SEU APPS SCRIPT
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
 
     function parseJwt(token) {
       try {
@@ -1522,6 +1561,16 @@
       localStorage.setItem('weon_contato_' + cliente, contato);
     }
 
+    // ARMAZENAMENTO HISTÓRICO DE ETAPA ANTERIOR E ATUAL
+    function getEtapaAnteriorLocal(cliente) {
+      return localStorage.getItem('weon_prev_col_' + cliente) || 'Inicial';
+    }
+    function saveEtapaAnteriorLocal(cliente, nomeColunaAnterior) {
+      if (nomeColunaAnterior) {
+        localStorage.setItem('weon_prev_col_' + cliente, nomeColunaAnterior);
+      }
+    }
+
     function getChecklistLocal(cliente) {
       const saved = localStorage.getItem('weon_chk_' + cliente);
       if (saved) return JSON.parse(saved);
@@ -1604,7 +1653,7 @@
         console.error("Erro ao carregar dados remotos:", error);
       }
 
-      // FALLBACK SE A CONEXÃO FALHAR OU NÃO RETORNAR COLUNAS
+      // FALLBACK SE CONEXÃO DEMORAR
       const cardsLocais = getCardsCriadosLocais();
       boardContainer.innerHTML = '';
       
@@ -1855,6 +1904,13 @@
         const destinoCol = parseInt(column.getAttribute('data-col-index'));
 
         if (data.origemCol === destinoCol) return;
+
+        // Salvar Histórico da Etapa Anterior antes de mudar
+        const colOrigemDiv = document.querySelector(`.kanban-column[data-col-index="${data.origemCol}"]`);
+        if (colOrigemDiv) {
+          const nomeColOrigem = colOrigemDiv.querySelector('.kanban-header span').innerText.trim();
+          saveEtapaAnteriorLocal(data.cliente, nomeColOrigem);
+        }
 
         const cardsContainer = column.querySelector('.cards-container');
         const emptyText = cardsContainer.querySelector('p');
@@ -2219,6 +2275,194 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       };
 
       html2pdf().set(opt).from(element).save();
+    }
+
+    // LÓGICA DO STATUS REPORT GERAL DO BOARD (DAILYS/WEEKLYS)
+    function extrairDadosCompletosDoBoard() {
+      const colunas = document.querySelectorAll('.kanban-column');
+      const dadosConsolidados = [];
+
+      colunas.forEach(col => {
+        const nomeColuna = col.querySelector('.kanban-header span').innerText.trim();
+        const cards = col.querySelectorAll('.kanban-card');
+
+        cards.forEach(card => {
+          const nomeCliente = card.getAttribute('data-cliente');
+          const obsHtml = card.getAttribute('data-obs') || getObsLocal(nomeCliente);
+          const chkItems = getChecklistLocal(nomeCliente);
+          const empresa = getEmpresaLocal(nomeCliente);
+          const contato = getContatoLocal(nomeCliente);
+          const etapaAnterior = getEtapaAnteriorLocal(nomeCliente);
+
+          const totalChk = chkItems.length;
+          const doneChk = chkItems.filter(i => i.done).length;
+          const pctChk = totalChk > 0 ? Math.round((doneChk / totalChk) * 100) : 0;
+          
+          const doneDates = chkItems.filter(i => i.done && i.date).map(i => i.date);
+          const ultimaAtividade = doneDates.length > 0 ? doneDates[doneDates.length - 1] : 'Sem atividade recente';
+
+          dadosConsolidados.push({
+            cliente: nomeCliente,
+            empresa: empresa,
+            contato: contato,
+            etapaAtual: nomeColuna,
+            etapaAnterior: etapaAnterior,
+            progressoPct: pctChk,
+            concluidosCount: `${doneChk}/${totalChk}`,
+            ultimaAtividade: ultimaAtividade,
+            pendencias: chkItems.filter(i => !i.done).map(i => i.texto),
+            concluidos: chkItems.filter(i => i.done).map(i => `${i.texto} (${i.date || ''})`),
+            obs: obsHtml.replace(/<[^>]*>?/gm, '')
+          });
+        });
+      });
+
+      return dadosConsolidados;
+    }
+
+    function abrirModalStatusReportGeral() {
+      document.getElementById('boardAiResponseBox').style.display = 'none';
+      document.getElementById('boardAiResponseBox').innerText = '';
+      document.getElementById('boardReportModal').style.display = 'flex';
+    }
+
+    function fecharModalBoardReport() {
+      document.getElementById('boardReportModal').style.display = 'none';
+    }
+
+    function exportarPdfBoardGeralPlanoB() {
+      const dadosBoard = extrairDadosCompletosDoBoard();
+      
+      if (dadosBoard.length === 0) {
+        return alert("Não há projetos/cards no quadro para gerar o relatório.");
+      }
+
+      const kpiTotal = document.getElementById('kpiTotal').innerText;
+      const kpiAndamento = document.getElementById('kpiAndamento').innerText;
+      const kpiBloqueio = document.getElementById('kpiBloqueio').innerText;
+      const kpiConcluido = document.getElementById('kpiConcluido').innerText;
+
+      let tabelaProjetosHtml = dadosBoard.map(p => `
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 10px; font-weight: bold; color: #0f172a;">${p.cliente}<br><span style="font-size:10px; font-weight:normal; color:#64748b;">${p.empresa || 'Cliente'}</span></td>
+          <td style="padding: 10px; color: #1e293b;"><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold;">${p.etapaAtual}</span><br><span style="font-size:9px; color:#94a3b8;">Anterior: ${p.etapaAnterior}</span></td>
+          <td style="padding: 10px; font-weight: bold; color: #0284c7;">${p.progressoPct}% (${p.concluidosCount})</td>
+          <td style="padding: 10px; font-size: 10px; color: #64748b;">${p.ultimaAtividade}</td>
+          <td style="padding: 10px; font-size: 10px; color: #334155;">
+            <strong>Pendências:</strong> ${p.pendencias.slice(0, 3).join(', ')}${p.pendencias.length > 3 ? '...' : ''}
+          </td>
+        </tr>
+      `).join('');
+
+      const element = document.createElement('div');
+      element.style.padding = '30px';
+      element.style.fontFamily = 'Arial, sans-serif';
+      element.style.color = '#1e293b';
+      element.style.background = '#ffffff';
+
+      element.innerHTML = `
+        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h1 style="color:#0f172a; margin:0; font-size:20px; font-weight:bold;">WeON - Relatório Geral de Acompanhamento (Daily/Weekly)</h1>
+            <p style="color:#64748b; font-size:12px; margin-top:4px;">Visão Consolidada de Todos os Projetos em Implantação</p>
+          </div>
+          <div style="text-align:right;">
+            <p style="font-size:11px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:20px; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0; justify-content:space-around; text-align:center;">
+          <div><span style="font-size:18px; font-weight:bold; color:#0284c7;">${kpiTotal}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">TOTAL PROJETOS</span></div>
+          <div><span style="font-size:18px; font-weight:bold; color:#0369a1;">${kpiAndamento}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">EM ANDAMENTO</span></div>
+          <div><span style="font-size:18px; font-weight:bold; color:#dc2626;">${kpiBloqueio}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">BLOQUEIOS / ATENÇÃO</span></div>
+          <div><span style="font-size:18px; font-weight:bold; color:#15803d;">${kpiConcluido}</span><br><span style="font-size:10px; color:#64748b; font-weight:bold;">CONCLUÍDOS</span></div>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:20px;">
+          <thead>
+            <tr style="background:#f1f5f9; text-align:left; color:#0f172a; border-bottom:2px solid #cbd5e1;">
+              <th style="padding:10px;">Projeto / Cliente</th>
+              <th style="padding:10px;">Etapa Atual / Anterior</th>
+              <th style="padding:10px;">Progresso</th>
+              <th style="padding:10px;">Última Atividade</th>
+              <th style="padding:10px;">Próximas Etapas</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tabelaProjetosHtml}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: center; font-size: 10px; color: #94a3b8;">
+          Relatório consolidado gerado pelo Hub de Implantação WeON
+        </div>
+      `;
+
+      const opt = {
+        margin:       8,
+        filename:     `Status_Report_Geral_WeON_${new Date().toISOString().slice(0,10)}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      };
+
+      html2pdf().set(opt).from(element).save();
+    }
+
+    async function gerarStatusReportGeralIA() {
+      const rawKey = localStorage.getItem('weon_gemini_key') || '';
+      const apiKey = rawKey.trim();
+
+      if (!apiKey || apiKey.length < 10) {
+        return alert("Por favor, cole sua API Key da Gemini na tela de edição de qualquer card para habilitar a IA.");
+      }
+
+      const dadosBoard = extrairDadosCompletosDoBoard();
+      if (dadosBoard.length === 0) return alert("Não há projetos no quadro para analisar.");
+
+      const responseBox = document.getElementById('boardAiResponseBox');
+      responseBox.style.display = 'block';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Análise Consolidada de Projetos para Daily/Weekly...</i>';
+
+      const promptText = `Você é um gerente de projetos da empresa WeON. Crie uma Análise Executiva de Status Report Consolidado para reuniões de Daily/Weekly de Implantação com ISM e Liderança.
+Dados atuais dos projetos no quadro: ${JSON.stringify(dadosBoard)}.
+
+Estruture a resposta com as seções:
+1. "Resumo da Operação" (visão rápida do volume e saúde das implantações)
+2. "Destaques de Evolução na Semana" (mencione os projetos que avançaram de etapa anterior para a atual)
+3. "Pontos de Atenção e Gargalos" (mencione colunas com o termo bloqueio ou pendências acumuladas)
+4. "Recomendações e Pauta para a Daily/Weekly".
+Escreva diretamente em Português sem formatação markdown pesada.`;
+
+      const models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+      let success = false;
+
+      for (const modelName of models) {
+        if (success) break;
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+          });
+
+          const data = await res.json();
+
+          if (res.ok && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+            responseBox.innerText = data.candidates[0].content.parts[0].text;
+            success = true;
+          }
+        } catch (err) {
+          console.error("Falha na requisição da IA:", err);
+        }
+      }
+
+      if (!success) {
+        responseBox.innerHTML = `<span style="color:var(--danger);">Servidores da IA temporariamente ocupados. Utilize o botão "Exportar PDF Geral (Plano B)" acima.</span>`;
+      }
     }
 
     function abrirModalNovaColuna() {
