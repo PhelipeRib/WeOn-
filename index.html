@@ -1856,7 +1856,6 @@ Empresa:
       }
     }
 
-    // EXCLUSÃO LIMPA SEM DEIXAR RASTRO NO CACHE LOCAL
     function deletarCardDirect(event, clienteNome, colIndex, btnEl) {
       event.stopPropagation();
       if (!confirm(`Tem certeza que deseja excluir o card "${clienteNome}"?`)) return;
@@ -2012,7 +2011,7 @@ Empresa:
       }
     }
 
-    // SUPORTE AO GEMINI 2.0 FLASH / 1.5 FLASH COM ENPOINT FUNCIONAL
+    // INTEGRAÇÃO COM GEMINI IA - MODELOS VIGENTES
     async function gerarStatusReportIA() {
       const apiKey = localStorage.getItem('weon_gemini_key');
       if (!apiKey || apiKey.trim().length < 10) {
@@ -2039,25 +2038,32 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      // ENDPOINTS VÁLIDOS DA API REST OFICIAL DO GOOGLE AI STUDIO
-      const modelEndpoints = [
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey.trim()}`,
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`
+      const modelsToTry = [
+        'gemini-2.5-flash',
+        'gemini-2.0-flash',
+        'gemini-1.5-flash'
       ];
 
       let success = false;
       let lastErrorMessage = "";
 
-      for (const endpoint of modelEndpoints) {
+      for (const modelName of modelsToTry) {
         try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey.trim()}`;
+          
           const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+            body: JSON.stringify({
+              contents: [{
+                parts: [{ text: promptText }]
+              }]
+            })
           });
+
           const data = await res.json();
 
-          if (data.candidates && data.candidates[0].content.parts[0].text) {
+          if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
             const reportText = data.candidates[0].content.parts[0].text;
             responseBox.innerText = reportText;
             btnExportPdf.style.display = 'inline-flex';
@@ -2065,14 +2071,15 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
             break;
           } else if (data.error) {
             lastErrorMessage = data.error.message;
+            console.warn(`Tentativa com ${modelName} falhou:`, data.error.message);
           }
         } catch (err) {
-          console.error("Erro na chamada:", err);
+          console.error(`Erro na requisição para ${modelName}:`, err);
         }
       }
 
       if (!success) {
-        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório com a IA: ${lastErrorMessage || 'Verifique sua API Key e tente novamente.'}</span>`;
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório com a IA: ${lastErrorMessage || 'Verifique se a sua API Key do Google AI Studio está correta e ativa.'}</span>`;
       }
     }
 
