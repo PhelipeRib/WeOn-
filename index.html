@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard Interno | Auxílio WeON</title>
   
-  <!-- GOOGLE IDENTITY SERVICES (LOGIN OFICIAL GOOGLE) -->
+  <!-- GOOGLE IDENTITY SERVICES -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <!-- Fontes Google & FontAwesome -->
@@ -14,14 +14,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>    
   
-  <!-- CHART.JS PARA GRÁFICOS INTERATIVOS -->
+  <!-- CHART.JS PARA GRÁFICOS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- HTML2PDF PARA EXPORTAÇÃO DE RELATÓRIOS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
-    /* VARIÁVEIS DE TEMA E CORES */
     :root {
       --bg-principal: #060911;
       --bg-card: rgba(15, 20, 34, 0.85);
@@ -40,7 +39,6 @@
       --radius-sm: 8px;
     }
 
-    /* TEMA CORPORATE WEON */
     [data-theme="corporate"] {
       --bg-principal: #0b132b;
       --bg-card: rgba(28, 37, 65, 0.9);
@@ -53,7 +51,6 @@
       --border-color: rgba(255, 255, 255, 0.12);
     }
 
-    /* TEMA CLARO / LIGHT MODE */
     [data-theme="light"] {
       --bg-principal: #f1f5f9;
       --bg-card: #ffffff;
@@ -91,7 +88,6 @@
       border: 1px solid var(--border-color); 
     }
     
-    /* TOPO E CONTROLES DE TEMA / USER */
     .top-bar-controls {
       display: flex;
       justify-content: space-between;
@@ -262,7 +258,6 @@
       padding-left: 12px; 
     }
 
-    /* PAINEL BI DA OPERAÇÃO */
     .bi-dashboard-box { 
       background: var(--bg-input); 
       border: 1px solid var(--border-color); 
@@ -357,7 +352,6 @@
     .content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background-color: var(--bg-card); }
     .content-inner { padding: 22px; }
 
-    /* ESTILO DA AGENDA EMBUTIDA */
     .calendar-embed-wrapper {
       position: relative;
       padding-bottom: 65%;
@@ -445,7 +439,6 @@
     .code-header { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; margin-top: 14px; }
     .code-header:first-child { margin-top: 0; }
 
-    /* KANBAN DINÂMICO E ARRASTE DE COLUNAS */
     .kanban-toolbar {
       display: flex;
       justify-content: flex-end;
@@ -587,7 +580,7 @@
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 600; color: var(--accent); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; }
     .card-checklist-progress { font-size: 0.72em; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 4px; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* ESTILOS DO CHECKLIST DENTRO DO MODAL */
+    /* CHECKLIST */
     .checklist-section {
       margin-top: 18px;
       background: var(--bg-input);
@@ -670,8 +663,8 @@
 
     .checklist-item-left input[type="checkbox"] {
       accent-color: var(--accent);
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       cursor: pointer;
     }
 
@@ -679,6 +672,7 @@
       font-size: 0.84em;
       color: var(--text-main);
       word-break: break-word;
+      cursor: pointer;
     }
     .checklist-item.completed .checklist-item-text {
       text-decoration: line-through;
@@ -711,7 +705,6 @@
     }
     .add-chk-input:focus { outline: none; border-color: var(--accent); }
 
-    /* SEÇÃO IA & RESUMO NO MODAL */
     .ai-report-section {
       margin-top: 18px;
       background: rgba(0, 255, 204, 0.03);
@@ -748,7 +741,6 @@
       display: none;
     }
 
-    /* MODAIS */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
     .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 620px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; color: var(--text-main); }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -802,7 +794,6 @@
       <h3 style="justify-content:center;"><i class="fas fa-shield-alt"></i> Acesso Restrito WeON</h3>
       <p style="font-size:0.88em; color:var(--text-muted); margin-bottom:20px;">Autentique-se com sua conta Google corporativa para liberar o painel.</p>
       
-      <!-- BOTÃO OFICIAL GOOGLE SIGN-IN COM SEU CLIENT ID -->
       <div style="display:flex; justify-content:center; margin-bottom:15px;">
         <div id="g_id_onload"
              data-client_id="829725285866-2b3kuo579qfqtacl0moecfadutm6hmfp.apps.googleusercontent.com"
@@ -825,7 +816,6 @@
 
   <div class="container" id="mainDashboardApp" style="display:none;">
     
-    <!-- BARRA SUPERIOR DE CONTROLE E TEMA -->
     <div class="top-bar-controls">
       <div class="user-info-badge">
         <i class="fas fa-user-check" style="color:var(--accent);"></i>
@@ -931,14 +921,12 @@
           <div class="kanban-toolbar">
             <button class="btn-add-column" onclick="abrirModalNovaColuna()"><i class="fas fa-plus"></i> Nova Coluna / Status</button>
           </div>
-          <div class="kanban-board" id="kanban-board">
-            <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas da planilha...</p>
-          </div>
+          <div class="kanban-board" id="kanban-board"></div>
         </div>
       </div>
     </div>
 
-    <!-- SEÇÃO AGENDA DO IMPLANTADOR -->
+    <!-- AGENDA -->
     <h2><i class="fas fa-calendar-alt"></i> Minha Agenda de Implantação</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible">
@@ -1133,7 +1121,7 @@ Empresa:
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO COM CHECKLIST & IA -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
@@ -1177,7 +1165,7 @@ Empresa:
 
       <div id="modalObsEditor" class="rich-editor" contenteditable="true" onkeyup="salvarSelecaoTexto()" onclick="salvarSelecaoTexto()"></div>
 
-      <!-- SEÇÃO DO CHECKLIST -->
+      <!-- CHECKLIST -->
       <div class="checklist-section">
         <div class="checklist-header">
           <h4><i class="fas fa-tasks"></i> Checklist de Implantação</h4>
@@ -1196,7 +1184,7 @@ Empresa:
         </div>
       </div>
 
-      <!-- SEÇÃO GERADOR DE REPORT COM IA -->
+      <!-- GERADOR DE REPORT IA -->
       <div class="ai-report-section">
         <div class="ai-header">
           <h4><i class="fas fa-robot"></i> Status Report Inteligente (Gemini IA)</h4>
@@ -1223,7 +1211,6 @@ Empresa:
     </div>
   </div>
 
-  <!-- MODAL DE CRIAÇÃO DE NOVA COLUNA -->
   <div id="colunaModal" class="modal">
     <div class="modal-content" style="max-width: 400px;">
       <h3><i class="fas fa-columns"></i> Criar Nova Coluna</h3>
@@ -1241,7 +1228,8 @@ Empresa:
   <div id="toast">Alteração salva!</div>
 
   <script>
-    // DECODIFICADOR JWT PARSE PARA TOKEN DO GOOGLE
+    let currentChecklistCache = [];
+
     function parseJwt(token) {
       try {
         const base64Url = token.split('.')[1];
@@ -1255,7 +1243,6 @@ Empresa:
       }
     }
 
-    // HANDLER DE RESPOSTA OFICIAL DO GOOGLE IDENTITY SIGN-IN
     function handleCredentialResponse(response) {
       const responsePayload = parseJwt(response.credential);
       const errorMsg = document.getElementById('loginErrorMsg');
@@ -1293,7 +1280,6 @@ Empresa:
       }
     }
 
-    // GESTÃO DE TEMAS
     function setTheme(themeName) {
       document.documentElement.setAttribute('data-theme', themeName);
       localStorage.setItem('weon_theme', themeName);
@@ -1407,7 +1393,6 @@ Empresa:
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
     }
 
-    // CHECKLIST PADRÃO
     const CHECKLIST_PADRAO = [
       "Enviado email boas vindas",
       "Aguardando cliente marcar kick off",
@@ -1439,7 +1424,6 @@ Empresa:
       "Enviado para faturamento"
     ];
 
-    // URL ATUALIZADA DO SEU APPS SCRIPT WEB APP (/exec)
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec'; 
 
     let cardElementoAtual = null;
@@ -1578,53 +1562,56 @@ Empresa:
         const response = await fetch(APPS_SCRIPT_URL);
         const resData = await response.json();
 
-        if (resData.status !== 'success' || !resData.colunas) {
-          throw new Error("Erro no retorno do Apps Script");
+        if (resData.status === 'success' && resData.colunas) {
+          boardContainer.innerHTML = '';
+          const colunasMap = resData.colunas;
+
+          colunasMap.forEach(col => {
+            let cardsHTML = '';
+
+            col.cards.forEach(card => {
+              let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
+              let chkData = card.chk ? card.chk : getChecklistLocal(card.cliente);
+
+              if (card.obs) saveObsLocal(card.cliente, card.obs);
+              if (card.chk) saveChecklistLocal(card.cliente, card.chk);
+
+              cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto, chkData);
+            });
+
+            const cardsLocais = getCardsCriadosLocais();
+            cardsLocais.forEach(cardLoc => {
+              if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
+                let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+                cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
+              }
+            });
+
+            const colDiv = montarElementoColuna(col.index, col.nome, cardsHTML);
+            boardContainer.appendChild(colDiv);
+          });
         }
-
-        boardContainer.innerHTML = '';
-        const colunasMap = resData.colunas;
-
-        colunasMap.forEach(col => {
-          let cardsHTML = '';
-
-          col.cards.forEach(card => {
-            let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
-            let chkData = card.chk ? card.chk : getChecklistLocal(card.cliente);
-
-            if (card.obs) saveObsLocal(card.cliente, card.obs);
-            if (card.chk) saveChecklistLocal(card.cliente, card.chk);
-
-            cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto, chkData);
-          });
-
-          const cardsLocais = getCardsCriadosLocais();
-          cardsLocais.forEach(cardLoc => {
-            if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
-              let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
-              cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
-            }
-          });
-
-          const colDiv = montarElementoColuna(col.index, col.nome, cardsHTML);
-          boardContainer.appendChild(colDiv);
-        });
-
-        boardContainer.addEventListener('wheel', (evt) => {
-          if (evt.deltaY !== 0) {
-            boardContainer.scrollLeft += evt.deltaY;
-          }
-        });
-
-        atualizarDashboardBI();
-
       } catch (error) {
-        console.error("Erro ao carregar dados do Apps Script:", error);
-        // Exibe feedback visual ao falhar no servidor
-        if (boardContainer.querySelectorAll('.kanban-column').length === 0) {
-          boardContainer.innerHTML = `<p style="font-size:0.85em; color:var(--text-muted); opacity:0.8; padding:10px;"><i class="fas fa-exclamation-circle" style="color:var(--danger)"></i> Não foi possível conectar ao Google Sheets. Verifique as colunas locais ou autorizações.</p>`;
-        }
+        console.error("Erro ao carregar dados remotos:", error);
       }
+
+      // Se o servidor falhar ou não trouxer colunas, renderiza o fallback local
+      if (boardContainer.querySelectorAll('.kanban-column').length === 0) {
+        boardContainer.innerHTML = '';
+        const cardsLocais = getCardsCriadosLocais();
+        let colDiv = montarElementoColuna(0, 'TESTE', '');
+        let container = colDiv.querySelector('.cards-container');
+        container.innerHTML = '';
+        
+        cardsLocais.forEach(cardLoc => {
+          let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+          container.innerHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
+        });
+
+        boardContainer.appendChild(colDiv);
+      }
+
+      atualizarDashboardBI();
     }
 
     function montarElementoColuna(index, nome, cardsHTML) {
@@ -1655,7 +1642,6 @@ Empresa:
       return colDiv;
     }
 
-    // ARRASTAR E SOLTAR COLUNAS
     function colDragStart(e) {
       if (window.draggedCard) return;
       draggedColumn = this;
@@ -1683,7 +1669,6 @@ Empresa:
       this.classList.remove('drag-over-column');
     }
 
-    // LÓGICA DO DASHBOARD BI
     function atualizarDashboardBI() {
       const colunas = document.querySelectorAll('.kanban-column');
       
@@ -1871,7 +1856,6 @@ Empresa:
       }
     }
 
-    // EXCLUSÃO DE CARD
     function deletarCardDirect(event, clienteNome, colIndex, btnEl) {
       event.stopPropagation();
       if (!confirm(`Tem certeza que deseja excluir o card "${clienteNome}"?`)) return;
@@ -1920,8 +1904,9 @@ Empresa:
       fecharModal();
     }
 
-    // GERENCIAMENTO E RENDERIZAÇÃO DO CHECKLIST
+    // INTERAÇÃO DO CHECKLIST COM DADOS DIRETOS
     function renderizarChecklistModal(items) {
+      currentChecklistCache = items;
       const container = document.getElementById('checklistContainer');
       container.innerHTML = '';
 
@@ -1939,8 +1924,8 @@ Empresa:
         itemDiv.innerHTML = `
           <div class="checklist-item-left">
             <i class="fas fa-grip-vertical drag-handle"></i>
-            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem(${index})">
-            <span class="checklist-item-text">${item.texto}</span>
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem(${index}, this.checked)">
+            <span class="checklist-item-text" onclick="clickTextToggle(${index})">${item.texto}</span>
           </div>
           <button class="btn-remove-chk" onclick="removerItemChecklist(${index})" title="Remover item"><i class="fas fa-times"></i></button>
         `;
@@ -1949,6 +1934,16 @@ Empresa:
       });
 
       atualizarProgressoChecklistUI(items);
+    }
+
+    function clickTextToggle(index) {
+      currentChecklistCache[index].done = !currentChecklistCache[index].done;
+      renderizarChecklistModal(currentChecklistCache);
+    }
+
+    function toggleChecklistItem(index, isChecked) {
+      currentChecklistCache[index].done = isChecked;
+      renderizarChecklistModal(currentChecklistCache);
     }
 
     function atualizarProgressoChecklistUI(items) {
@@ -1961,26 +1956,12 @@ Empresa:
     }
 
     function obterChecklistModalAtual() {
-      const container = document.getElementById('checklistContainer');
-      const items = [];
-      container.querySelectorAll('.checklist-item').forEach(el => {
-        const done = el.querySelector('input[type="checkbox"]').checked;
-        const texto = el.querySelector('.checklist-item-text').innerText;
-        items.push({ texto: texto, done: done });
-      });
-      return items;
-    }
-
-    function toggleChecklistItem(index) {
-      const items = obterChecklistModalAtual();
-      items[index].done = !items[index].done;
-      renderizarChecklistModal(items);
+      return currentChecklistCache;
     }
 
     function removerItemChecklist(index) {
-      const items = obterChecklistModalAtual();
-      items.splice(index, 1);
-      renderizarChecklistModal(items);
+      currentChecklistCache.splice(index, 1);
+      renderizarChecklistModal(currentChecklistCache);
     }
 
     function adicionarItemChecklistInput() {
@@ -1988,13 +1969,11 @@ Empresa:
       const texto = input.value.trim();
       if (!texto) return;
 
-      const items = obterChecklistModalAtual();
-      items.push({ texto: texto, done: false });
-      renderizarChecklistModal(items);
+      currentChecklistCache.push({ texto: texto, done: false });
+      renderizarChecklistModal(currentChecklistCache);
       input.value = '';
     }
 
-    // DRAG AND DROP DENTRO DO CHECKLIST
     function chkDragStart(e) {
       e.stopPropagation();
       draggedChecklistItem = this;
@@ -2023,18 +2002,17 @@ Empresa:
       this.classList.remove('drag-over-item');
 
       if (draggedChecklistItem && draggedChecklistItem !== this) {
-        const items = obterChecklistModalAtual();
         const fromIndex = parseInt(draggedChecklistItem.getAttribute('data-chk-index'));
         const toIndex = parseInt(this.getAttribute('data-chk-index'));
 
-        const movedItem = items.splice(fromIndex, 1)[0];
-        items.splice(toIndex, 0, movedItem);
+        const movedItem = currentChecklistCache.splice(fromIndex, 1)[0];
+        currentChecklistCache.splice(toIndex, 0, movedItem);
 
-        renderizarChecklistModal(items);
+        renderizarChecklistModal(currentChecklistCache);
       }
     }
 
-    // CHAMADA IA GEMINI REORDENADA E ATUALIZADA (ROTA v1beta E v1 COM MODELOS RECENTES)
+    // GERADOR DE REPORT COM GEMINI 2.0 FLASH
     async function gerarStatusReportIA() {
       const apiKey = localStorage.getItem('weon_gemini_key');
       if (!apiKey || apiKey.trim().length < 10) {
@@ -2061,11 +2039,11 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      // ROTAS VÁLIDAS DO GEMINI (TESTA 2.5-flash e 1.5-flash)
+      // MODELO ATUALIZADO 2.0 E FALLBACKS
       const modelEndpoints = [
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey.trim()}`,
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
-        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`,
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey.trim()}`
       ];
 
       let success = false;
@@ -2088,15 +2066,14 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
             break;
           } else if (data.error) {
             lastErrorMessage = data.error.message;
-            console.warn("Erro no modelo:", data.error.message);
           }
         } catch (err) {
-          console.error("Erro na requisição Gemini:", err);
+          console.error("Erro na chamada:", err);
         }
       }
 
       if (!success) {
-        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório: ${lastErrorMessage || 'Verifique sua API Key.'}</span>`;
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro ao gerar relatório com a IA: ${lastErrorMessage || 'Verifique sua API Key e tente novamente.'}</span>`;
       }
     }
 
@@ -2130,7 +2107,6 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       html2pdf().set(opt).from(element).save();
     }
 
-    // CRIAR E EXCLUIR COLUNAS
     function abrirModalNovaColuna() {
       document.getElementById('colunaTitleInput').value = '';
       document.getElementById('colunaModal').style.display = 'flex';
