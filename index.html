@@ -2038,10 +2038,11 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
+      // MODELOS VIGENTES DO GEMINI (ROTA DA V1BETA)
       const modelsToTry = [
-        'gemini-2.5-flash',
-        'gemini-2.0-flash',
-        'gemini-1.5-flash'
+        'gemini-1.5-flash',
+        'gemini-1.5-pro',
+        'gemini-flash'
       ];
 
       let success = false;
