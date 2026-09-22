@@ -1595,7 +1595,6 @@ Empresa:
         console.error("Erro ao carregar dados remotos:", error);
       }
 
-      // Se o servidor falhar ou não trouxer colunas, renderiza o fallback local
       if (boardContainer.querySelectorAll('.kanban-column').length === 0) {
         boardContainer.innerHTML = '';
         const cardsLocais = getCardsCriadosLocais();
@@ -1904,7 +1903,6 @@ Empresa:
       fecharModal();
     }
 
-    // INTERAÇÃO DO CHECKLIST COM DADOS DIRETOS
     function renderizarChecklistModal(items) {
       currentChecklistCache = items;
       const container = document.getElementById('checklistContainer');
@@ -2012,7 +2010,6 @@ Empresa:
       }
     }
 
-    // GERADOR DE REPORT COM GEMINI 2.0 FLASH
     async function gerarStatusReportIA() {
       const apiKey = localStorage.getItem('weon_gemini_key');
       if (!apiKey || apiKey.trim().length < 10) {
@@ -2039,7 +2036,6 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcas em markdown agressivas.`;
 
-      // MODELO ATUALIZADO 2.0 E FALLBACKS
       const modelEndpoints = [
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey.trim()}`,
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
