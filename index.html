@@ -1097,7 +1097,7 @@
           <div>
             <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">PROVEDOR DE IA:</label>
             <select id="aiProviderSelect" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" onchange="salvarProvedorIa(this.value)">
-              <option value="groq">Groq (Llama 3 70B - Gratuito & Rápido)</option>
+              <option value="groq">Groq (Llama 3.3 70B - Gratuito & Rápido)</option>
               <option value="openai">OpenAI (ChatGPT GPT-4o mini)</option>
               <option value="gemini">Google Gemini (3.6 / 3.8)</option>
               <option value="auto">Automático (Fallback entre todos)</option>
@@ -1283,7 +1283,7 @@
     </div>
 
     <div class="footer">
-      <p><i class="fas fa-info-circle"></i> Este documento foi estilizado para facilitar o dia a dia operacional interno.</p>
+      <p><i class="fas fa-info-circle"></i> Facilitadores para implantadores Weon.</p>
     </div>
   </div>
 
@@ -2170,25 +2170,47 @@
       }
     }
 
-    /* SISTEMA DE INTEGRAÇÃO MULTI-PROVEDOR DE IA (GROQ / OPENAI / GEMINI 3.6+) */
+    /* SISTEMA DE INTEGRAÇÃO MULTI-PROVEDOR DE IA (GROQ COM MODELOS ATUAIS / OPENAI / GEMINI 3.6+) */
     async function chamarGroqApi(promptText, apiKey) {
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: 'llama3-70b-8192',
-          messages: [{ role: 'user', content: promptText }],
-          temperature: 0.3
-        })
-      });
-      const data = await res.json();
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        return data.choices[0].message.content;
+      const modelosGroq = [
+        'llama-3.3-70b-versatile',
+        'llama-3.1-8b-instant',
+        'mixtral-8x7b-32768'
+      ];
+
+      let ultimoErro = null;
+
+      for (const model of modelosGroq) {
+        try {
+          const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [{ role: 'user', content: promptText }],
+              temperature: 0.3
+            })
+          });
+
+          const data = await res.json();
+
+          if (data.choices && data.choices[0] && data.choices[0].message) {
+            return data.choices[0].message.content;
+          }
+
+          if (data.error) {
+            ultimoErro = data.error.message || ("Erro no modelo " + model);
+            continue;
+          }
+        } catch (e) {
+          ultimoErro = e.message;
+        }
       }
-      throw new Error(data.error ? data.error.message : "Erro na chamada Groq API");
+
+      throw new Error(ultimoErro || "Não foi possível conectar à API da Groq.");
     }
 
     async function chamarOpenAiApi(promptText, apiKey) {
@@ -2248,7 +2270,6 @@
       } else if (provider === 'gemini') {
         return await chamarGemini36Api(promptText, apiKey);
       } else {
-        // Modo Automático (Fallback)
         try {
           if (apiKey.startsWith('gsk_')) return await chamarGroqApi(promptText, apiKey);
           if (apiKey.startsWith('sk-')) return await chamarOpenAiApi(promptText, apiKey);
@@ -2265,21 +2286,16 @@
       if (!mdText) return '';
       
       let html = mdText;
-      // Remove linhas divisórias feias
       html = html.replace(/---/g, '');
       
-      // Converte cabeçalhos
       html = html.replace(/^### (.*$)/gim, '<h3 style="color:#0284c7; font-size:14px; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-top:14px; margin-bottom:8px; font-weight:bold; text-transform:uppercase;">$1</h3>');
       html = html.replace(/^## (.*$)/gim, '<h2 style="color:#0f172a; font-size:16px; border-bottom:2px solid #00ffcc; padding-bottom:6px; margin-top:16px; margin-bottom:10px; font-weight:bold;">$1</h2>');
       
-      // Converte negritos
       html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color:#0f172a;">$1</strong>');
       
-      // Converte listas com marcadores limpos
       html = html.replace(/^\* (.*$)/gim, '<li style="margin-bottom:4px; list-style-type:none; padding-left:15px; position:relative;"><span style="position:absolute; left:0; color:#0284c7;">▪</span> $1</li>');
       html = html.replace(/^- (.*$)/gim, '<li style="margin-bottom:4px; list-style-type:none; padding-left:15px; position:relative;"><span style="position:absolute; left:0; color:#0284c7;">▪</span> $1</li>');
 
-      // Ajusta parágrafos
       html = html.replace(/\n\n/g, '<p style="margin-bottom:10px; line-height:1.5; color:#334155;"></p>');
 
       return html;
