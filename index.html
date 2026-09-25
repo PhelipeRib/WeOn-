@@ -1283,7 +1283,7 @@
     </div>
 
     <div class="footer">
-      <p><i class="fas fa-info-circle"></i> Facilitadores Implantadores Weon. </p>
+      <p><i class="fas fa-info-circle"></i> Este documento foi estilizado para facilitar o dia a dia operacional interno.</p>
     </div>
   </div>
 
@@ -2170,57 +2170,48 @@
       }
     }
 
-    /* SISTEMA DE DISCOVERY DE MODELO ATIVO DA GROQ EM TEMPO REAL */
-    async function obterModeloAtivoGroq(apiKey) {
-      try {
-        const res = await fetch('https://api.groq.com/openai/v1/models', {
-          headers: { 'Authorization': `Bearer ${apiKey}` }
-        });
-        const data = await res.json();
-        
-        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
-          // Procura por Llama 3/4 ou GPT-OSS ativos no catálogo do seu projeto
-          const modelEncontrado = data.data.find(m => 
-            m.id.includes('llama') || m.id.includes('gpt-oss') || m.id.includes('qwen')
-          );
-          if (modelEncontrado) return modelEncontrado.id;
-          return data.data[0].id;
-        }
-      } catch (e) {
-        console.warn("Falha ao consultar modelos ativos Groq, usando fallback...");
-      }
-      
-      // Fallback para modelos conhecidos em produção
-      return 'openai/gpt-oss-120b';
-    }
-
+    /* CHAMADA ENXUTA DA GROQ API COM MAX TOKENS CONFIGURADO (EVITA ESTOURO DE COMPLEÇÃO) */
     async function chamarGroqApi(promptText, apiKey) {
-      const activeModel = await obterModeloAtivoGroq(apiKey);
+      const modelosGroq = [
+        'llama-3.1-8b-instant',
+        'llama3-8b-8192',
+        'llama-3.3-70b-versatile'
+      ];
 
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: activeModel,
-          messages: [{ role: 'user', content: promptText }],
-          temperature: 0.3
-        })
-      });
+      let ultimoErro = null;
 
-      const data = await res.json();
+      for (const model of modelosGroq) {
+        try {
+          const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [{ role: 'user', content: promptText }],
+              temperature: 0.3,
+              max_tokens: 1000
+            })
+          });
 
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        return data.choices[0].message.content;
+          const data = await res.json();
+
+          if (data.choices && data.choices[0] && data.choices[0].message) {
+            return data.choices[0].message.content;
+          }
+
+          if (data.error) {
+            ultimoErro = data.error.message || ("Erro no modelo " + model);
+            continue;
+          }
+        } catch (e) {
+          ultimoErro = e.message;
+        }
       }
 
-      if (data.error) {
-        throw new Error(data.error.message || "Erro na API da Groq");
-      }
-
-      throw new Error("Resposta inválida do servidor Groq");
+      throw new Error(ultimoErro || "Não foi possível conectar à API da Groq.");
     }
 
     async function chamarOpenAiApi(promptText, apiKey) {
@@ -2233,7 +2224,8 @@
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages: [{ role: 'user', content: promptText }],
-          temperature: 0.3
+          temperature: 0.3,
+          max_tokens: 1000
         })
       });
       const data = await res.json();
@@ -2311,7 +2303,7 @@
       return html;
     }
 
-    /* RESUMO IA DENTRO DO CARD INDIVIDUAL */
+    /* RESUMO IA DENTRO DO CARD INDIVIDUAL COM DADOS RESUMIDOS (PROMPT ENXUTO) */
     async function gerarStatusReportIA() {
       const clienteNome = document.getElementById('modalTitleInput').value.trim();
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim();
@@ -2320,19 +2312,22 @@
 
       if (!clienteNome) return alert("Digite o nome do cliente no card.");
 
-      const doneItems = chkItems.filter(i => i.done).map(i => i.texto);
-      const pendingItems = chkItems.filter(i => !i.done).map(i => i.texto);
+      const totalChk = chkItems.length;
+      const doneChk = chkItems.filter(i => i.done).length;
+      const pctChk = totalChk > 0 ? Math.round((doneChk / totalChk) * 100) : 0;
+      
+      const pendenciasTop = chkItems.filter(i => !i.done).slice(0, 4).map(i => i.texto);
 
       const responseBox = document.getElementById('aiResponseBox');
       const btnExportPdf = document.getElementById('btnExportPdf');
       responseBox.style.display = 'block';
       responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via IA...</i>';
 
-      const promptText = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente/projeto "${clienteNome}" (Empresa: ${empresaNome || 'Cliente'}).
-Anotações internas do projeto: "${obsHtml}".
-Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
-Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
-Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda em Português sem marcadores brutos de código Markdown.`;
+      const promptText = `Você é um analista da WeON. Crie um Status Report executivo curto e formal para o projeto "${clienteNome}" (Empresa: ${empresaNome || 'Cliente'}).
+Progresso Atual: ${pctChk}% (${doneChk}/${totalChk} etapas concluídas).
+Próximas Pendências Principais: ${JSON.stringify(pendenciasTop)}.
+Anotações Internas: "${obsHtml.slice(0, 300)}".
+Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda em Português diretamente.`;
 
       try {
         const reportText = await chamarIaGenerica(promptText);
@@ -2842,27 +2837,33 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       window.print();
     }
 
-    /* BOTAO DIRETO DE DIAGNOSTICO DE IA DO BOARD GERAL */
     function executarAnaliseIAGeralDireta() {
       abrirModalStatusReportGeral();
       gerarAnaliseIAGeral();
     }
 
-    /* GERADOR DE ANÁLISE IA DO BOARD COMPLETO */
     async function gerarAnaliseIAGeral() {
       const dadosBoard = extrairDadosCompletosDoBoard();
       if (dadosBoard.length === 0) {
         return alert("Não há projetos ativos no board para analisar.");
       }
 
+      // Resume os dados para não sobrecarregar a requisição de IA
+      const dadosResumidos = dadosBoard.map(p => ({
+        cliente: p.cliente,
+        etapa: p.etapaAtual,
+        progresso: `${p.progressoPct}%`,
+        pendenciasCount: p.pendencias.length
+      }));
+
       const responseBox = document.getElementById('boardAiResponseBox');
       const btnExport = document.getElementById('btnExportBoardAiPdf');
       responseBox.style.display = 'block';
       responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Processando diagnóstico executivo via IA...</i>';
 
-      const promptText = `Você é o Gestor de Implantações da WeON. Faça um diagnóstico executivo consolidado da carteira geral de projetos.
-Projetos ativos e dados: ${JSON.stringify(dadosBoard)}.
-Forneça um relatório dividido em: "Resumo Geral da Carteira", "Pontos Críticos / Gargalos" e "Recomendações e Próximos Passos para a Equipe". Responda diretamente em Português sem marcadores de código Markdown.`;
+      const promptText = `Você é Gestor da WeON. Faça um diagnóstico executivo resumido dos projetos ativos.
+Projetos: ${JSON.stringify(dadosResumidos)}.
+Divida o texto curto em: "Resumo Geral da Carteira", "Gargalos" e "Ações Recomendadas". Responda diretamente em Português sem marcas de código.`;
 
       try {
         const reportText = await chamarIaGenerica(promptText);
