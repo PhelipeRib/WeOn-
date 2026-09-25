@@ -430,6 +430,7 @@
       align-items: center;
       margin-bottom: 14px;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .btn-add-column {
@@ -470,6 +471,26 @@
       background: #38bdf8;
       color: #090c15;
       box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-ai-board-direct {
+      background: var(--accent-glow);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.82em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-ai-board-direct:hover {
+      background: var(--accent);
+      color: #090c15;
+      box-shadow: 0 0 15px var(--accent-glow);
     }
 
     .kanban-board { 
@@ -1046,10 +1067,16 @@
       </button>
       <div class="content" style="max-height: 2500px;">
         <div class="content-inner">
+          
+          <!-- BARRA DE FERRAMENTAS DO KANBAN COM O BOTÃO DE IA E EXPORTAÇÃO -->
           <div class="kanban-toolbar">
-            <button class="btn-board-report" onclick="abrirModalStatusReportGeral()"><i class="fas fa-file-contract"></i> Status Report Geral (Dailys/Weeklys)</button>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn-board-report" onclick="abrirModalStatusReportGeral()"><i class="fas fa-file-contract"></i> Status Report Geral (Dailys/Weeklys)</button>
+              <button class="btn-ai-board-direct" onclick="executarAnaliseIAGeralDireta()"><i class="fas fa-robot"></i> 🤖 Resumo IA do Board Geral</button>
+            </div>
             <button class="btn-add-column" onclick="abrirModalNovaColuna()"><i class="fas fa-plus"></i> Nova Coluna / Status</button>
           </div>
+
           <div class="kanban-board" id="kanban-board">
             <p style="font-size:0.8em; color:var(--text-muted);">Carregando colunas...</p>
           </div>
@@ -1057,30 +1084,31 @@
       </div>
     </div>
 
-    <!-- MODAL DE STATUS REPORT GERAL (BOARD INTEIRO) -->
+    <!-- MODAL DE STATUS REPORT GERAL & DIAGNÓSTICO IA DO BOARD -->
     <div id="boardReportModal" class="modal">
       <div class="modal-content">
-        <h3><i class="fas fa-file-contract"></i> Status Report Geral com Pipeline (Dailys & Weeklys)</h3>
-        <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Visão executiva com esteira de progresso por marco para cada cliente.</p>
+        <h3><i class="fas fa-file-contract"></i> Status Report Geral & Diagnóstico IA da Carteira</h3>
+        <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Acompanhamento executivo de todos os projetos ativos.</p>
 
         <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
-          <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Salvar / Imprimir)</button>
-          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarAnaliseIAGeral()"><i class="fas fa-robot"></i> Gerar Análise IA Geral (Gemini)</button>
+          <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Esteira & Tabela)</button>
+          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarAnaliseIAGeral()"><i class="fas fa-magic"></i> Gerar/Atualizar Resumo com IA</button>
         </div>
 
-        <!-- CAMPO API KEY GEMINI NO BOARD GERAL -->
         <div style="margin-bottom: 12px;">
           <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY GEMINI (GOOGLE AI STUDIO):</label>
           <input type="password" id="boardGeminiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="AIzaSy..." onchange="salvarKeyGeminiGeral(this.value)">
         </div>
 
+        <!-- CAIXA ONDE O RESUMO DE IA É EXIBIDO -->
         <div id="boardAiResponseBox" class="ai-response-box"></div>
-        <button id="btnExportBoardAiPdf" class="btn-widget" style="display:none; margin-top:10px; margin-bottom:10px; border-color:#38bdf8; color:#38bdf8;" onclick="exportarRelatorioIAGeralPdf()"><i class="fas fa-download"></i> Exportar Análise IA Geral em PDF</button>
+        <button id="btnExportBoardAiPdf" class="btn-widget" style="display:none; margin-top:10px; margin-bottom:14px; border-color:var(--accent); color:var(--accent);" onclick="exportarRelatorioIAGeralPdf()"><i class="fas fa-file-download"></i> 📄 Exportar PDF da Análise IA</button>
 
+        <!-- VISUALIZAÇÃO EM TABELA E ESTEIRA -->
         <div id="boardReportPrintContainer" class="printable-preview-container"></div>
 
         <div class="modal-actions" style="justify-content: flex-end; margin-top:14px;">
-          <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar</button>
+          <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar Modal</button>
         </div>
       </div>
     </div>
@@ -1251,7 +1279,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO COM IA E PLANO B -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO DE CARD INDIVIDUAL -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
@@ -1324,12 +1352,12 @@
         </div>
       </div>
 
-      <!-- PAINEL COMPLETO DE IA E PLANO B NO CARD INDIVIDUAL -->
+      <!-- IA E PLANO B NO CARD INDIVIDUAL -->
       <div class="ai-report-section">
         <div class="ai-header">
-          <h4><i class="fas fa-robot"></i> Status Report do Projetos (Gemini IA & Exportação)</h4>
+          <h4><i class="fas fa-robot"></i> Status Report do Projeto (Gemini IA & Exportação)</h4>
           <div style="display:flex; gap:8px;">
-            <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfDirectoLocal()"><i class="fas fa-file-pdf"></i> Exportar PDF Direto (Plano B - Sem IA)</button>
+            <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfDirectoLocal()"><i class="fas fa-file-pdf"></i> Exportar PDF Direto (Sem IA)</button>
             <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportIA()"><i class="fas fa-magic"></i> Gerar Resumo IA</button>
           </div>
         </div>
@@ -2130,7 +2158,7 @@
       }
     }
 
-    /* FUNÇÃO DE EXECUÇÃO COM FALLBACK AUTOMÁTICO EM CASCATA DE MODELOS (INCLUINDO 3.6 E 3.8) */
+    /* FUNÇÃO OFICIAL UNIFICADA COM MODELO OFICIAL GEMINI GOOGLE AI STUDIO */
     async function chamarGeminiComFallback(promptText) {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2139,18 +2167,15 @@
         throw new Error("API_KEY_INVALIDA");
       }
 
-      // Ordem de tentativa com os modelos mais estáveis disponíveis no Google AI Studio
-      const modelos = [
-        'gemini-3.8-flash',
-        'gemini-3.6-flash',
-        'gemini-3.5-flash',
+      // Usando estritamente os modelos vigentes e suportados na v1beta
+      const modelosValidos = [
         'gemini-2.5-flash',
-        'gemini-1.5-flash'
+        'gemini-2.0-flash'
       ];
 
       let ultimoErro = null;
 
-      for (const model of modelos) {
+      for (const model of modelosValidos) {
         try {
           const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
           const res = await fetch(url, {
@@ -2166,8 +2191,7 @@
           }
 
           if (data.error) {
-            ultimoErro = data.error.message || "Erro de API no modelo " + model;
-            // Se o erro for de descontinuidade ou alta demanda no modelo, passa para o próximo automaticamente
+            ultimoErro = data.error.message || ("Erro ao utilizar modelo " + model);
             continue;
           }
         } catch (e) {
@@ -2175,10 +2199,10 @@
         }
       }
 
-      throw new Error(ultimoErro || "Alta demanda temporária nos servidores da IA.");
+      throw new Error(ultimoErro || "Alta demanda nos servidores da IA.");
     }
 
-    /* FUNÇÃO DE GERAR RESUMO IA DENTRO DO CARD INDIVIDUAL */
+    /* RESUMO IA DENTRO DO CARD INDIVIDUAL */
     async function gerarStatusReportIA() {
       const clienteNome = document.getElementById('modalTitleInput').value.trim();
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim();
@@ -2207,13 +2231,13 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
         btnExportPdf.style.display = 'inline-flex';
       } catch (err) {
         if (err.message === "API_KEY_INVALIDA") {
-          responseBox.innerHTML = `<span style="color:var(--danger);">Por favor, cole a sua API Key do Google AI Studio no campo acima.</span>`;
+          responseBox.innerHTML = `<span style="color:var(--danger);">Por favor, insira a sua API Key do Google AI Studio no campo acima.</span>`;
         } else {
           responseBox.innerHTML = `
-            <div style="background: rgba(255,74,74,0.1); border:1px solid var(--danger); padding:10px; border-radius:6px; color:var(--danger);">
-              <i class="fas fa-exclamation-triangle"></i> <strong>Pico de uso no servidor Gemini:</strong> ${err.message}
+            <div style="background: rgba(255,74,74,0.08); border:1px solid var(--danger); padding:12px; border-radius:6px; color:var(--danger); font-size:0.85em;">
+              <strong>Aviso da API Gemini:</strong> ${err.message}
               <br><br>
-              💡 <strong>Dica rápida:</strong> Clique no botão <strong>"Exportar PDF Direto (Plano B - Sem IA)"</strong> no topo para emitir o relatório completo do projeto instantaneamente!
+              💡 <strong>Solução Rápida:</strong> Use o botão <strong>"Exportar PDF Direto (Sem IA)"</strong> no topo para gerar o relatório sem depender da API.
             </div>
           `;
         }
@@ -2256,7 +2280,6 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       printWindow.onload = function() { printWindow.focus(); printWindow.print(); };
     }
 
-    /* FUNÇÃO DE EXPORTAÇÃO PDF DO CARD VIA JANELA DE IMPRESSÃO NATIVA (PLANO B) */
     function exportarPdfDirectoLocal() {
       const projetoNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto Sem Título';
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Não Informada';
@@ -2710,6 +2733,12 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       window.print();
     }
 
+    /* BOTÃO DIRETO DO KANBAN DE RESUMO IA DO BOARD GERAL */
+    function executarAnaliseIAGeralDireta() {
+      abrirModalStatusReportGeral();
+      gerarAnaliseIAGeral();
+    }
+
     /* FUNÇÃO DE ANÁLISE IA PARA TODO O BOARD GERAL (TODOS OS PROJETOS) */
     async function gerarAnaliseIAGeral() {
       const dadosBoard = extrairDadosCompletosDoBoard();
@@ -2720,7 +2749,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       const responseBox = document.getElementById('boardAiResponseBox');
       const btnExport = document.getElementById('btnExportBoardAiPdf');
       responseBox.style.display = 'block';
-      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Consolidação executiva em processamento via Gemini IA...</i>';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Processando diagnóstico executivo de todos os projetos via Gemini IA...</i>';
 
       const promptText = `Você é o Gestor de Implantações da WeON. Faça um diagnóstico executivo consolidado da carteira geral de projetos.
 Projetos ativos e dados: ${JSON.stringify(dadosBoard)}.
@@ -2735,10 +2764,10 @@ Forneça um relatório dividido em: "Resumo Geral da Carteira", "Pontos Crítico
           responseBox.innerHTML = `<span style="color:var(--danger);">Por favor, informe a API Key do Google AI Studio no campo acima.</span>`;
         } else {
           responseBox.innerHTML = `
-            <div style="background: rgba(255,74,74,0.1); border:1px solid var(--danger); padding:10px; border-radius:6px; color:var(--danger);">
-              <i class="fas fa-exclamation-triangle"></i> <strong>Pico de uso no servidor Gemini:</strong> ${err.message}
+            <div style="background: rgba(255,74,74,0.08); border:1px solid var(--danger); padding:12px; border-radius:6px; color:var(--danger); font-size:0.85em;">
+              <strong>Aviso Gemini IA:</strong> ${err.message}
               <br><br>
-              💡 <strong>Dica rápida:</strong> Clique no botão <strong>"Exportar PDF Geral (Salvar / Imprimir)"</strong> para emitir a tabela completa de todos os projetos instantaneamente!
+              💡 <strong>Dica Rápida:</strong> Clique no botão <strong>"Exportar PDF Geral (Esteira & Tabela)"</strong> acima para salvar a visão geral completa de todos os projetos em PDF sem depender da IA!
             </div>
           `;
         }
