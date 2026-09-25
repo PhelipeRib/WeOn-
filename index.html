@@ -17,9 +17,6 @@
   <!-- CHART.JS PARA GRÁFICOS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- HTML2PDF PARA EXPORTAÇÃO DE RELATÓRIOS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
   <style>
     :root {
       --bg-principal: #060911;
@@ -590,7 +587,7 @@
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 600; color: var(--accent); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; }
     .card-checklist-progress { font-size: 0.72em; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 4px; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* ESTILOS DA PIPELINE DE MARCOS / TRACKER ESTILO IFOOD */
+    /* ESTILOS DA PIPELINE DE MARCOS / TRACKER */
     .pipeline-tracker-container {
       display: flex;
       align-items: flex-start;
@@ -785,42 +782,6 @@
       font-size: 0.82em;
     }
     .add-chk-input:focus { outline: none; border-color: var(--accent); }
-
-    .ai-report-section {
-      margin-top: 18px;
-      background: rgba(0, 255, 204, 0.03);
-      border: 1px solid var(--border-glow);
-      border-radius: 8px;
-      padding: 16px;
-    }
-    .ai-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .ai-header h4 {
-      font-size: 0.85em;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .ai-response-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 14px;
-      font-size: 0.85em;
-      line-height: 1.5;
-      color: var(--text-main);
-      max-height: 250px;
-      overflow-y: auto;
-      margin-top: 10px;
-      display: none;
-    }
 
     .input-title-group { margin-bottom: 14px; }
     .input-title-group label { display: block; font-size: 0.75em; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -2094,7 +2055,7 @@
       }
     }
 
-    /* FUNÇÃO CORRIGIDA DE EXPORTAÇÃO PDF DO CARD INDIVIDUAL (PLANO B) */
+    /* FUNÇÃO DE EXPORTAÇÃO PDF DO CARD VIA JANELA DE IMPRESSÃO NATIVA (A4) */
     function exportarPdfDirectoLocal() {
       const projetoNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto Sem Título';
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Não Informada';
@@ -2111,75 +2072,84 @@
       let doneListHtml = doneItems.map(i => `<li style="margin-bottom:6px; color:#15803d; font-size:12px;">✔ <strong>${i.texto}</strong> ${i.date ? `<span style="font-size:11px; color:#64748b;">(${i.date})</span>` : ''}</li>`).join('');
       let pendingListHtml = pendingItems.map(i => `<li style="margin-bottom:6px; color:#b91c1c; font-size:12px;">⌛ ${i.texto}</li>`).join('');
 
-      const element = document.createElement('div');
-      element.style.position = 'fixed';
-      element.style.left = '0';
-      element.style.top = '0';
-      element.style.width = '800px';
-      element.style.zIndex = '9999';
-      element.style.padding = '30px';
-      element.style.fontFamily = 'Arial, sans-serif';
-      element.style.color = '#000000';
-      element.style.background = '#ffffff';
+      const printWindow = window.open('', '_blank', 'width=900,height=800');
+      if (!printWindow) return alert("Permita que o navegador abra janelas pop-up para gerar o PDF.");
 
-      element.innerHTML = `
-        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <h1 style="color:#0f172a; margin:0; font-size:20px; font-weight:bold;">WeON - Relatório Completo de Implantação</h1>
-            <p style="color:#64748b; font-size:13px; margin-top:4px;">Projeto: <strong>${projetoNome}</strong></p>
+      const contentHtml = `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>Relatório - ${projetoNome}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              color: #0f172a;
+              background: #ffffff;
+              padding: 30px;
+              margin: 0;
+            }
+            @page {
+              size: A4 portrait;
+              margin: 15mm;
+            }
+            @media print {
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 12px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h1 style="color:#0f172a; margin:0; font-size:20px; font-weight:bold;">WeON - Relatório Completo de Implantação</h1>
+              <p style="color:#64748b; font-size:13px; margin-top:4px;">Projeto: <strong>${projetoNome}</strong></p>
+            </div>
+            <div style="text-align:right;">
+              <p style="font-size:11px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')}</p>
+              <p style="font-size:13px; font-weight:bold; color:#0284c7; margin-top:2px;">Progresso: ${doneCount}/${total} (${pct}%)</p>
+            </div>
           </div>
-          <div style="text-align:right;">
-            <p style="font-size:11px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')}</p>
-            <p style="font-size:13px; font-weight:bold; color:#0284c7; margin-top:2px;">Progresso: ${doneCount}/${total} (${pct}%)</p>
+
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:12px 16px; border-radius:6px; margin-bottom:20px;">
+            <h3 style="font-size:13px; color:#0f172a; margin-bottom:6px; text-transform:uppercase; font-weight:bold;">Informações de Contato e Cliente</h3>
+            <p style="font-size:12px; margin:3px 0;"><strong>Empresa Cliente:</strong> ${empresaNome}</p>
+            <p style="font-size:12px; margin:3px 0;"><strong>Contato Responsável:</strong> ${contatoInfo}</p>
           </div>
-        </div>
 
-        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:12px 16px; border-radius:6px; margin-bottom:20px;">
-          <h3 style="font-size:13px; color:#0f172a; margin-bottom:6px; text-transform:uppercase; font-weight:bold;">Informações de Contato e Cliente</h3>
-          <p style="font-size:12px; margin:3px 0;"><strong>Empresa Cliente:</strong> ${empresaNome}</p>
-          <p style="font-size:12px; margin:3px 0;"><strong>Contato Responsável:</strong> ${contatoInfo}</p>
-        </div>
+          ${obsHtml.trim() ? `
+          <div style="margin-bottom:20px;">
+            <h3 style="font-size:13px; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase; font-weight:bold;">Descrição / Anotações Gerais</h3>
+            <div style="font-size:12px; line-height:1.5; color:#334155;">${obsHtml}</div>
+          </div>` : ''}
 
-        ${obsHtml.trim() ? `
-        <div style="margin-bottom:20px;">
-          <h3 style="font-size:13px; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase; font-weight:bold;">Descrição / Anotações Gerais</h3>
-          <div style="font-size:12px; line-height:1.5; color:#334155;">${obsHtml}</div>
-        </div>` : ''}
+          <div style="margin-bottom:20px;">
+            <h3 style="font-size:13px; color:#15803d; border-bottom:1px solid #bbf7d0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase; font-weight:bold;">Etapas Concluídas (${doneCount})</h3>
+            <ul style="padding-left:18px; font-size:12px; list-style-type:none; margin:0;">
+              ${doneListHtml || '<li style="color:#94a3b8; font-style:italic;">Nenhuma etapa concluída até o momento.</li>'}
+            </ul>
+          </div>
 
-        <div style="margin-bottom:20px;">
-          <h3 style="font-size:13px; color:#15803d; border-bottom:1px solid #bbf7d0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase; font-weight:bold;">Etapas Concluídas (${doneCount})</h3>
-          <ul style="padding-left:18px; font-size:12px; list-style-type:none;">
-            ${doneListHtml || '<li style="color:#94a3b8; font-style:italic;">Nenhuma etapa concluída até o momento.</li>'}
-          </ul>
-        </div>
+          <div style="margin-bottom:20px;">
+            <h3 style="font-size:13px; color:#b91c1c; border-bottom:1px solid #fecaca; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase; font-weight:bold;">Etapas Pendentes / Próximos Passos (${pendingItems.length})</h3>
+            <ul style="padding-left:18px; font-size:12px; list-style-type:none; margin:0;">
+              ${pendingListHtml || '<li style="color:#15803d; font-weight:bold;">🎉 Todas as etapas do checklist foram concluídas!</li>'}
+            </ul>
+          </div>
 
-        <div style="margin-bottom:20px;">
-          <h3 style="font-size:13px; color:#b91c1c; border-bottom:1px solid #fecaca; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase; font-weight:bold;">Etapas Pendentes / Próximos Passos (${pendingItems.length})</h3>
-          <ul style="padding-left:18px; font-size:12px; list-style-type:none;">
-            ${pendingListHtml || '<li style="color:#15803d; font-weight:bold;">🎉 Todas as etapas do checklist foram concluídas!</li>'}
-          </ul>
-        </div>
-
-        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: center; font-size: 10px; color: #94a3b8;">
-          Documento gerado pelo Hub de Auxílio WeON
-        </div>
+          <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: center; font-size: 10px; color: #94a3b8;">
+            Documento gerado pelo Hub de Auxílio WeON
+          </div>
+        </body>
+        </html>
       `;
 
-      document.body.appendChild(element);
+      printWindow.document.write(contentHtml);
+      printWindow.document.close();
 
-      const opt = {
-        margin:       10,
-        filename:     `Relatorio_Implantacao_${projetoNome.replace(/\s+/g, '_')}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      printWindow.onload = function() {
+        printWindow.focus();
+        printWindow.print();
       };
-
-      setTimeout(() => {
-        html2pdf().set(opt).from(element).save().then(() => {
-          document.body.removeChild(element);
-        });
-      }, 300);
     }
 
     function abrirModalObs(cardEl, col) {
