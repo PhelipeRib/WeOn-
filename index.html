@@ -1283,7 +1283,7 @@
     </div>
 
     <div class="footer">
-      <p><i class="fas fa-info-circle"></i> Facilitadores para implantadores Weon.</p>
+      <p><i class="fas fa-info-circle"></i> Facilitadores para implantadores Weon. </p>
     </div>
   </div>
 
@@ -2170,12 +2170,11 @@
       }
     }
 
-    /* SISTEMA DE INTEGRAÇÃO MULTI-PROVEDOR DE IA (GROQ COM MODELOS ATUAIS / OPENAI / GEMINI 3.6+) */
+    /* MODELOS GROQ EXCLUSIVOS EM OPERAÇÃO ATIVA */
     async function chamarGroqApi(promptText, apiKey) {
       const modelosGroq = [
         'llama-3.3-70b-versatile',
-        'llama-3.1-8b-instant',
-        'mixtral-8x7b-32768'
+        'llama-3.1-8b-instant'
       ];
 
       let ultimoErro = null;
@@ -2343,7 +2342,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       }
     }
 
-    /* GERADOR DE IMPRESSÃO DE PDF FORMATADO (SEM "about:blank" E SEM TRAVESSÕES GROSSEIROS) */
+    /* GERADOR DE IMPRESSÃO DE PDF FORMATADO */
     function emitirPdfDocumentoCorporativo(titulo, subtitulo, conteudoHtml) {
       const iframe = document.createElement('iframe');
       iframe.style.position = 'fixed';
