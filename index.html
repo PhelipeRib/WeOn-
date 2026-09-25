@@ -1075,6 +1075,7 @@
         </div>
 
         <div id="boardAiResponseBox" class="ai-response-box"></div>
+        <button id="btnExportBoardAiPdf" class="btn-widget" style="display:none; margin-top:10px; margin-bottom:10px; border-color:#38bdf8; color:#38bdf8;" onclick="exportarRelatorioIAGeralPdf()"><i class="fas fa-download"></i> Exportar Análise IA Geral em PDF</button>
 
         <div id="boardReportPrintContainer" class="printable-preview-container"></div>
 
@@ -2129,15 +2130,58 @@
       }
     }
 
-    /* FUNÇÃO DE GERAR RESUMO IA DENTRO DO CARD INDIVIDUAL (MODELO ATUALIZADO 3.8-FLASH) */
-    async function gerarStatusReportIA() {
+    /* FUNÇÃO CENTRALIZADA COM FALLBACK AUTOMÁTICO DE MODELOS GEMINI PARA IA */
+    async function chamarGeminiComFallback(promptText) {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
 
       if (!apiKey || apiKey.length < 10) {
-        return alert("Por favor, cole a sua API Key do Google AI Studio no campo apropriado.");
+        throw new Error("API_KEY_INVALIDA");
       }
 
+      // Lista de modelos ordenados para fallback em caso de alta demanda no modelo gratuito
+      const modelos = [
+        'gemini-2.5-flash',
+        'gemini-1.5-flash',
+        'gemini-2.0-flash'
+      ];
+
+      let ultimoErro = null;
+
+      for (const model of modelos) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+          });
+
+          const data = await res.json();
+
+          if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+            return data.candidates[0].content.parts[0].text;
+          }
+
+          if (data.error) {
+            ultimoErro = data.error.message || "Erro desconhecido na API Gemini";
+            // Se for erro de demanda/limite, continua o loop para o próximo modelo
+            if (ultimoErro.toLowerCase().includes('demand') || ultimoErro.toLowerCase().includes('quota') || ultimoErro.toLowerCase().includes('rate')) {
+              continue;
+            } else {
+              break;
+            }
+          }
+        } catch (e) {
+          ultimoErro = e.message;
+        }
+      }
+
+      throw new Error(ultimoErro || "Alta demanda momentânea no serviço da Gemini.");
+    }
+
+    /* FUNÇÃO DE GERAR RESUMO IA DENTRO DO CARD INDIVIDUAL */
+    async function gerarStatusReportIA() {
       const clienteNome = document.getElementById('modalTitleInput').value.trim();
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim();
       const obsHtml = document.getElementById('modalObsEditor').innerText.trim();
@@ -2151,7 +2195,7 @@
       const responseBox = document.getElementById('aiResponseBox');
       const btnExportPdf = document.getElementById('btnExportPdf');
       responseBox.style.display = 'block';
-      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini 3.8-Flash IA...</i>';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini IA...</i>';
 
       const promptText = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente/projeto "${clienteNome}" (Empresa: ${empresaNome || 'Cliente'}).
 Anotações internas do projeto: "${obsHtml}".
@@ -2159,27 +2203,22 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcadores de código Markdown agressivos.`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
-
       try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-        });
-
-        const data = await res.json();
-
-        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-          const reportText = data.candidates[0].content.parts[0].text;
-          responseBox.innerText = reportText;
-          btnExportPdf.style.display = 'inline-flex';
-        } else if (data.error) {
-          responseBox.innerHTML = `<span style="color:var(--danger);">Erro na API Gemini: ${data.error.message}</span>`;
-        }
+        const reportText = await chamarGeminiComFallback(promptText);
+        responseBox.innerText = reportText;
+        btnExportPdf.style.display = 'inline-flex';
       } catch (err) {
-        console.error("Falha na requisição da IA:", err);
-        responseBox.innerHTML = `<span style="color:var(--danger);">Erro de conexão ao gerar o relatório via IA.</span>`;
+        if (err.message === "API_KEY_INVALIDA") {
+          responseBox.innerHTML = `<span style="color:var(--danger);">Por favor, cole a sua API Key do Google AI Studio no campo acima.</span>`;
+        } else {
+          responseBox.innerHTML = `
+            <div style="background: rgba(255,74,74,0.1); border:1px solid var(--danger); padding:10px; border-radius:6px; color:var(--danger);">
+              <i class="fas fa-exclamation-triangle"></i> <strong>Aviso Gemini IA:</strong> O servidor de IA do Google está em pico de uso temporário.
+              <br><br>
+              💡 <strong>Use o botão "Exportar PDF Direto (Plano B - Sem IA)"</strong> no topo para emitir a ficha completa do projeto sem depender da IA!
+            </div>
+          `;
+        }
       }
     }
 
@@ -2542,6 +2581,8 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
 
     function abrirModalStatusReportGeral() {
       montarPreviewRelatorioPrint();
+      document.getElementById('boardAiResponseBox').style.display = 'none';
+      document.getElementById('btnExportBoardAiPdf').style.display = 'none';
       document.getElementById('boardReportModal').style.display = 'flex';
     }
 
@@ -2671,48 +2712,74 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       window.print();
     }
 
-    /* FUNÇÃO DE ANÁLISE IA PARA TODO O BOARD GERAL (MODELO ATUALIZADO 3.8-FLASH) */
+    /* FUNÇÃO DE ANÁLISE IA PARA TODO O BOARD GERAL (TODOS OS PROJETOS) */
     async function gerarAnaliseIAGeral() {
-      const rawKey = localStorage.getItem('weon_gemini_key') || '';
-      const apiKey = rawKey.trim();
-
-      if (!apiKey || apiKey.length < 10) {
-        return alert("Por favor, informe a API Key do Google AI Studio.");
-      }
-
       const dadosBoard = extrairDadosCompletosDoBoard();
       if (dadosBoard.length === 0) {
         return alert("Não há projetos ativos para analisar.");
       }
 
       const responseBox = document.getElementById('boardAiResponseBox');
+      const btnExport = document.getElementById('btnExportBoardAiPdf');
       responseBox.style.display = 'block';
-      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Consolidação executiva em processamento via Gemini 3.8-Flash IA...</i>';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Consolidação executiva em processamento via Gemini IA...</i>';
 
       const promptText = `Você é o Gestor de Implantações da WeON. Faça um diagnóstico executivo consolidado da carteira geral de projetos.
 Projetos ativos e dados: ${JSON.stringify(dadosBoard)}.
 Forneça um relatório dividido em: "Resumo Geral da Carteira", "Pontos Críticos / Gargalos" e "Recomendações e Próximos Passos para a Equipe". Responda diretamente em Português sem marcadores de código Markdown agressivos.`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
-
       try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-        });
-
-        const data = await res.json();
-
-        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-          responseBox.innerText = data.candidates[0].content.parts[0].text;
-        } else if (data.error) {
-          responseBox.innerHTML = `<span style="color:var(--danger);">Erro na API Gemini: ${data.error.message}</span>`;
-        }
+        const reportText = await chamarGeminiComFallback(promptText);
+        responseBox.innerText = reportText;
+        btnExport.style.display = 'inline-flex';
       } catch (err) {
-        console.error("Erro ao gerar análise IA do Board:", err);
-        responseBox.innerHTML = `<span style="color:var(--danger);">Erro de conexão ao gerar a análise da carteira.</span>`;
+        if (err.message === "API_KEY_INVALIDA") {
+          responseBox.innerHTML = `<span style="color:var(--danger);">Por favor, informe a API Key do Google AI Studio no campo acima.</span>`;
+        } else {
+          responseBox.innerHTML = `
+            <div style="background: rgba(255,74,74,0.1); border:1px solid var(--danger); padding:10px; border-radius:6px; color:var(--danger);">
+              <i class="fas fa-exclamation-triangle"></i> <strong>Aviso Gemini IA:</strong> O serviço de IA do Google está com pico temporário de uso.
+              <br><br>
+              💡 <strong>Você pode usar o botão "Exportar PDF Geral (Salvar / Imprimir)"</strong> para gerar a tabela completa com a esteira/pipeline de todos os projetos sem dependência da IA!
+            </div>
+          `;
+        }
       }
+    }
+
+    function exportarRelatorioIAGeralPdf() {
+      const responseBox = document.getElementById('boardAiResponseBox');
+      const textoIA = responseBox.innerText;
+
+      if (!textoIA) return alert("Nenhuma análise de IA gerada para exportar.");
+
+      const printWindow = window.open('', '_blank', 'width=900,height=800');
+      if (!printWindow) return alert("Permita pop-ups no navegador.");
+
+      const contentHtml = `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>Diagnóstico da Carteira - WeON</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 30px; color: #0f172a; line-height: 1.6; }
+            h1 { font-size: 18px; color: #0284c7; border-bottom: 2px solid #00ffcc; padding-bottom: 8px; }
+            pre { white-space: pre-wrap; font-family: Arial, sans-serif; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <h1>WeON - Diagnóstico Executivo Geral da Carteira (IA)</h1>
+          <p style="font-size:11px; color:#64748b;">Emissão: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</p>
+          <hr style="border:none; border-top:1px solid #e2e8f0; margin: 15px 0;">
+          <pre>${textoIA}</pre>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(contentHtml);
+      printWindow.document.close();
+      printWindow.onload = function() { printWindow.focus(); printWindow.print(); };
     }
   </script>
 </body>
