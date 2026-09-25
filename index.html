@@ -1097,7 +1097,7 @@
           <div>
             <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">PROVEDOR DE IA:</label>
             <select id="aiProviderSelect" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" onchange="salvarProvedorIa(this.value)">
-              <option value="groq">Groq (Llama 3.3 70B - Gratuito & Rápido)</option>
+              <option value="groq">Groq (Auto-Detecção do Modelo Ativo)</option>
               <option value="openai">OpenAI (ChatGPT GPT-4o mini)</option>
               <option value="gemini">Google Gemini (3.6 / 3.8)</option>
               <option value="auto">Automático (Fallback entre todos)</option>
@@ -2170,9 +2170,32 @@
       }
     }
 
-    /* SISTEMA DIRETO DE CHAMADA DE IA (GROQ EXCLUSIVAMENTE COM MODELO OFICIAL 'llama-3.3-70b-versatile') */
+    /* SISTEMA DE DISCOVERY DE MODELO ATIVO DA GROQ EM TEMPO REAL */
+    async function obterModeloAtivoGroq(apiKey) {
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/models', {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+        const data = await res.json();
+        
+        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+          // Procura por Llama 3/4 ou GPT-OSS ativos no catálogo do seu projeto
+          const modelEncontrado = data.data.find(m => 
+            m.id.includes('llama') || m.id.includes('gpt-oss') || m.id.includes('qwen')
+          );
+          if (modelEncontrado) return modelEncontrado.id;
+          return data.data[0].id;
+        }
+      } catch (e) {
+        console.warn("Falha ao consultar modelos ativos Groq, usando fallback...");
+      }
+      
+      // Fallback para modelos conhecidos em produção
+      return 'openai/gpt-oss-120b';
+    }
+
     async function chamarGroqApi(promptText, apiKey) {
-      const model = 'llama-3.3-70b-versatile';
+      const activeModel = await obterModeloAtivoGroq(apiKey);
 
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -2181,7 +2204,7 @@
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: model,
+          model: activeModel,
           messages: [{ role: 'user', content: promptText }],
           temperature: 0.3
         })
