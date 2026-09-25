@@ -1283,7 +1283,7 @@
     </div>
 
     <div class="footer">
-      <p><i class="fas fa-info-circle"></i> Faclitadores Implantadores Weon.</p>
+      <p><i class="fas fa-info-circle"></i> Facilitadores Implantadores Weon. </p>
     </div>
   </div>
 
@@ -2170,46 +2170,34 @@
       }
     }
 
-    /* MODELOS GROQ EXCLUSIVOS EM OPERAÇÃO ATIVA */
+    /* SISTEMA DIRETO DE CHAMADA DE IA (GROQ EXCLUSIVAMENTE COM MODELO OFICIAL 'llama-3.3-70b-versatile') */
     async function chamarGroqApi(promptText, apiKey) {
-      const modelosGroq = [
-        'llama-3.3-70b-versatile',
-        'llama-3.1-8b-instant'
-      ];
+      const model = 'llama-3.3-70b-versatile';
 
-      let ultimoErro = null;
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'user', content: promptText }],
+          temperature: 0.3
+        })
+      });
 
-      for (const model of modelosGroq) {
-        try {
-          const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: [{ role: 'user', content: promptText }],
-              temperature: 0.3
-            })
-          });
+      const data = await res.json();
 
-          const data = await res.json();
-
-          if (data.choices && data.choices[0] && data.choices[0].message) {
-            return data.choices[0].message.content;
-          }
-
-          if (data.error) {
-            ultimoErro = data.error.message || ("Erro no modelo " + model);
-            continue;
-          }
-        } catch (e) {
-          ultimoErro = e.message;
-        }
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        return data.choices[0].message.content;
       }
 
-      throw new Error(ultimoErro || "Não foi possível conectar à API da Groq.");
+      if (data.error) {
+        throw new Error(data.error.message || "Erro na API da Groq");
+      }
+
+      throw new Error("Resposta inválida do servidor Groq");
     }
 
     async function chamarOpenAiApi(promptText, apiKey) {
