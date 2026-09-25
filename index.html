@@ -2129,7 +2129,7 @@
       }
     }
 
-    /* FUNÇÃO DE GERAR RESUMO IA DENTRO DO CARD INDIVIDUAL */
+    /* FUNÇÃO DE GERAR RESUMO IA DENTRO DO CARD INDIVIDUAL (MODELO ATUALIZADO 3.8-FLASH) */
     async function gerarStatusReportIA() {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2151,7 +2151,7 @@
       const responseBox = document.getElementById('aiResponseBox');
       const btnExportPdf = document.getElementById('btnExportPdf');
       responseBox.style.display = 'block';
-      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini IA...</i>';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini 3.8-Flash IA...</i>';
 
       const promptText = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente/projeto "${clienteNome}" (Empresa: ${empresaNome || 'Cliente'}).
 Anotações internas do projeto: "${obsHtml}".
@@ -2159,7 +2159,7 @@ Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
 Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
 Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcadores de código Markdown agressivos.`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
 
       try {
         const res = await fetch(url, {
@@ -2671,7 +2671,7 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
       window.print();
     }
 
-    /* FUNÇÃO DE ANÁLISE IA PARA TODO O BOARD GERAL (TODOS OS PROJETOS) */
+    /* FUNÇÃO DE ANÁLISE IA PARA TODO O BOARD GERAL (MODELO ATUALIZADO 3.8-FLASH) */
     async function gerarAnaliseIAGeral() {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2687,13 +2687,13 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
 
       const responseBox = document.getElementById('boardAiResponseBox');
       responseBox.style.display = 'block';
-      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Consolidação executiva em processamento via Gemini IA...</i>';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Consolidação executiva em processamento via Gemini 3.8-Flash IA...</i>';
 
       const promptText = `Você é o Gestor de Implantações da WeON. Faça um diagnóstico executivo consolidado da carteira geral de projetos.
 Projetos ativos e dados: ${JSON.stringify(dadosBoard)}.
 Forneça um relatório dividido em: "Resumo Geral da Carteira", "Pontos Críticos / Gargalos" e "Recomendações e Próximos Passos para a Equipe". Responda diretamente em Português sem marcadores de código Markdown agressivos.`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
 
       try {
         const res = await fetch(url, {
