@@ -2130,7 +2130,7 @@
       }
     }
 
-    /* FUNÇÃO CENTRALIZADA COM FALLBACK AUTOMÁTICO DE MODELOS GEMINI PARA IA */
+    /* FUNÇÃO DE EXECUÇÃO COM FALLBACK AUTOMÁTICO EM CASCATA DE MODELOS (INCLUINDO 3.6 E 3.8) */
     async function chamarGeminiComFallback(promptText) {
       const rawKey = localStorage.getItem('weon_gemini_key') || '';
       const apiKey = rawKey.trim();
@@ -2139,11 +2139,13 @@
         throw new Error("API_KEY_INVALIDA");
       }
 
-      // Lista de modelos ordenados para fallback em caso de alta demanda no modelo gratuito
+      // Ordem de tentativa com os modelos mais estáveis disponíveis no Google AI Studio
       const modelos = [
+        'gemini-3.8-flash',
+        'gemini-3.6-flash',
+        'gemini-3.5-flash',
         'gemini-2.5-flash',
-        'gemini-1.5-flash',
-        'gemini-2.0-flash'
+        'gemini-1.5-flash'
       ];
 
       let ultimoErro = null;
@@ -2164,20 +2166,16 @@
           }
 
           if (data.error) {
-            ultimoErro = data.error.message || "Erro desconhecido na API Gemini";
-            // Se for erro de demanda/limite, continua o loop para o próximo modelo
-            if (ultimoErro.toLowerCase().includes('demand') || ultimoErro.toLowerCase().includes('quota') || ultimoErro.toLowerCase().includes('rate')) {
-              continue;
-            } else {
-              break;
-            }
+            ultimoErro = data.error.message || "Erro de API no modelo " + model;
+            // Se o erro for de descontinuidade ou alta demanda no modelo, passa para o próximo automaticamente
+            continue;
           }
         } catch (e) {
           ultimoErro = e.message;
         }
       }
 
-      throw new Error(ultimoErro || "Alta demanda momentânea no serviço da Gemini.");
+      throw new Error(ultimoErro || "Alta demanda temporária nos servidores da IA.");
     }
 
     /* FUNÇÃO DE GERAR RESUMO IA DENTRO DO CARD INDIVIDUAL */
@@ -2213,9 +2211,9 @@ Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" 
         } else {
           responseBox.innerHTML = `
             <div style="background: rgba(255,74,74,0.1); border:1px solid var(--danger); padding:10px; border-radius:6px; color:var(--danger);">
-              <i class="fas fa-exclamation-triangle"></i> <strong>Aviso Gemini IA:</strong> O servidor de IA do Google está em pico de uso temporário.
+              <i class="fas fa-exclamation-triangle"></i> <strong>Pico de uso no servidor Gemini:</strong> ${err.message}
               <br><br>
-              💡 <strong>Use o botão "Exportar PDF Direto (Plano B - Sem IA)"</strong> no topo para emitir a ficha completa do projeto sem depender da IA!
+              💡 <strong>Dica rápida:</strong> Clique no botão <strong>"Exportar PDF Direto (Plano B - Sem IA)"</strong> no topo para emitir o relatório completo do projeto instantaneamente!
             </div>
           `;
         }
@@ -2738,9 +2736,9 @@ Forneça um relatório dividido em: "Resumo Geral da Carteira", "Pontos Crítico
         } else {
           responseBox.innerHTML = `
             <div style="background: rgba(255,74,74,0.1); border:1px solid var(--danger); padding:10px; border-radius:6px; color:var(--danger);">
-              <i class="fas fa-exclamation-triangle"></i> <strong>Aviso Gemini IA:</strong> O serviço de IA do Google está com pico temporário de uso.
+              <i class="fas fa-exclamation-triangle"></i> <strong>Pico de uso no servidor Gemini:</strong> ${err.message}
               <br><br>
-              💡 <strong>Você pode usar o botão "Exportar PDF Geral (Salvar / Imprimir)"</strong> para gerar a tabela completa com a esteira/pipeline de todos os projetos sem dependência da IA!
+              💡 <strong>Dica rápida:</strong> Clique no botão <strong>"Exportar PDF Geral (Salvar / Imprimir)"</strong> para emitir a tabela completa de todos os projetos instantaneamente!
             </div>
           `;
         }
