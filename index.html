@@ -783,6 +783,45 @@
     }
     .add-chk-input:focus { outline: none; border-color: var(--accent); }
 
+    .ai-report-section {
+      margin-top: 18px;
+      background: rgba(0, 255, 204, 0.03);
+      border: 1px solid var(--border-glow);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .ai-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ai-header h4 {
+      font-size: 0.85em;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-response-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 0.85em;
+      line-height: 1.5;
+      color: var(--text-main);
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 10px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
     .input-title-group { margin-bottom: 14px; }
     .input-title-group label { display: block; font-size: 0.75em; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     .input-card-title { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); font-weight: 600; font-size: 0.95em; }
@@ -1018,7 +1057,7 @@
       </div>
     </div>
 
-    <!-- MODAL DE STATUS REPORT GERAL -->
+    <!-- MODAL DE STATUS REPORT GERAL (BOARD INTEIRO) -->
     <div id="boardReportModal" class="modal">
       <div class="modal-content">
         <h3><i class="fas fa-file-contract"></i> Status Report Geral com Pipeline (Dailys & Weeklys)</h3>
@@ -1026,7 +1065,16 @@
 
         <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
           <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Salvar / Imprimir)</button>
+          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarAnaliseIAGeral()"><i class="fas fa-robot"></i> Gerar Análise IA Geral (Gemini)</button>
         </div>
+
+        <!-- CAMPO API KEY GEMINI NO BOARD GERAL -->
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY GEMINI (GOOGLE AI STUDIO):</label>
+          <input type="password" id="boardGeminiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="AIzaSy..." onchange="salvarKeyGeminiGeral(this.value)">
+        </div>
+
+        <div id="boardAiResponseBox" class="ai-response-box"></div>
 
         <div id="boardReportPrintContainer" class="printable-preview-container"></div>
 
@@ -1202,7 +1250,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO -->
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO COM IA E PLANO B -->
   <div id="obsModal" class="modal">
     <div class="modal-content">
       <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
@@ -1275,14 +1323,24 @@
         </div>
       </div>
 
-      <!-- PAINEL DE EXPORTAÇÃO INDIVIDUAL CORRIGIDO DO CARD -->
-      <div class="ai-report-section" style="margin-top: 18px; background: rgba(0, 255, 204, 0.03); border: 1px solid var(--border-glow); border-radius: 8px; padding: 16px;">
-        <div class="ai-header" style="display:flex; justify-content:space-between; align-items:center;">
-          <h4 style="font-size:0.85em; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;">
-            <i class="fas fa-file-export"></i> Opções de Relatório & Exportação PDF
-          </h4>
-          <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfDirectoLocal()"><i class="fas fa-file-pdf"></i> Exportar PDF Direto (Plano B - Sem IA)</button>
+      <!-- PAINEL COMPLETO DE IA E PLANO B NO CARD INDIVIDUAL -->
+      <div class="ai-report-section">
+        <div class="ai-header">
+          <h4><i class="fas fa-robot"></i> Status Report do Projetos (Gemini IA & Exportação)</h4>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfDirectoLocal()"><i class="fas fa-file-pdf"></i> Exportar PDF Direto (Plano B - Sem IA)</button>
+            <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportIA()"><i class="fas fa-magic"></i> Gerar Resumo IA</button>
+          </div>
         </div>
+
+        <div style="margin-top: 10px; margin-bottom: 8px;">
+          <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY GEMINI (GOOGLE AI STUDIO):</label>
+          <input type="password" id="geminiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="AIzaSy..." onchange="salvarKeyGemini(this.value)">
+        </div>
+
+        <div id="aiResponseBox" class="ai-response-box"></div>
+
+        <button id="btnExportPdf" class="btn-widget" style="display:none; margin-top:10px; border-color:#38bdf8; color:#38bdf8;" onclick="exportarRelatorioPdfIA()"><i class="fas fa-download"></i> Exportar Resumo IA em PDF</button>
       </div>
 
       <div class="modal-actions">
@@ -1448,6 +1506,12 @@
       carregarTemaSalvo();
       const savedNotes = localStorage.getItem('weon_quick_notes');
       if (savedNotes) document.getElementById('quickNotes').value = savedNotes;
+
+      const savedKey = localStorage.getItem('weon_gemini_key');
+      if (savedKey) {
+        document.getElementById('geminiApiKey').value = savedKey;
+        document.getElementById('boardGeminiApiKey').value = savedKey;
+      }
     }
 
     function saveNotes() { localStorage.setItem('weon_quick_notes', document.getElementById('quickNotes').value); }
@@ -1483,6 +1547,16 @@
 
     function escapeXml(unsafe) {
       return unsafe.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '\'': '&apos;', '"': '&quot;' }[c]));
+    }
+
+    function salvarKeyGemini(val) {
+      localStorage.setItem('weon_gemini_key', val.trim());
+      document.getElementById('boardGeminiApiKey').value = val.trim();
+    }
+
+    function salvarKeyGeminiGeral(val) {
+      localStorage.setItem('weon_gemini_key', val.trim());
+      document.getElementById('geminiApiKey').value = val.trim();
     }
 
     const CHECKLIST_PADRAO = [
@@ -2055,7 +2129,97 @@
       }
     }
 
-    /* FUNÇÃO DE EXPORTAÇÃO PDF DO CARD VIA JANELA DE IMPRESSÃO NATIVA (A4) */
+    /* FUNÇÃO DE GERAR RESUMO IA DENTRO DO CARD INDIVIDUAL */
+    async function gerarStatusReportIA() {
+      const rawKey = localStorage.getItem('weon_gemini_key') || '';
+      const apiKey = rawKey.trim();
+
+      if (!apiKey || apiKey.length < 10) {
+        return alert("Por favor, cole a sua API Key do Google AI Studio no campo apropriado.");
+      }
+
+      const clienteNome = document.getElementById('modalTitleInput').value.trim();
+      const empresaNome = document.getElementById('modalEmpresaInput').value.trim();
+      const obsHtml = document.getElementById('modalObsEditor').innerText.trim();
+      const chkItems = obterChecklistModalAtual();
+
+      if (!clienteNome) return alert("Digite o nome do cliente no card.");
+
+      const doneItems = chkItems.filter(i => i.done).map(i => i.texto);
+      const pendingItems = chkItems.filter(i => !i.done).map(i => i.texto);
+
+      const responseBox = document.getElementById('aiResponseBox');
+      const btnExportPdf = document.getElementById('btnExportPdf');
+      responseBox.style.display = 'block';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via Gemini IA...</i>';
+
+      const promptText = `Você é um analista de implantação da empresa WeON. Crie um Status Report executivo, formal e direto para enviar ao cliente/projeto "${clienteNome}" (Empresa: ${empresaNome || 'Cliente'}).
+Anotações internas do projeto: "${obsHtml}".
+Etapas concluídas da implantação: ${JSON.stringify(doneItems)}.
+Etapas pendentes/próximos passos: ${JSON.stringify(pendingItems)}.
+Formate o texto com seções claras: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda diretamente em Português sem marcadores de código Markdown agressivos.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+        });
+
+        const data = await res.json();
+
+        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+          const reportText = data.candidates[0].content.parts[0].text;
+          responseBox.innerText = reportText;
+          btnExportPdf.style.display = 'inline-flex';
+        } else if (data.error) {
+          responseBox.innerHTML = `<span style="color:var(--danger);">Erro na API Gemini: ${data.error.message}</span>`;
+        }
+      } catch (err) {
+        console.error("Falha na requisição da IA:", err);
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro de conexão ao gerar o relatório via IA.</span>`;
+      }
+    }
+
+    function exportarRelatorioPdfIA() {
+      const responseBox = document.getElementById('aiResponseBox');
+      const clienteNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto';
+      const textoIA = responseBox.innerText;
+
+      if (!textoIA) return alert("Nenhum relatório gerado para exportar.");
+
+      const printWindow = window.open('', '_blank', 'width=900,height=800');
+      if (!printWindow) return alert("Permita pop-ups no navegador.");
+
+      const contentHtml = `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>Status Report IA - ${clienteNome}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 30px; color: #0f172a; line-height: 1.6; }
+            h1 { font-size: 18px; color: #0284c7; border-bottom: 2px solid #00ffcc; padding-bottom: 8px; }
+            pre { white-space: pre-wrap; font-family: Arial, sans-serif; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <h1>WeON - Status Report Executivo IA (${clienteNome})</h1>
+          <p style="font-size:11px; color:#64748b;">Emissão: ${new Date().toLocaleDateString('pt-BR')}</p>
+          <hr style="border:none; border-top:1px solid #e2e8f0; margin: 15px 0;">
+          <pre>${textoIA}</pre>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(contentHtml);
+      printWindow.document.close();
+      printWindow.onload = function() { printWindow.focus(); printWindow.print(); };
+    }
+
+    /* FUNÇÃO DE EXPORTAÇÃO PDF DO CARD VIA JANELA DE IMPRESSÃO NATIVA (PLANO B) */
     function exportarPdfDirectoLocal() {
       const projetoNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto Sem Título';
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Não Informada';
@@ -2082,20 +2246,9 @@
           <meta charset="UTF-8">
           <title>Relatório - ${projetoNome}</title>
           <style>
-            body {
-              font-family: Arial, sans-serif;
-              color: #0f172a;
-              background: #ffffff;
-              padding: 30px;
-              margin: 0;
-            }
-            @page {
-              size: A4 portrait;
-              margin: 15mm;
-            }
-            @media print {
-              body { padding: 0; }
-            }
+            body { font-family: Arial, sans-serif; color: #0f172a; background: #ffffff; padding: 30px; margin: 0; }
+            @page { size: A4 portrait; margin: 15mm; }
+            @media print { body { padding: 0; } }
           </style>
         </head>
         <body>
@@ -2145,11 +2298,7 @@
 
       printWindow.document.write(contentHtml);
       printWindow.document.close();
-
-      printWindow.onload = function() {
-        printWindow.focus();
-        printWindow.print();
-      };
+      printWindow.onload = function() { printWindow.focus(); printWindow.print(); };
     }
 
     function abrirModalObs(cardEl, col) {
@@ -2174,6 +2323,9 @@
       document.getElementById('modalContatoInput').value = contatoAtual;
       document.getElementById('modalObsEditor').innerHTML = obsAtual;
       
+      document.getElementById('aiResponseBox').style.display = 'none';
+      document.getElementById('btnExportPdf').style.display = 'none';
+
       renderizarChecklistModal(chkAtual);
       document.getElementById('obsModal').style.display = 'flex';
 
@@ -2197,6 +2349,9 @@
       document.getElementById('modalContatoInput').value = '';
       document.getElementById('modalObsEditor').innerHTML = '';
       
+      document.getElementById('aiResponseBox').style.display = 'none';
+      document.getElementById('btnExportPdf').style.display = 'none';
+
       const chkPadrao = CHECKLIST_PADRAO.map(t => ({ texto: t, done: false, date: null }));
       renderizarChecklistModal(chkPadrao);
 
@@ -2514,6 +2669,50 @@
     function exportarPdfBoardGeralPlanoB() {
       montarPreviewRelatorioPrint();
       window.print();
+    }
+
+    /* FUNÇÃO DE ANÁLISE IA PARA TODO O BOARD GERAL (TODOS OS PROJETOS) */
+    async function gerarAnaliseIAGeral() {
+      const rawKey = localStorage.getItem('weon_gemini_key') || '';
+      const apiKey = rawKey.trim();
+
+      if (!apiKey || apiKey.length < 10) {
+        return alert("Por favor, informe a API Key do Google AI Studio.");
+      }
+
+      const dadosBoard = extrairDadosCompletosDoBoard();
+      if (dadosBoard.length === 0) {
+        return alert("Não há projetos ativos para analisar.");
+      }
+
+      const responseBox = document.getElementById('boardAiResponseBox');
+      responseBox.style.display = 'block';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Consolidação executiva em processamento via Gemini IA...</i>';
+
+      const promptText = `Você é o Gestor de Implantações da WeON. Faça um diagnóstico executivo consolidado da carteira geral de projetos.
+Projetos ativos e dados: ${JSON.stringify(dadosBoard)}.
+Forneça um relatório dividido em: "Resumo Geral da Carteira", "Pontos Críticos / Gargalos" e "Recomendações e Próximos Passos para a Equipe". Responda diretamente em Português sem marcadores de código Markdown agressivos.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+        });
+
+        const data = await res.json();
+
+        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+          responseBox.innerText = data.candidates[0].content.parts[0].text;
+        } else if (data.error) {
+          responseBox.innerHTML = `<span style="color:var(--danger);">Erro na API Gemini: ${data.error.message}</span>`;
+        }
+      } catch (err) {
+        console.error("Erro ao gerar análise IA do Board:", err);
+        responseBox.innerHTML = `<span style="color:var(--danger);">Erro de conexão ao gerar a análise da carteira.</span>`;
+      }
     }
   </script>
 </body>
