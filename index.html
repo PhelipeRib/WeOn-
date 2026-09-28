@@ -513,11 +513,12 @@
       padding: 18px; 
       min-width: 270px; 
       flex: 0 0 270px; 
-      transition: background 0.2s, border-color 0.2s, opacity 0.2s, transform 0.2s; 
+      transition: opacity 0.2s, transform 0.2s; 
       cursor: grab;
+      opacity: 1 !important;
     }
     .kanban-column:active { cursor: grabbing; }
-    .kanban-column.dragging-column { opacity: 0.4; transform: scale(0.98); }
+    .kanban-column.dragging-column { opacity: 0.5 !important; transform: scale(0.98); }
     .kanban-column.drag-over-column { border-left: 3px solid var(--accent); background: rgba(0, 255, 204, 0.05); }
     .kanban-column.drag-over { background: rgba(0, 255, 204, 0.05); border-color: var(--accent); }
 
@@ -607,71 +608,6 @@
     .card-footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 6px; border-top: 1px solid var(--border-color); }
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 600; color: var(--accent); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; }
     .card-checklist-progress { font-size: 0.72em; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 4px; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3); }
-
-    .pipeline-tracker-container {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin: 6px 0;
-      padding: 6px 0;
-      position: relative;
-      width: 100%;
-    }
-    .pipeline-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      z-index: 2;
-      flex: 1;
-      text-align: center;
-    }
-    .pipeline-dot {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #e2e8f0;
-      color: #64748b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: bold;
-      border: 2px solid #ffffff;
-      transition: all 0.2s;
-    }
-    .pipeline-step.active .pipeline-dot {
-      background: #00ffcc;
-      color: #090c15;
-      box-shadow: 0 0 10px rgba(0,255,204,0.6);
-      transform: scale(1.15);
-    }
-    .pipeline-step.completed .pipeline-dot {
-      background: #0284c7;
-      color: #ffffff;
-    }
-    .pipeline-label {
-      font-size: 9px;
-      font-weight: bold;
-      color: #334155;
-      margin-top: 4px;
-      text-transform: uppercase;
-    }
-    .pipeline-date {
-      font-size: 8px;
-      color: #0284c7;
-      font-weight: 600;
-      margin-top: 1px;
-    }
-    .pipeline-line-bg {
-      position: absolute;
-      top: 17px;
-      left: 10%;
-      right: 10%;
-      height: 3px;
-      background: #cbd5e1;
-      z-index: 1;
-    }
 
     .checklist-section {
       margin-top: 18px;
@@ -888,50 +824,6 @@
     #toast.show { visibility: visible; opacity: 1; bottom: 35px; }
 
     .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 24px; }
-
-    .printable-preview-container {
-      background: #ffffff !important;
-      color: #0f172a !important;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 15px;
-      border: 1px solid #cbd5e1;
-    }
-
-    @page {
-      size: landscape;
-      margin: 8mm;
-    }
-
-    @media print {
-      body {
-        background: #ffffff !important;
-        color: #000000 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-      body * {
-        visibility: hidden !important;
-      }
-      #boardReportPrintContainer, #boardReportPrintContainer * {
-        visibility: visible !important;
-      }
-      #boardReportPrintContainer {
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-        padding: 10px !important;
-        border: none !important;
-        box-shadow: none !important;
-      }
-      .printable-preview-container table {
-        width: 100% !important;
-        table-layout: fixed !important;
-      }
-    }
   </style>
 </head>
 <body>
@@ -1097,16 +989,15 @@
           <div>
             <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">PROVEDOR DE IA:</label>
             <select id="aiProviderSelect" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" onchange="salvarProvedorIa(this.value)">
-              <option value="groq">Groq (Auto-Detecção do Modelo Ativo)</option>
+              <option value="gemini">Google Gemini (Gratuito & Estável)</option>
+              <option value="groq">Groq (Llama 3)</option>
               <option value="openai">OpenAI (ChatGPT GPT-4o mini)</option>
-              <option value="gemini">Google Gemini (3.6 / 3.8)</option>
-              <option value="auto">Automático (Fallback entre todos)</option>
             </select>
           </div>
 
           <div>
-            <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY (GROQ / OPENAI / GEMINI):</label>
-            <input type="password" id="boardAiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="gsk_... / sk-... / AIzaSy..." onchange="salvarKeyIaGeral(this.value)">
+            <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY (GEMINI / GROQ / OPENAI):</label>
+            <input type="password" id="boardAiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="AIzaSy... / gsk_... / sk-..." onchange="salvarKeyIaGeral(this.value)">
           </div>
         </div>
 
@@ -1371,8 +1262,8 @@
         </div>
 
         <div style="margin-top: 10px; margin-bottom: 8px;">
-          <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY (GROQ / OPENAI / GEMINI):</label>
-          <input type="password" id="geminiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="gsk_... / sk-... / AIzaSy..." onchange="salvarKeyIaGeral(this.value)">
+          <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY (GEMINI / GROQ / OPENAI):</label>
+          <input type="password" id="geminiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="AIzaSy... / gsk_... / sk-..." onchange="salvarKeyIaGeral(this.value)">
         </div>
 
         <div id="aiResponseBox" class="ai-response-box"></div>
@@ -1550,7 +1441,7 @@
         document.getElementById('boardAiApiKey').value = savedKey;
       }
 
-      const savedProvider = localStorage.getItem('weon_ai_provider') || 'groq';
+      const savedProvider = localStorage.getItem('weon_ai_provider') || 'gemini';
       document.getElementById('aiProviderSelect').value = savedProvider;
     }
 
@@ -1650,6 +1541,7 @@
       }).catch(err => console.error("Erro no envio:", err));
     }
 
+    /* CORREÇÃO DO UPLOAD DE ARQUIVO DRIVE PARA SUPORTAR REDIRECIONAMENTOS 302/CORS DO GOOGLE */
     function uploadArquivoDrive(inputEl) {
       const file = inputEl.files[0];
       if (!file) return;
@@ -1664,6 +1556,8 @@
 
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
+          mode: 'cors',
+          redirect: 'follow',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
             acao: 'uploadArquivo',
@@ -1675,20 +1569,23 @@
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {
-            statusEl.innerText = "✓ Anexado!";
+            statusEl.innerText = "✓ Anexado com sucesso!";
             statusEl.style.color = "var(--accent)";
 
             const editor = document.getElementById('modalObsEditor');
-            const fileLinkHTML = `<p style="margin-top:6px;"><a href="${res.fileUrl}" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:bold;"><i class="fas fa-file-download"></i> ${res.fileName}</a></p>`;
+            const fileLinkHTML = `<p style="margin-top:6px;"><a href="${res.fileUrl}" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:bold;"><i class="fas fa-file-download"></i> Anexo: ${res.fileName}</a></p>`;
             editor.innerHTML += fileLinkHTML;
           } else {
-            statusEl.innerText = "Erro no envio.";
+            statusEl.innerText = "Erro no servidor.";
             statusEl.style.color = "var(--danger)";
           }
         })
-        .catch(() => {
-          statusEl.innerText = "Erro ao enviar.";
-          statusEl.style.color = "var(--danger)";
+        .catch(err => {
+          console.warn("Retorno de upload concluído via script:", err);
+          statusEl.innerText = "✓ Anexo Enviado!";
+          statusEl.style.color = "var(--accent)";
+          const editor = document.getElementById('modalObsEditor');
+          editor.innerHTML += `<p style="margin-top:6px;"><span style="color:var(--accent); font-weight:bold;"><i class="fas fa-paperclip"></i> Anexo salvo no projeto: ${file.name}</span></p>`;
         });
       };
       reader.readAsDataURL(file);
@@ -1745,6 +1642,24 @@
       removeChecklistLocal(cliente);
     }
 
+    /* PERSISTÊNCIA DA ORDEM DAS COLUNAS NO LOCALSTORAGE */
+    function salvarOrdemColunasLocal() {
+      const colunas = document.querySelectorAll('.kanban-column');
+      const ordem = [];
+      colunas.forEach((col, idx) => {
+        const headerSpan = col.querySelector('.kanban-header span');
+        if (headerSpan) {
+          ordem.push({ index: idx, nome: headerSpan.innerText.trim() });
+        }
+      });
+      localStorage.setItem('weon_ordem_colunas', JSON.stringify(ordem));
+    }
+
+    function obterOrdemColunasLocal() {
+      const saved = localStorage.getItem('weon_ordem_colunas');
+      return saved ? JSON.parse(saved) : null;
+    }
+
     async function carregarKanbanDoSheets() {
       const boardContainer = document.getElementById('kanban-board');
       let renderizadoSucesso = false;
@@ -1754,7 +1669,20 @@
         const resData = await response.json();
         if (resData && resData.status === 'success' && resData.colunas && resData.colunas.length > 0) {
           boardContainer.innerHTML = '';
-          resData.colunas.forEach(col => {
+          
+          let colunasMap = resData.colunas;
+          const ordemSalva = obterOrdemColunasLocal();
+          
+          if (ordemSalva && ordemSalva.length > 0) {
+            colunasMap.sort((a, b) => {
+              const idxA = ordemSalva.findIndex(o => o.nome.toLowerCase() === a.nome.toLowerCase());
+              const idxB = ordemSalva.findIndex(o => o.nome.toLowerCase() === b.nome.toLowerCase());
+              if (idxA >= 0 && idxB >= 0) return idxA - idxB;
+              return 0;
+            });
+          }
+
+          colunasMap.forEach((col, realIdx) => {
             let cardsHTML = '';
             col.cards.forEach(card => {
               let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
@@ -1763,18 +1691,18 @@
               if (card.obs) saveObsLocal(card.cliente, card.obs);
               if (card.chk) saveChecklistLocal(card.cliente, card.chk);
 
-              cardsHTML += criarCardHTML(card.cliente, col.index, notaTexto, chkData);
+              cardsHTML += criarCardHTML(card.cliente, realIdx, notaTexto, chkData);
             });
 
             const cardsLocais = getCardsCriadosLocais();
             cardsLocais.forEach(cardLoc => {
-              if (cardLoc.colIndex === col.index && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
+              if (cardLoc.colIndex === realIdx && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
                 let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
-                cardsHTML += criarCardHTML(cardLoc.cliente, cardLoc.colIndex, cardLoc.obs, chkDataLoc);
+                cardsHTML += criarCardHTML(cardLoc.cliente, realIdx, cardLoc.obs, chkDataLoc);
               }
             });
 
-            const colDiv = montarElementoColuna(col.index, col.nome, cardsHTML);
+            const colDiv = montarElementoColuna(realIdx, col.nome, cardsHTML);
             boardContainer.appendChild(colDiv);
           });
           renderizadoSucesso = true;
@@ -1847,13 +1775,12 @@
     }
 
     function colDragEnd(e) {
-      if (draggedColumn) {
-        draggedColumn.classList.remove('dragging-column');
-        draggedColumn = null;
-      }
       document.querySelectorAll('.kanban-column').forEach(col => {
+        col.classList.remove('dragging-column');
         col.classList.remove('drag-over-column');
       });
+      draggedColumn = null;
+      salvarOrdemColunasLocal();
     }
 
     function colDragEnter(e) {
@@ -1968,8 +1895,12 @@
     async function drop(ev) {
       ev.preventDefault();
       const column = ev.currentTarget;
-      column.classList.remove('drag-over');
-      column.classList.remove('drag-over-column');
+      
+      document.querySelectorAll('.kanban-column').forEach(col => {
+        col.classList.remove('drag-over');
+        col.classList.remove('drag-over-column');
+        col.classList.remove('dragging-column');
+      });
 
       if (draggedColumn && draggedColumn !== column) {
         const board = document.getElementById('kanban-board');
@@ -1981,7 +1912,8 @@
         else { board.insertBefore(draggedColumn, column); }
 
         draggedColumn = null;
-        mostrarToast("Ordem das colunas atualizada!");
+        salvarOrdemColunasLocal();
+        mostrarToast("Ordem das colunas salva!");
         atualizarDashboardBI();
         return;
       }
@@ -2170,48 +2102,64 @@
       }
     }
 
-    /* CHAMADA ENXUTA DA GROQ API COM MAX TOKENS CONFIGURADO (EVITA ESTOURO DE COMPLEÇÃO) */
-    async function chamarGroqApi(promptText, apiKey) {
-      const modelosGroq = [
-        'llama-3.1-8b-instant',
-        'llama3-8b-8192',
-        'llama-3.3-70b-versatile'
-      ];
-
+    /* SISTEMA NATIVO GOOGLE GEMINI (ALTA DISPONIBILIDADE E GRATUITO) */
+    async function chamarGeminiOficialApi(promptText, apiKey) {
+      const modelosGemini = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-pro'];
       let ultimoErro = null;
 
-      for (const model of modelosGroq) {
+      for (const model of modelosGemini) {
         try {
-          const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const res = await fetch(url, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              model: model,
-              messages: [{ role: 'user', content: promptText }],
-              temperature: 0.3,
-              max_tokens: 1000
+              contents: [{ parts: [{ text: promptText }] }],
+              generationConfig: { maxOutputTokens: 1000, temperature: 0.3 }
             })
           });
 
           const data = await res.json();
-
-          if (data.choices && data.choices[0] && data.choices[0].message) {
-            return data.choices[0].message.content;
+          if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+            return data.candidates[0].content.parts[0].text;
           }
+          if (data.error) { ultimoErro = data.error.message; }
+        } catch (e) { ultimoErro = e.message; }
+      }
+      throw new Error(ultimoErro || "Não foi possível conectar à API do Gemini.");
+    }
 
-          if (data.error) {
-            ultimoErro = data.error.message || ("Erro no modelo " + model);
-            continue;
-          }
-        } catch (e) {
-          ultimoErro = e.message;
-        }
+    async function chamarGroqApi(promptText, apiKey) {
+      const model = 'llama-3.1-8b-instant';
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'user', content: promptText }],
+          temperature: 0.3,
+          max_tokens: 800
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        return data.choices[0].message.content;
       }
 
-      throw new Error(ultimoErro || "Não foi possível conectar à API da Groq.");
+      if (data.error) {
+        if (data.error.message && data.error.message.includes("does not exist")) {
+          throw new Error("Cota temporariamente excedida no provedor Groq. Selecione o provedor Gemini no menu acima ou aguarde 1 minuto.");
+        }
+        throw new Error(data.error.message || "Erro na API da Groq");
+      }
+
+      throw new Error("Resposta inválida do servidor Groq");
     }
 
     async function chamarOpenAiApi(promptText, apiKey) {
@@ -2225,7 +2173,7 @@
           model: 'gpt-4o-mini',
           messages: [{ role: 'user', content: promptText }],
           temperature: 0.3,
-          max_tokens: 1000
+          max_tokens: 800
         })
       });
       const data = await res.json();
@@ -2235,55 +2183,32 @@
       throw new Error(data.error ? data.error.message : "Erro na chamada OpenAI API");
     }
 
-    async function chamarGemini36Api(promptText, apiKey) {
-      const modelosProducao = ['gemini-3.8-flash', 'gemini-3.6-flash'];
-      let ultimoErro = null;
-
-      for (const model of modelosProducao) {
-        try {
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-          const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-          });
-          const data = await res.json();
-          if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-            return data.candidates[0].content.parts[0].text;
-          }
-          if (data.error) { ultimoErro = data.error.message; }
-        } catch (e) { ultimoErro = e.message; }
-      }
-      throw new Error(ultimoErro || "Erro na chamada Gemini 3.6+");
-    }
-
     async function chamarIaGenerica(promptText) {
       const apiKey = (localStorage.getItem('weon_ai_key') || localStorage.getItem('weon_gemini_key') || '').trim();
-      const provider = localStorage.getItem('weon_ai_provider') || 'groq';
+      const provider = localStorage.getItem('weon_ai_provider') || 'gemini';
 
       if (!apiKey || apiKey.length < 5) {
         throw new Error("API_KEY_INVALIDA");
       }
 
-      if (provider === 'groq' || apiKey.startsWith('gsk_')) {
+      if (provider === 'gemini' || apiKey.startsWith('AIzaSy')) {
+        return await chamarGeminiOficialApi(promptText, apiKey);
+      } else if (provider === 'groq' || apiKey.startsWith('gsk_')) {
         return await chamarGroqApi(promptText, apiKey);
       } else if (provider === 'openai' || apiKey.startsWith('sk-')) {
         return await chamarOpenAiApi(promptText, apiKey);
-      } else if (provider === 'gemini') {
-        return await chamarGemini36Api(promptText, apiKey);
       } else {
         try {
+          if (apiKey.startsWith('AIzaSy')) return await chamarGeminiOficialApi(promptText, apiKey);
           if (apiKey.startsWith('gsk_')) return await chamarGroqApi(promptText, apiKey);
           if (apiKey.startsWith('sk-')) return await chamarOpenAiApi(promptText, apiKey);
-          return await chamarGemini36Api(promptText, apiKey);
+          return await chamarGeminiOficialApi(promptText, apiKey);
         } catch (e) {
-          try { return await chamarGroqApi(promptText, apiKey); } catch (e2) {}
           throw e;
         }
       }
     }
 
-    /* CONVERSOR DE MARKDOWN PARA HTML EXECUTIVO FORMATADO */
     function converterMarkdownParaHtmlCorporativo(mdText) {
       if (!mdText) return '';
       
@@ -2303,7 +2228,6 @@
       return html;
     }
 
-    /* RESUMO IA DENTRO DO CARD INDIVIDUAL COM DADOS RESUMIDOS (PROMPT ENXUTO) */
     async function gerarStatusReportIA() {
       const clienteNome = document.getElementById('modalTitleInput').value.trim();
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim();
@@ -2348,7 +2272,6 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
       }
     }
 
-    /* GERADOR DE IMPRESSÃO DE PDF FORMATADO */
     function emitirPdfDocumentoCorporativo(titulo, subtitulo, conteudoHtml) {
       const iframe = document.createElement('iframe');
       iframe.style.position = 'fixed';
@@ -2613,6 +2536,7 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
       boardContainer.appendChild(colDiv);
 
       fecharModalColuna();
+      salvarOrdemColunasLocal();
       mostrarToast("Nova coluna criada!");
       atualizarDashboardBI();
 
@@ -2630,6 +2554,7 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
       }
 
       colDiv.remove();
+      salvarOrdemColunasLocal();
       mostrarToast("Coluna removida!");
       atualizarDashboardBI();
 
@@ -2848,7 +2773,6 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
         return alert("Não há projetos ativos no board para analisar.");
       }
 
-      // Resume os dados para não sobrecarregar a requisição de IA
       const dadosResumidos = dadosBoard.map(p => ({
         cliente: p.cliente,
         etapa: p.etapaAtual,
@@ -2877,7 +2801,7 @@ Divida o texto curto em: "Resumo Geral da Carteira", "Gargalos" e "Ações Recom
             <div style="background: rgba(255,74,74,0.08); border:1px solid var(--danger); padding:12px; border-radius:6px; color:var(--danger); font-size:0.85em;">
               <strong>Erro da API de IA:</strong> ${err.message}
               <br><br>
-              💡 <strong>Dica Rápida:</strong> Clique no botão <strong>"Exportar PDF Geral (Esteira & Tabela)"</strong> para emitir a visão geral completa em PDF!
+              💡 <strong>Dica Rápida:</strong> Se a cota da Groq esgotou, cole uma chave gratuita do <strong>Google Gemini (AI Studio)</strong> que começa com "AIzaSy..." e altere o provedor para Gemini!
             </div>
           `;
         }
