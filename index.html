@@ -1343,6 +1343,7 @@
 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
+    const WEBHOOK_WEON_BOARD = 'https://weon5m3.weon.com.br/weaction-api/api/weon/public/webhook/XJ7h4IxZ-5zr7-97hZkPnL';
 
     let currentChecklistCache = [];
     let cardElementoAtual = null;
@@ -1585,7 +1586,27 @@
       }).catch(err => console.error("Erro no envio:", err));
     }
 
-    /* UPLOAD DE ANEXOS CORRIGIDO */
+    /* FUNÇÃO DE DISPARO DO WEBHOOK AUTOMÁTICO DO WEON BOARD */
+    function dispararWebhookWeonBoard(dadosProjeto) {
+      if (!WEBHOOK_WEON_BOARD) return;
+
+      fetch(WEBHOOK_WEON_BOARD, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cliente: dadosProjeto.cliente || 'Sem Nome',
+          empresa: dadosProjeto.empresa || 'Empresa',
+          contato: dadosProjeto.contato || 'Contato',
+          telefone: dadosProjeto.telefone || '5541999999999',
+          email: dadosProjeto.email || 'contato@weon.com.br',
+          etapa: dadosProjeto.etapa || 'NOVA DEMANDA',
+          detalhes: dadosProjeto.detalhes || ''
+        })
+      })
+      .then(() => console.log("Webhook WeON Board enviado com sucesso!"))
+      .catch(err => console.error("Erro ao disparar webhook do WeON Board:", err));
+    }
+
     function uploadArquivoDrive(inputEl) {
       const file = inputEl.files[0];
       if (!file) return;
@@ -1959,8 +1980,9 @@
         if (data.origemCol === destinoCol) return;
 
         const colOrigemDiv = document.querySelector(`.kanban-column[data-col-index="${data.origemCol}"]`);
+        let nomeColOrigem = 'INICIAL';
         if (colOrigemDiv) {
-          const nomeColOrigem = colOrigemDiv.querySelector('.kanban-header span').innerText.trim();
+          nomeColOrigem = colOrigemDiv.querySelector('.kanban-header span').innerText.trim();
           saveEtapaAnteriorLocal(data.cliente, nomeColOrigem);
         }
 
@@ -1971,6 +1993,8 @@
         cardsContainer.appendChild(window.draggedCard);
         window.draggedCard.setAttribute('data-col', destinoCol);
 
+        const nomeColDestino = column.querySelector('.kanban-header span').innerText.trim();
+
         window.draggedCard = null;
         mostrarToast("Card movido!");
         atualizarDashboardBI();
@@ -1980,6 +2004,15 @@
           cliente: data.cliente,
           origemCol: data.origemCol,
           destinoCol: destinoCol
+        });
+
+        /* Dispara o Webhook do WeON Board indicando a mudança de etapa */
+        dispararWebhookWeonBoard({
+          cliente: data.cliente,
+          empresa: getEmpresaLocal(data.cliente),
+          contato: getContatoLocal(data.cliente),
+          etapa: nomeColDestino,
+          detalhes: getObsLocal(data.cliente)
         });
       }
     }
@@ -2295,7 +2328,8 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
       }
     }
 
-    function emitirPdfDocumentoCorporativo(titulo, subtitulo, conteudoHtml) {
+    /* GERADOR DE IMPRESSÃO COM VETOR EXACTO DA LOGO WEON E STATUS DINÂMICO */
+    function emitirPdfDocumentoCorporativo(titulo, subtitulo, conteudoHtml, statusAtualColuna = 'EM ANDAMENTO') {
       const iframe = document.createElement('iframe');
       iframe.style.position = 'fixed';
       iframe.style.right = '0';
@@ -2315,23 +2349,45 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
           <title>${titulo}</title>
           <style>
             @page { size: A4 portrait; margin: 12mm; }
-            body { font-family: 'Arial', sans-serif; color: #0f172a; background: #ffffff; padding: 20px; margin: 0; line-height: 1.5; font-size: 12px; }
-            .header-banner { border-bottom: 2px solid #00ffcc; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-            .header-banner h1 { font-size: 18px; color: #0f172a; margin: 0; font-weight: bold; }
-            .header-banner p { font-size: 11px; color: #64748b; margin-top: 2px; }
-            .footer-banner { margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 8px; text-align: center; font-size: 9px; color: #94a3b8; }
-            ul { padding-left: 0; margin: 8px 0; }
+            * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+            body { background: #ffffff; color: #0f172a; padding: 20px; line-height: 1.5; font-size: 12px; }
+            
+            .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ffcc; padding-bottom: 10px; margin-bottom: 16px; }
+            .logo-weon-official { display: flex; align-items: center; }
+            .logo-weon-svg { height: 38px; width: auto; display: block; }
+            
+            .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; }
+            .meta-item { font-size: 11px; color: #334155; }
+            .meta-item strong { color: #0f172a; }
+            .status-badge-dinamico { background: #0284c7; color: #ffffff; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+            .footer-banner { margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 8px; text-align: center; font-size: 9px; color: #94a3b8; }
           </style>
         </head>
         <body>
-          <div class="header-banner">
-            <div>
-              <h1>WeON - ${titulo}</h1>
-              <p>${subtitulo}</p>
+          <div class="header-container">
+            <div class="logo-weon-official">
+              <svg class="logo-weon-svg" viewBox="0 0 255 75" width="180" height="53" xmlns="http://www.w3.org/2000/svg">
+                <!-- VETOR DE ALTA FIDELIDADE: WEON -->
+                <path d="M 5 10 L 28 10 L 42 56 L 56 10 L 76 10 L 90 56 L 104 10 L 126 10 L 102 70 L 80 70 L 66 26 L 52 70 L 30 70 Z" fill="#18181b"/>
+                <path d="M 124 10 L 168 10 L 168 23 L 140 23 L 140 33 L 166 33 L 166 45 L 140 45 L 140 57 L 168 57 L 168 70 L 124 70 Z" fill="#18181b"/>
+                <circle cx="182" cy="40" r="28" fill="#18181b"/>
+                <circle cx="182" cy="40" r="16.5" fill="#FFFFFF"/>
+                <circle cx="182" cy="40" r="8.5" fill="#00A3FF"/>
+                <path d="M 206 10 L 226 10 L 238 48 L 238 10 L 250 10 L 250 70 L 230 70 L 218 32 L 218 70 L 206 70 Z" fill="#18181b"/>
+              </svg>
             </div>
-            <div style="text-align:right;">
-              <p style="font-size:10px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')}</p>
+            <div style="text-align:right; font-size:10px; color:#64748b;">
+              <strong>${titulo}</strong><br>
+              <span>Emissão: ${new Date().toLocaleDateString('pt-BR')}</span>
             </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item"><strong>Projeto:</strong> ${titulo}</div>
+            <div class="meta-item"><strong>Cliente:</strong> ${subtitulo}</div>
+            <div class="meta-item"><strong>Elaboração:</strong> Analista de Implantação – WeON</div>
+            <div class="meta-item"><strong>Status Atual (Coluna):</strong> <span class="status-badge-dinamico">${statusAtualColuna}</span></div>
           </div>
 
           <div>
@@ -2356,15 +2412,29 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
       }, 300);
     }
 
+    function obterNomeColunaAtualCard() {
+      if (cardElementoAtual) {
+        const colDiv = cardElementoAtual.closest('.kanban-column');
+        if (colDiv) {
+          const headerSpan = colDiv.querySelector('.kanban-header span');
+          if (headerSpan) return headerSpan.innerText.trim().toUpperCase();
+        }
+      }
+      return 'EM ANDAMENTO';
+    }
+
     function exportarRelatorioPdfIA() {
       const responseBox = document.getElementById('aiResponseBox');
       const clienteNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto';
+      const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Cliente';
       const textoIA = responseBox.innerText;
 
-      if (!textoIA) return alert("Nenhum relatório gerado para exportar.");
+      if (!textoIA) return alert("Nenum relatório gerado para exportar.");
 
       const htmlFormatado = converterMarkdownParaHtmlCorporativo(textoIA);
-      emitirPdfDocumentoCorporativo(`Status Report IA (${clienteNome})`, `Relatório Executivo Gerado com Inteligência Artificial`, htmlFormatado);
+      const statusColuna = obterNomeColunaAtualCard();
+
+      emitirPdfDocumentoCorporativo(`Implantação ${clienteNome}`, empresaNome, htmlFormatado, statusColuna);
     }
 
     function exportarPdfDirectoLocal() {
@@ -2407,7 +2477,8 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
         </div>
       `;
 
-      emitirPdfDocumentoCorporativo(`Relatório de Implantação - ${projetoNome}`, `Acompanhamento Completo de Projeto`, conteudoHtml);
+      const statusColuna = obterNomeColunaAtualCard();
+      emitirPdfDocumentoCorporativo(`Implantação ${projetoNome}`, empresaNome, conteudoHtml, statusColuna);
     }
 
     function abrirModalObs(cardEl, col) {
@@ -2480,10 +2551,16 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
 
       if (!novoTitulo) return alert("Digite um título para o card!");
 
+      let nomeColuna = 'INICIAL';
       if (modoCriacao) {
+        const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
+        if (colDiv) {
+          const headerSpan = colDiv.querySelector('.kanban-header span');
+          if (headerSpan) nomeColuna = headerSpan.innerText.trim();
+        }
+
         saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml, chkItems, empresaVal, contatoVal);
 
-        const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
         if (colDiv) {
           const container = colDiv.querySelector('.cards-container');
           const emptyP = container.querySelector('p');
@@ -2506,6 +2583,12 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
 
       } else {
         if (cardElementoAtual) {
+          const colDiv = cardElementoAtual.closest('.kanban-column');
+          if (colDiv) {
+            const headerSpan = colDiv.querySelector('.kanban-header span');
+            if (headerSpan) nomeColuna = headerSpan.innerText.trim();
+          }
+
           cardElementoAtual.setAttribute('data-cliente', novoTitulo);
           cardElementoAtual.querySelector('.card-title').innerText = novoTitulo;
           cardElementoAtual.setAttribute('data-obs', obsHtml);
@@ -2534,6 +2617,15 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
           chk: JSON.stringify(chkItems)
         });
       }
+
+      /* Dispara a criação/atualização de tarefas no WeON Board via Webhook */
+      dispararWebhookWeonBoard({
+        cliente: novoTitulo,
+        empresa: empresaVal,
+        contato: contatoVal,
+        etapa: nomeColuna,
+        detalhes: obsHtml
+      });
 
       atualizarDashboardBI();
       fecharModal();
@@ -2838,7 +2930,7 @@ Divida o texto curto em: "Resumo Geral da Carteira", "Gargalos" e "Ações Recom
       if (!textoIA) return alert("Nenhuma análise de IA gerada para exportar.");
 
       const htmlFormatado = converterMarkdownParaHtmlCorporativo(textoIA);
-      emitirPdfDocumentoCorporativo(`Diagnóstico Geral da Carteira de Projetos`, `Relatório Executivo Consolidado de Implantações`, htmlFormatado);
+      emitirPdfDocumentoCorporativo(`Diagnóstico Geral da Carteira de Projetos`, `Relatório Executivo Consolidado de Implantações`, htmlFormatado, 'CARTEIRA GERAL');
     }
   </script>
 </body>
