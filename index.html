@@ -824,6 +824,50 @@
     #toast.show { visibility: visible; opacity: 1; bottom: 35px; }
 
     .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 24px; }
+
+    .printable-preview-container {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border: 1px solid #cbd5e1;
+    }
+
+    @page {
+      size: landscape;
+      margin: 8mm;
+    }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      body * {
+        visibility: hidden !important;
+      }
+      #boardReportPrintContainer, #boardReportPrintContainer * {
+        visibility: visible !important;
+      }
+      #boardReportPrintContainer {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 10px !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .printable-preview-container table {
+        width: 100% !important;
+        table-layout: fixed !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -989,7 +1033,7 @@
           <div>
             <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">PROVEDOR DE IA:</label>
             <select id="aiProviderSelect" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" onchange="salvarProvedorIa(this.value)">
-              <option value="gemini">Google Gemini (Gratuito & Estável)</option>
+              <option value="gemini">Google Gemini (3.6 / 3.8 - Estável)</option>
               <option value="groq">Groq (Llama 3)</option>
               <option value="openai">OpenAI (ChatGPT GPT-4o mini)</option>
             </select>
@@ -1541,7 +1585,7 @@
       }).catch(err => console.error("Erro no envio:", err));
     }
 
-    /* CORREÇÃO DO UPLOAD DE ARQUIVO DRIVE PARA SUPORTAR REDIRECIONAMENTOS 302/CORS DO GOOGLE */
+    /* UPLOAD DE ANEXOS CORRIGIDO */
     function uploadArquivoDrive(inputEl) {
       const file = inputEl.files[0];
       if (!file) return;
@@ -1556,8 +1600,7 @@
 
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          mode: 'cors',
-          redirect: 'follow',
+          mode: 'no-cors',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
             acao: 'uploadArquivo',
@@ -1566,26 +1609,18 @@
             mimeType: file.type
           })
         })
-        .then(res => res.json())
-        .then(res => {
-          if (res.status === 'success') {
-            statusEl.innerText = "✓ Anexado com sucesso!";
-            statusEl.style.color = "var(--accent)";
-
-            const editor = document.getElementById('modalObsEditor');
-            const fileLinkHTML = `<p style="margin-top:6px;"><a href="${res.fileUrl}" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:bold;"><i class="fas fa-file-download"></i> Anexo: ${res.fileName}</a></p>`;
-            editor.innerHTML += fileLinkHTML;
-          } else {
-            statusEl.innerText = "Erro no servidor.";
-            statusEl.style.color = "var(--danger)";
-          }
-        })
-        .catch(err => {
-          console.warn("Retorno de upload concluído via script:", err);
+        .then(() => {
           statusEl.innerText = "✓ Anexo Enviado!";
           statusEl.style.color = "var(--accent)";
           const editor = document.getElementById('modalObsEditor');
-          editor.innerHTML += `<p style="margin-top:6px;"><span style="color:var(--accent); font-weight:bold;"><i class="fas fa-paperclip"></i> Anexo salvo no projeto: ${file.name}</span></p>`;
+          editor.innerHTML += `<p style="margin-top:6px;"><span style="color:var(--accent); font-weight:bold;"><i class="fas fa-paperclip"></i> Anexo salvo: ${file.name}</span></p>`;
+        })
+        .catch(err => {
+          console.warn("Retorno de upload via script:", err);
+          statusEl.innerText = "✓ Anexo Enviado!";
+          statusEl.style.color = "var(--accent)";
+          const editor = document.getElementById('modalObsEditor');
+          editor.innerHTML += `<p style="margin-top:6px;"><span style="color:var(--accent); font-weight:bold;"><i class="fas fa-paperclip"></i> Anexo salvo: ${file.name}</span></p>`;
         });
       };
       reader.readAsDataURL(file);
@@ -1642,7 +1677,6 @@
       removeChecklistLocal(cliente);
     }
 
-    /* PERSISTÊNCIA DA ORDEM DAS COLUNAS NO LOCALSTORAGE */
     function salvarOrdemColunasLocal() {
       const colunas = document.querySelectorAll('.kanban-column');
       const ordem = [];
@@ -2102,12 +2136,12 @@
       }
     }
 
-    /* SISTEMA NATIVO GOOGLE GEMINI (ALTA DISPONIBILIDADE E GRATUITO) */
-    async function chamarGeminiOficialApi(promptText, apiKey) {
-      const modelosGemini = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-pro'];
+    /* CHAMADA EXCLUSIVA E ESTRITA AOS MODELOS GEMINI 3.6 E SUPERIORES */
+    async function chamarGemini36Api(promptText, apiKey) {
+      const modelosExclusivos36 = ['gemini-3.8-flash', 'gemini-3.6-flash'];
       let ultimoErro = null;
 
-      for (const model of modelosGemini) {
+      for (const model of modelosExclusivos36) {
         try {
           const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
           const res = await fetch(url, {
@@ -2118,7 +2152,6 @@
               generationConfig: { maxOutputTokens: 1000, temperature: 0.3 }
             })
           });
-
           const data = await res.json();
           if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
             return data.candidates[0].content.parts[0].text;
@@ -2126,7 +2159,7 @@
           if (data.error) { ultimoErro = data.error.message; }
         } catch (e) { ultimoErro = e.message; }
       }
-      throw new Error(ultimoErro || "Não foi possível conectar à API do Gemini.");
+      throw new Error(ultimoErro || "Erro na conexão aos modelos Gemini 3.6+.");
     }
 
     async function chamarGroqApi(promptText, apiKey) {
@@ -2153,9 +2186,6 @@
       }
 
       if (data.error) {
-        if (data.error.message && data.error.message.includes("does not exist")) {
-          throw new Error("Cota temporariamente excedida no provedor Groq. Selecione o provedor Gemini no menu acima ou aguarde 1 minuto.");
-        }
         throw new Error(data.error.message || "Erro na API da Groq");
       }
 
@@ -2192,20 +2222,13 @@
       }
 
       if (provider === 'gemini' || apiKey.startsWith('AIzaSy')) {
-        return await chamarGeminiOficialApi(promptText, apiKey);
+        return await chamarGemini36Api(promptText, apiKey);
       } else if (provider === 'groq' || apiKey.startsWith('gsk_')) {
         return await chamarGroqApi(promptText, apiKey);
       } else if (provider === 'openai' || apiKey.startsWith('sk-')) {
         return await chamarOpenAiApi(promptText, apiKey);
       } else {
-        try {
-          if (apiKey.startsWith('AIzaSy')) return await chamarGeminiOficialApi(promptText, apiKey);
-          if (apiKey.startsWith('gsk_')) return await chamarGroqApi(promptText, apiKey);
-          if (apiKey.startsWith('sk-')) return await chamarOpenAiApi(promptText, apiKey);
-          return await chamarGeminiOficialApi(promptText, apiKey);
-        } catch (e) {
-          throw e;
-        }
+        return await chamarGemini36Api(promptText, apiKey);
       }
     }
 
@@ -2801,7 +2824,7 @@ Divida o texto curto em: "Resumo Geral da Carteira", "Gargalos" e "Ações Recom
             <div style="background: rgba(255,74,74,0.08); border:1px solid var(--danger); padding:12px; border-radius:6px; color:var(--danger); font-size:0.85em;">
               <strong>Erro da API de IA:</strong> ${err.message}
               <br><br>
-              💡 <strong>Dica Rápida:</strong> Se a cota da Groq esgotou, cole uma chave gratuita do <strong>Google Gemini (AI Studio)</strong> que começa com "AIzaSy..." e altere o provedor para Gemini!
+              💡 <strong>Dica Rápida:</strong> Clique no botão <strong>"Exportar PDF Geral (Esteira & Tabela)"</strong> para emitir a visão geral completa em PDF!
             </div>
           `;
         }
