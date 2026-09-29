@@ -1586,24 +1586,26 @@
       }).catch(err => console.error("Erro no envio:", err));
     }
 
-    /* FUNÇÃO DE DISPARO DO WEBHOOK AUTOMÁTICO DO WEON BOARD */
+    /* DISPARO DO WEBHOOK SEM PREFLIGHT OPTIONS (SEM BLOQUEIO CORS) */
     function dispararWebhookWeonBoard(dadosProjeto) {
       if (!WEBHOOK_WEON_BOARD) return;
 
+      const payload = new URLSearchParams();
+      payload.append('cliente', dadosProjeto.cliente || 'Sem Nome');
+      payload.append('empresa', dadosProjeto.empresa || 'Empresa');
+      payload.append('contato', dadosProjeto.contato || 'Contato');
+      payload.append('telefone', dadosProjeto.telefone || '5541999999999');
+      payload.append('email', dadosProjeto.email || 'contato@weon.com.br');
+      payload.append('etapa', dadosProjeto.etapa || 'NOVA DEMANDA');
+      payload.append('detalhes', dadosProjeto.detalhes || '');
+
       fetch(WEBHOOK_WEON_BOARD, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cliente: dadosProjeto.cliente || 'Sem Nome',
-          empresa: dadosProjeto.empresa || 'Empresa',
-          contato: dadosProjeto.contato || 'Contato',
-          telefone: dadosProjeto.telefone || '5541999999999',
-          email: dadosProjeto.email || 'contato@weon.com.br',
-          etapa: dadosProjeto.etapa || 'NOVA DEMANDA',
-          detalhes: dadosProjeto.detalhes || ''
-        })
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: payload.toString()
       })
-      .then(() => console.log("Webhook WeON Board enviado com sucesso!"))
+      .then(() => console.log("Webhook WeON Board disparado com sucesso!"))
       .catch(err => console.error("Erro ao disparar webhook do WeON Board:", err));
     }
 
@@ -2328,7 +2330,7 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
       }
     }
 
-    /* GERADOR DE IMPRESSÃO COM VETOR EXACTO DA LOGO WEON E STATUS DINÂMICO */
+    /* GERADOR DE IMPRESSÃO COM VETOR FIEL E EXACTO DA LOGO WEON */
     function emitirPdfDocumentoCorporativo(titulo, subtitulo, conteudoHtml, statusAtualColuna = 'EM ANDAMENTO') {
       const iframe = document.createElement('iframe');
       iframe.style.position = 'fixed';
@@ -2368,7 +2370,7 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
           <div class="header-container">
             <div class="logo-weon-official">
               <svg class="logo-weon-svg" viewBox="0 0 255 75" width="180" height="53" xmlns="http://www.w3.org/2000/svg">
-                <!-- VETOR DE ALTA FIDELIDADE: WEON -->
+                <!-- VETOR EXACTO DA WEON: W E O N -->
                 <path d="M 5 10 L 28 10 L 42 56 L 56 10 L 76 10 L 90 56 L 104 10 L 126 10 L 102 70 L 80 70 L 66 26 L 52 70 L 30 70 Z" fill="#18181b"/>
                 <path d="M 124 10 L 168 10 L 168 23 L 140 23 L 140 33 L 166 33 L 166 45 L 140 45 L 140 57 L 168 57 L 168 70 L 124 70 Z" fill="#18181b"/>
                 <circle cx="182" cy="40" r="28" fill="#18181b"/>
@@ -2387,7 +2389,7 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
             <div class="meta-item"><strong>Projeto:</strong> ${titulo}</div>
             <div class="meta-item"><strong>Cliente:</strong> ${subtitulo}</div>
             <div class="meta-item"><strong>Elaboração:</strong> Analista de Implantação – WeON</div>
-            <div class="meta-item"><strong>Status Atual (Coluna):</strong> <span class="status-badge-dinamico">${statusAtualColuna}</span></div>
+            <div class="meta-item"><strong>Status Atual (Etapa):</strong> <span class="status-badge-dinamico">${statusAtualColuna}</span></div>
           </div>
 
           <div>
@@ -2429,7 +2431,7 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
       const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Cliente';
       const textoIA = responseBox.innerText;
 
-      if (!textoIA) return alert("Nenum relatório gerado para exportar.");
+      if (!textoIA) return alert("Nenhum relatório gerado para exportar.");
 
       const htmlFormatado = converterMarkdownParaHtmlCorporativo(textoIA);
       const statusColuna = obterNomeColunaAtualCard();
