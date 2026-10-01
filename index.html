@@ -241,16 +241,10 @@
     .btn-widget.btn-danger { color: #ff8888; }
     .btn-widget.btn-danger:hover { border-color: var(--danger); color: #fff; background: var(--danger); }
 
-    .section-header-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 40px 0 20px 0;
-    }
-
     h2 { 
       font-size: 1.15em; 
       font-weight: 700;
+      margin: 40px 0 20px 0; 
       display: flex; 
       align-items: center; 
       gap: 10px; 
@@ -274,6 +268,7 @@
       align-items: center;
       gap: 6px;
       transition: all 0.2s;
+      margin-left: auto;
     }
     .btn-add-resource:hover {
       background: var(--accent);
@@ -366,9 +361,9 @@
       transition: background 0.2s;
     }
     .collapsible:hover { background-color: rgba(30, 41, 59, 0.4); }
-    .collapsible .btn-title { display: flex; align-items: center; gap: 14px; }
+    .collapsible .btn-title { display: flex; align-items: center; gap: 14px; width: 100%; }
     .collapsible .btn-title i { color: var(--accent); width: 20px; font-size: 1.1em; }
-    .collapsible .chevron { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text-muted); }
+    .collapsible .chevron { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text-muted); margin-left: 10px; }
     .collapsible.active .chevron { transform: rotate(180deg); color: var(--accent); }
 
     .content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background-color: var(--bg-card); }
@@ -390,7 +385,6 @@
       height: 100%;
     }
 
-    /* ESTILO FIXO NATIVO ORIGINAL DAS CREDENCIAIS */
     .data-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
     .data-row:last-child { border-bottom: none; }
     .data-row.highlight-group { background: rgba(0, 255, 204, 0.02); padding: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid rgba(0, 255, 204, 0.1); }
@@ -413,7 +407,6 @@
     .btn-copy:hover { color: var(--accent); }
     .btn-copy.copied { color: var(--accent) !important; }
 
-    /* ESTILO FIXO NATIVO ORIGINAL DOS LINKS */
     .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .custom-link { 
       background: rgba(30, 41, 59, 0.2); 
@@ -1073,14 +1066,14 @@
       </div>
     </div>
 
-    <!-- CREDENCIAIS E ACESSOS (ESTÁTICO + ADIÇÃO DINÂMICA) -->
-    <div class="section-header-title">
-      <h2><i class="fas fa-lock"></i> Credenciais e Acessos</h2>
-      <button class="btn-add-resource" onclick="abrirModalRecurso('credenciais')"><i class="fas fa-plus"></i> Adicionar Credencial</button>
-    </div>
+    <!-- CREDENCIAIS E ACESSOS (LAYOUT NATIVO ORIGINAL PRESERVADO) -->
+    <h2><i class="fas fa-lock"></i> Credenciais e Acessos</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible">
-        <span class="btn-title"><i class="fas fa-shield-alt"></i> Acessos, Senhas e JIRA</span>
+        <span class="btn-title">
+          <span><i class="fas fa-shield-alt"></i> Acessos, Senhas e JIRA</span>
+          <button class="btn-add-resource" onclick="event.stopPropagation(); abrirModalRecurso('credenciais')"><i class="fas fa-plus"></i> Adicionar Credencial</button>
+        </span>
         <i class="fas fa-chevron-down chevron"></i>
       </button>
       <div class="content">
@@ -1139,14 +1132,14 @@
       </div>
     </div>
 
-    <!-- LINKS RÁPIDOS E NAVEGAÇÃO (ESTÁTICO + ADIÇÃO DINÂMICA) -->
-    <div class="section-header-title">
-      <h2><i class="fas fa-external-link-alt"></i> Navegação rápida</h2>
-      <button class="btn-add-resource" onclick="abrirModalRecurso('navegacao')"><i class="fas fa-plus"></i> Adicionar Link</button>
-    </div>
+    <!-- LINKS RÁPIDOS E NAVEGAÇÃO (LAYOUT NATIVO ORIGINAL PRESERVADO) -->
+    <h2><i class="fas fa-external-link-alt"></i> Navegação rápida</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible">
-        <span class="btn-title"><i class="fas fa-link"></i> Links Importantes</span>
+        <span class="btn-title">
+          <span><i class="fas fa-link"></i> Links Importantes</span>
+          <button class="btn-add-resource" onclick="event.stopPropagation(); abrirModalRecurso('navegacao')"><i class="fas fa-plus"></i> Adicionar Link</button>
+        </span>
         <i class="fas fa-chevron-down chevron"></i>
       </button>
       <div class="content">
@@ -1168,14 +1161,14 @@
       </div>
     </div>
 
-    <!-- BIBLIOTECA DE ARTIGOS (ESTÁTICO + ADIÇÃO DINÂMICA) -->
-    <div class="section-header-title">
-      <h2><i class="fas fa-book-open"></i> Biblioteca de Artigos</h2>
-      <button class="btn-add-resource" onclick="abrirModalRecurso('artigos')"><i class="fas fa-plus"></i> Adicionar Artigo</button>
-    </div>
+    <!-- BIBLIOTECA DE ARTIGOS (LAYOUT NATIVO ORIGINAL PRESERVADO) -->
+    <h2><i class="fas fa-book-open"></i> Biblioteca de Artigos</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible">
-        <span class="btn-title"><i class="fas fa-graduation-cap"></i> Artigos e Documentações Internas</span>
+        <span class="btn-title">
+          <span><i class="fas fa-graduation-cap"></i> Artigos e Documentações Internas</span>
+          <button class="btn-add-resource" onclick="event.stopPropagation(); abrirModalRecurso('artigos')"><i class="fas fa-plus"></i> Adicionar Artigo</button>
+        </span>
         <i class="fas fa-chevron-down chevron"></i>
       </button>
       <div class="content">
@@ -1193,13 +1186,13 @@
     </div>
 
     <!-- DESENVOLVEDOR & INTEGRAÇÕES -->
-    <div class="section-header-title">
-      <h2><i class="fas fa-code"></i> Desenvolvedor & Integrações</h2>
-      <button class="btn-add-resource" onclick="abrirModalRecurso('desenvolvedor')"><i class="fas fa-plus"></i> Adicionar Recurso</button>
-    </div>
+    <h2><i class="fas fa-code"></i> Desenvolvedor & Integrações</h2>
     <div class="collapsible-wrapper target-search">
       <button class="collapsible">
-        <span class="btn-title"><i class="fas fa-terminal"></i> Códigos e Chamadas de API</span>
+        <span class="btn-title">
+          <span><i class="fas fa-terminal"></i> Códigos e Chamadas de API</span>
+          <button class="btn-add-resource" onclick="event.stopPropagation(); abrirModalRecurso('desenvolvedor')"><i class="fas fa-plus"></i> Adicionar Recurso</button>
+        </span>
         <i class="fas fa-chevron-down chevron"></i>
       </button>
       <div class="content">
@@ -1650,13 +1643,13 @@
         gridHtml += `</div>`;
 
         secaoDiv.innerHTML = `
-          <div class="section-header-title">
-            <h2><i class="fas fa-folder"></i> ${secaoNome}</h2>
-            <button class="btn-add-resource" onclick="abrirModalRecurso('${secaoNome}')"><i class="fas fa-plus"></i> Adicionar Item</button>
-          </div>
+          <h2><i class="fas fa-folder"></i> ${secaoNome}</h2>
           <div class="collapsible-wrapper">
             <button class="collapsible">
-              <span class="btn-title"><i class="fas fa-folder"></i> ${secaoNome}</span>
+              <span class="btn-title">
+                <span><i class="fas fa-folder"></i> ${secaoNome}</span>
+                <button class="btn-add-resource" onclick="event.stopPropagation(); abrirModalRecurso('${secaoNome}')"><i class="fas fa-plus"></i> Adicionar Item</button>
+              </span>
               <i class="fas fa-chevron-down chevron"></i>
             </button>
             <div class="content">
@@ -1679,7 +1672,6 @@
           }
         };
 
-        // Se a seção já estiver aberta, ajusta a altura dinamicamente
         if (button.classList.contains("active")) {
           const content = button.nextElementSibling;
           content.style.maxHeight = content.scrollHeight + 100 + "px";
