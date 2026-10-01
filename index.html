@@ -265,8 +265,8 @@
       background: var(--accent-glow);
       border: 1px solid var(--accent);
       color: var(--accent);
-      padding: 5px 12px;
-      font-size: 0.78em;
+      padding: 4px 10px;
+      font-size: 0.75em;
       font-weight: 700;
       border-radius: 6px;
       cursor: pointer;
@@ -390,7 +390,8 @@
       height: 100%;
     }
 
-    .data-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); position: relative; }
+    /* ESTILO FIXO NATIVO ORIGINAL DAS CREDENCIAIS */
+    .data-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
     .data-row:last-child { border-bottom: none; }
     .data-row.highlight-group { background: rgba(0, 255, 204, 0.02); padding: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid rgba(0, 255, 204, 0.1); }
     .data-label { color: var(--text-muted); font-size: 0.9em; font-weight: 500; }
@@ -408,26 +409,11 @@
       word-break: break-all;
     }
 
-    .item-actions {
-      display: flex;
-      gap: 6px;
-      margin-left: 8px;
-    }
-    .btn-item-action {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.85em;
-      transition: color 0.2s;
-    }
-    .btn-item-action:hover { color: var(--accent); }
-    .btn-item-delete:hover { color: var(--danger); }
-
     .btn-copy { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; font-size: 1.05em; flex-shrink: 0; }
     .btn-copy:hover { color: var(--accent); }
     .btn-copy.copied { color: var(--accent) !important; }
 
+    /* ESTILO FIXO NATIVO ORIGINAL DOS LINKS */
     .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .custom-link { 
       background: rgba(30, 41, 59, 0.2); 
@@ -437,16 +423,27 @@
       text-decoration: none; 
       display: flex; 
       align-items: center; 
-      justify-content: space-between;
+      gap: 12px; 
       font-size: 0.88em; 
       font-weight: 500;
       border: 1px solid var(--border-color); 
       transition: all 0.2s;
+      position: relative;
     }
     .custom-link:hover { background: var(--bg-input); border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-    .custom-link-left { display: flex; align-items: center; gap: 12px; }
     .custom-link i { color: var(--accent); font-size: 1.1em; }
     .link-subtext { display: block; font-size: 0.75em; color: var(--text-muted); margin-top: 2px; }
+
+    .btn-item-delete {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85em;
+      margin-left: 6px;
+      transition: color 0.2s;
+    }
+    .btn-item-delete:hover { color: var(--danger); }
 
     pre.code-block { 
       background: rgba(0,0,0,0.2); 
@@ -1076,12 +1073,174 @@
       </div>
     </div>
 
-    <!-- SEÇÕES DINÂMICAS DE RECURSOS E LINKS (GERENCIADOR DE SEÇÕES) -->
-    <div id="dynamicResourceSections"></div>
+    <!-- CREDENCIAIS E ACESSOS (ESTÁTICO + ADIÇÃO DINÂMICA) -->
+    <div class="section-header-title">
+      <h2><i class="fas fa-lock"></i> Credenciais e Acessos</h2>
+      <button class="btn-add-resource" onclick="abrirModalRecurso('credenciais')"><i class="fas fa-plus"></i> Adicionar Credencial</button>
+    </div>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-shield-alt"></i> Acessos, Senhas e JIRA</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="data-row highlight-group">
+            <span class="data-label"><i class="fab fa-jira" style="color: #0052CC; font-size:1.1em;"></i> <strong>JIRA Implantação (Portal Suporte)</strong></span>
+            <span class="data-value">
+              <a href="https://weon.atlassian.net/jira/for-you?tab=recommendedActions" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:700;">Acessar Portal <i class="fas fa-external-link-alt" style="font-size:0.8em;"></i></a>
+            </span>
+          </div>
+          <div class="data-row">
+            <span class="data-label" style="padding-left:15px;"><i class="fas fa-envelope"></i> JIRA E-mail</span>
+            <span class="data-value">comercial@weon.com.br <button class="btn-copy" onclick="copyText('comercial@weon.com.br', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row" style="margin-bottom:12px; border-bottom: 2px dashed var(--border-color); padding-bottom:12px;">
+            <span class="data-label" style="padding-left:15px;"><i class="fas fa-key"></i> JIRA Senha</span>
+            <span class="data-value">Weon@2024* <button class="btn-copy" onclick="copyText('Weon@2024*', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
 
-    <div style="margin-top: 25px; text-align: center;">
-      <button class="btn-widget" style="margin: 0 auto; padding: 10px 20px; font-size: 0.88em; border-color:var(--accent); color:var(--accent);" onclick="abrirModalRecurso('NovaSecao')">
-        <i class="fas fa-folder-plus"></i> + Criar Nova Seção Dinâmica
+          <div class="data-row">
+            <span class="data-label">WeON Admin User</span>
+            <span class="data-value">admin <button class="btn-copy" onclick="copyText('admin', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">WeON Admin Senha</span>
+            <span class="data-value">vah%4ge1E <button class="btn-copy" onclick="copyText('vah%4ge1E', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso para o admin (m3 weon)</span>
+            <span class="data-value">10.0.9.84/weon <button class="btn-copy" onclick="copyText('10.0.9.84/weon', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso weon5m1-dn1</span>
+            <span class="data-value">10.0.8.78 <button class="btn-copy" onclick="copyText('10.0.8.78', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso weon5m2-dn1</span>
+            <span class="data-value">10.0.8.184 <button class="btn-copy" onclick="copyText('10.0.8.184', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">IP de acesso Dg solutions</span>
+            <span class="data-value">10.0.9.175 <button class="btn-copy" onclick="copyText('10.0.9.175', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">weon.supervisor User</span>
+            <span class="data-value">supweon <button class="btn-copy" onclick="copyText('supweon', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">weon.supervisor Senha</span>
+            <span class="data-value">W30N_S3cVrItY <button class="btn-copy" onclick="copyText('W30N_S3cVrItY', this)"><i class="fas fa-copy"></i></button></span>
+          </div>
+
+          <!-- Contentor para novas credenciais adicionadas via interface -->
+          <div id="dynamic-credenciais-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINKS RÁPIDOS E NAVEGAÇÃO (ESTÁTICO + ADIÇÃO DINÂMICA) -->
+    <div class="section-header-title">
+      <h2><i class="fas fa-external-link-alt"></i> Navegação rápida</h2>
+      <button class="btn-add-resource" onclick="abrirModalRecurso('navegacao')"><i class="fas fa-plus"></i> Adicionar Link</button>
+    </div>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-link"></i> Links Importantes</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="link-grid" id="static-link-grid">
+            <a href="https://docs.google.com/spreadsheets/d/1yMYhXJ9JZTmsKo9AkVnRKQRXVluUKItGVkTpkBxhO4A/edit?usp=sharing" target="_blank" class="custom-link"><i class="fas fa-table"></i> Projetos Weon</a>
+            <a href="https://docs.google.com/document/d/1JAgCLbS67m6NICvjwlGDb3mG30wsGmNH/edit?usp=sharing&ouid=114973427241747262319&rtpof=true&sd=true" target="_blank" class="custom-link"><i class="fas fa-robot"></i> Bot de atendimento</a>
+            <a href="https://docs.google.com/spreadsheets/d/1mJ7D98iXfaj85HGFVSixoacgSwWZEY1JglSsG5HkvDI/edit?gid=1891921868#gid=1891921868" target="_blank" class="custom-link"><i class="fas fa-project-diagram"></i> Descritivo Comercial</a>
+            <a href="https://drive.google.com/drive/folders/12lWKbZBbYX66lqhWc7x-KDUrU8P4K7IT?usp=drive_link" target="_blank" class="custom-link"><i class="fab fa-google-drive"></i> Empresas Implantação</a>
+            <a href="https://docs.google.com/spreadsheets/d/1B6YU1bAtcj3IlDBH7tThz53MCGcM58sGbIXZf_Z9lUI/edit?gid=1376319518#gid=1376319518" target="_blank" class="custom-link"><i class="fas fa-table"></i> Dashboard GUPSHUP</a>
+            <a href="http://172.16.0.226/zabbix/zabbix.php?action=dashboard.list" target="_blank" class="custom-link"><i class="fas fa-chart-line"></i> Zabbix</a>
+            <a href="https://docs.google.com/spreadsheets/d/1-VYV3dmdrxgsZy-ZBy-lEDwq1BKh-ZA7Yj6-Kh3-Ysk/edit?gid=150809063#gid=150809063" target="_blank" class="custom-link"><i class="fas fa-shield-virus"></i> Processo ISO</a>
+            <a href="https://drive.google.com/drive/folders/1K2JiILPLgvj3EuVYeD0q0aqQ3ZrZuG_1" target="_blank" class="custom-link"><i class="fab fa-google-drive"></i> ISO GERAL WEON</a>
+            <a href="https://docs.google.com/document/d/1tIQEkCfIJEwFAsGpJ7mHy5vItnCx5WH4OwPOifYuFo8/edit?usp=sharing" class="custom-link"><i class="fas fa-cogs"></i> Configuração Coex</a>
+            <a href="https://docs.google.com/document/d/1lcrsotUPRzp619ojLae1pN6hrRGw-x5suvB1Zt_weBI/edit?usp=sharing" target="_blank" class="custom-link"><i class="fab fa-meta"></i> Meta Docs</a>
+            <a href="https://weon.notion.site/WeAction-API-8cd617e2f0e746359a6e6b3557ed2482" target="_blank" class="custom-link"><i class="fas fa-book"></i> Notion WeAction API</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BIBLIOTECA DE ARTIGOS (ESTÁTICO + ADIÇÃO DINÂMICA) -->
+    <div class="section-header-title">
+      <h2><i class="fas fa-book-open"></i> Biblioteca de Artigos</h2>
+      <button class="btn-add-resource" onclick="abrirModalRecurso('artigos')"><i class="fas fa-plus"></i> Adicionar Artigo</button>
+    </div>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-graduation-cap"></i> Artigos e Documentações Internas</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="link-grid" id="static-artigos-grid">
+            <a href="Plano-de-Estudo-Node-RED-WeON.pdf" target="_blank" class="custom-link"><i class="fas fa-file-pdf"></i> Manual NodeRed</a>
+            <a href="https://weon.atlassian.net/wiki/spaces/NBDCS/pages/1673101313/Como+criar+supervisor" target="_blank" class="custom-link">
+              <div><i class="fab fa-confluence"></i> Confluence Jira <span class="link-subtext">⚠️ Requer acesso</span></div>
+            </a>
+            <a href="https://docs.google.com/document/d/1WB6I7U8UVwT7GiIrxQ5tLXKgb5YiDXm9/edit" target="_blank" class="custom-link"><i class="fas fa-file-word"></i> POP Agentes</a>
+            <a href="https://docs.weon.com.br/" target="_blank" class="custom-link"><i class="fas fa-question-circle"></i> FAQ Supervisores</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESENVOLVEDOR & INTEGRAÇÕES -->
+    <div class="section-header-title">
+      <h2><i class="fas fa-code"></i> Desenvolvedor & Integrações</h2>
+      <button class="btn-add-resource" onclick="abrirModalRecurso('desenvolvedor')"><i class="fas fa-plus"></i> Adicionar Recurso</button>
+    </div>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-terminal"></i> Códigos e Chamadas de API</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="data-row" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+            <span class="data-label"><i class="fas fa-external-link-alt" style="color:var(--accent);"></i> Gerador de Token Gupshup (Docs Oficial)</span>
+            <span class="data-value">
+              <a href="https://partner-docs.gupshup.io/reference/get_partner-app-appid-token" target="_blank" style="color:var(--accent); text-decoration:underline; font-weight:600;">
+                Acessar Portal Gupshup API
+              </a>
+            </span>
+          </div>
+
+          <div class="code-header">
+            <span>Token Atual para a Gupshup:</span>
+            <button class="btn-copy" onclick="copyText('eyJraWQiOiI2ODlhZjdmMmUxOTQ2ZWM3IiwiYWxnIjoiRWREU0EiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJDQVMtVjIiLCJ0dCI6IlVUIiwic3ViIjoiMTA2IiwicnRpIjoiaVJiZGFnbVAyS05GIiwianRpIjoidXQtMWt6dmtwOG8yc2Vmb28zeHB5YnpwdWY4YW43IiwiaWF0IjoxNzg0MzA4NTMxLCJleHAiOjE3ODk0NDExNzEsImF1ZCI6ImdzcCIsInJvbGUiOiIqIiwicGEiOnRydWV9.T1kRTVjcW3Kj2ZxmFExHiaynNSls8-4-B8B8_mBu6L83O0-Peami-nO484IHzS6-YevVPeqq_UtLksMSF4ekCg', this)"><i class="fas fa-copy"></i> Copiar Token</button>
+          </div>
+          <pre class="code-block" id="gupshupTokenCode">eyJraWQiOiI2ODlhZjdmMmUxOTQ2ZWM3IiwiYWxnIjoiRWREU0EiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJDQVMtVjIiLCJ0dCI6IlVUIiwic3ViIjoiMTA2IiwicnRpIjoiaVJiZGFnbVAyS05GIiwianRpIjoidXQtMWt6dmtwOG8yc2Vmb28zeHB5YnpwdWY4YW43IiwiaWF0IjoxNzg0MzA4NTMxLCJleHAiOjE3ODk0NDExNzEsImF1ZCI6ImdzcCIsInJvbGUiOiIqIiwicGEiOnRydWV9.T1kRTVjcW3Kj2ZxmFExHiaynNSls8-4-B8B8_mBu6L83O0-Peami-nO484IHzS6-YevVPeqq_UtLksMSF4ekCg</pre>
+
+          <div class="code-header">
+            <span>Requisição Token cURL</span>
+            <button class="btn-copy" onclick="copyCodeBlock(this)"><i class="fas fa-copy"></i> Copiar Código</button>
+          </div>
+          <pre class="code-block" id="curlCode">curl --location 'https://weon5m1.weon.com.br/weaction-api/api/weon/v3/auth/token' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "identifier": "apicontraktor",
+    "password": "Ck@2026"
+}'</pre>
+
+          <div id="dynamic-desenvolvedor-container" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENTOR PARA SEÇÕES TOTALMENTE NOVAS CRIADAS VIA INTERFACE -->
+    <div id="customSectionsContainer"></div>
+
+    <div style="margin-top: 30px; text-align: center;">
+      <button class="btn-widget" style="margin: 0 auto; padding: 10px 20px; font-size: 0.88em; border-color:var(--accent); color:var(--accent);" onclick="abrirModalNovaSecao()">
+        <i class="fas fa-folder-plus"></i> + Criar Nova Seção
       </button>
     </div>
 
@@ -1090,39 +1249,50 @@
     </div>
   </div>
 
-  <!-- MODAL DE ADICIONAR RECURSO / LINK DINÂMICO -->
+  <!-- MODAL ADICIONAR RECURSO DINÂMICO -->
   <div id="recursoModal" class="modal">
     <div class="modal-content" style="max-width: 480px;">
-      <h3 id="recursoModalTitle"><i class="fas fa-link"></i> Adicionar Recurso</h3>
+      <h3 id="recursoModalTitle"><i class="fas fa-link"></i> Adicionar Item</h3>
       
       <div class="input-title-group">
         <label>Nome / Rótulo:</label>
-        <input type="text" id="recursoNomeInput" class="input-card-title" placeholder="Ex: Drive de Documentos, IP Servidor X...">
+        <input type="text" id="recursoNomeInput" class="input-card-title" placeholder="Ex: Servidor Backup, Manual X...">
       </div>
 
       <div class="input-title-group">
-        <label>URL / Valor / Senha:</label>
-        <input type="text" id="recursoValorInput" class="input-card-title" placeholder="Ex: https://..., admin123, 10.0.8.78">
+        <label>Link (URL) ou Valor de Senha/IP:</label>
+        <input type="text" id="recursoValorInput" class="input-card-title" placeholder="Ex: https://... ou 10.0.9.90 ou Senha123">
       </div>
 
       <div class="input-title-group">
-        <label>Ícone FontAwesome (Ex: fa-link, fa-key, fa-file-pdf, fa-folder):</label>
+        <label>Ícone FontAwesome (Ex: fa-link, fa-key, fa-file-pdf):</label>
         <input type="text" id="recursoIconeInput" class="input-card-title" placeholder="fa-link" value="fa-link">
       </div>
 
-      <div class="input-title-group">
-        <label>Seção Destino:</label>
-        <select id="recursoCategoriaSelect" class="input-card-title" style="padding: 10px;">
-          <option value="credenciais">Credenciais e Acessos</option>
-          <option value="navegacao">Navegação Rápida</option>
-          <option value="artigos">Biblioteca de Artigos</option>
-          <option value="desenvolvedor">Desenvolvedor & Integrações</option>
-        </select>
-      </div>
+      <input type="hidden" id="recursoCategoriaHidden" value="navegacao">
 
       <div class="modal-actions" style="justify-content: flex-end; gap: 10px;">
         <button class="btn-widget" onclick="fecharModalRecurso()">Cancelar</button>
         <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarRecursoDinamico()">Salvar Item</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CRIAR NOVA SEÇÃO -->
+  <div id="secaoModal" class="modal">
+    <div class="modal-content" style="max-width: 420px;">
+      <h3><i class="fas fa-folder-plus"></i> Criar Nova Seção</h3>
+      <div class="input-title-group">
+        <label>Título da Nova Seção:</label>
+        <input type="text" id="secaoTituloInput" class="input-card-title" placeholder="Ex: Documentos de Implantação">
+      </div>
+      <div class="input-title-group">
+        <label>Ícone FontAwesome (Ex: fa-folder, fa-file-alt, fa-tools):</label>
+        <input type="text" id="secaoIconeInput" class="input-card-title" placeholder="fa-folder" value="fa-folder">
+      </div>
+      <div class="modal-actions" style="justify-content: flex-end; gap: 10px;">
+        <button class="btn-widget" onclick="fecharModalSecao()">Cancelar</button>
+        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarNovaSecaoDinamica()">Criar Seção</button>
       </div>
     </div>
   </div>
@@ -1300,22 +1470,6 @@
 
     let recursosDinamicosCache = [];
 
-    /* RECURSOS E LINKS PADRÃO DO DASHBOARD */
-    const RECURSOS_PADRAO = [
-      { id: '1', secao: 'credenciais', nome: 'JIRA Implantação', valor: 'https://weon.atlassian.net/jira/for-you?tab=recommendedActions', icone: 'fa-jira' },
-      { id: '2', secao: 'credenciais', nome: 'JIRA E-mail', valor: 'comercial@weon.com.br', icone: 'fa-envelope' },
-      { id: '3', secao: 'credenciais', nome: 'JIRA Senha', valor: 'Weon@2024*', icone: 'fa-key' },
-      { id: '4', secao: 'credenciais', nome: 'WeON Admin User', valor: 'admin', icone: 'fa-user' },
-      { id: '5', secao: 'credenciais', nome: 'WeON Admin Senha', valor: 'vah%4ge1E', icone: 'fa-key' },
-      { id: '6', secao: 'credenciais', nome: 'IP admin (m3 weon)', valor: '10.0.9.84/weon', icone: 'fa-network-wired' },
-      { id: '7', secao: 'navegacao', nome: 'Projetos Weon', valor: 'https://docs.google.com/spreadsheets/d/1yMYhXJ9JZTmsKo9AkVnRKQRXVluUKItGVkTpkBxhO4A/edit?usp=sharing', icone: 'fa-table' },
-      { id: '8', secao: 'navegacao', nome: 'Bot de atendimento', valor: 'https://docs.google.com/document/d/1JAgCLbS67m6NICvjwlGDb3mG30wsGmNH/edit?usp=sharing', icone: 'fa-robot' },
-      { id: '9', secao: 'navegacao', nome: 'Descritivo Comercial', valor: 'https://docs.google.com/spreadsheets/d/1mJ7D98iXfaj85HGFVSixoacgSwWZEY1JglSsG5HkvDI/edit', icone: 'fa-project-diagram' },
-      { id: '10', secao: 'navegacao', nome: 'Empresas Implantação', valor: 'https://drive.google.com/drive/folders/12lWKbZBbYX66lqhWc7x-KDUrU8P4K7IT', icone: 'fa-google-drive' },
-      { id: '11', secao: 'artigos', nome: 'Manual NodeRed', valor: 'Plano-de-Estudo-Node-RED-WeON.pdf', icone: 'fa-file-pdf' },
-      { id: '12', secao: 'artigos', nome: 'POP Agentes', valor: 'https://docs.google.com/document/d/1WB6I7U8UVwT7GiIrxQ5tLXKgb5YiDXm9/edit', icone: 'fa-file-word' }
-    ];
-
     function parseJwt(token) {
       try {
         const base64Url = token.split('.')[1];
@@ -1396,111 +1550,128 @@
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2200);
     }
 
-    /* SISTEMA DE RECURSOS E LINKS DINÂMICOS EM NUVEM */
+    /* CARREGAMENTO E SINCRONIZAÇÃO DE RECURSOS ADICIONAIS DINÂMICOS */
     function carregarRecursosDinamicos() {
-      const saved = localStorage.getItem('weon_recursos_dinamicos');
-      recursosDinamicosCache = saved ? JSON.parse(saved) : RECURSOS_PADRAO;
+      const saved = localStorage.getItem('weon_recursos_adicionais');
+      recursosDinamicosCache = saved ? JSON.parse(saved) : [];
       renderizarRecursosDinamicos();
 
-      /* Sincronização em tempo real com o Google Sheets */
       if (APPS_SCRIPT_URL) {
         fetch(`${APPS_SCRIPT_URL}?acao=getRecursos`)
           .then(res => res.json())
           .then(res => {
-            if (res && res.status === 'success' && res.recursos && res.recursos.length > 0) {
+            if (res && res.status === 'success' && res.recursos) {
               recursosDinamicosCache = res.recursos;
-              localStorage.setItem('weon_recursos_dinamicos', JSON.stringify(recursosDinamicosCache));
+              localStorage.setItem('weon_recursos_adicionais', JSON.stringify(recursosDinamicosCache));
               renderizarRecursosDinamicos();
             }
           })
-          .catch(err => console.warn("Modo offline de recursos ativo:", err));
+          .catch(err => console.warn("Modo offline de recursos adicionais ativo:", err));
       }
     }
 
     function renderizarRecursosDinamicos() {
-      const container = document.getElementById('dynamicResourceSections');
-      container.innerHTML = '';
+      // Limpa os contentores dinâmicos das secções nativas
+      const credContainer = document.getElementById('dynamic-credenciais-container');
+      const devContainer = document.getElementById('dynamic-desenvolvedor-container');
+      const staticLinkGrid = document.getElementById('static-link-grid');
+      const staticArtigosGrid = document.getElementById('static-artigos-grid');
+      const customSectionsContainer = document.getElementById('customSectionsContainer');
 
-      const secoesMap = [
-        { id: 'credenciais', titulo: 'Credenciais e Acessos', icone: 'fa-lock' },
-        { id: 'navegacao', titulo: 'Navegação rápida', icone: 'fa-external-link-alt' },
-        { id: 'artigos', titulo: 'Biblioteca de Artigos', icone: 'fa-book-open' },
-        { id: 'desenvolvedor', titulo: 'Desenvolvedor & Integrações', icone: 'fa-code' }
-      ];
+      if (credContainer) credContainer.innerHTML = '';
+      if (devContainer) devContainer.innerHTML = '';
+      if (customSectionsContainer) customSectionsContainer.innerHTML = '';
 
-      secoesMap.forEach(secao => {
-        const itensSecao = recursosDinamicosCache.filter(r => r.secao === secao.id);
-        
-        let conteudoHTML = '';
-        if (secao.id === 'navegacao' || secao.id === 'artigos') {
-          conteudoHTML = `<div class="link-grid">`;
-          itensSecao.forEach(item => {
-            conteudoHTML += `
-              <div class="custom-link">
-                <a href="${item.valor}" target="_blank" class="custom-link-left" style="color: inherit; text-decoration: none;">
-                  <i class="fas ${item.icone || 'fa-link'}"></i>
-                  <span>${item.nome}</span>
-                </a>
-                <div class="item-actions">
-                  <button class="btn-item-action btn-item-delete" onclick="deletarRecurso('${item.id}')" title="Excluir"><i class="fas fa-trash-alt"></i></button>
-                </div>
+      // Remove apenas os botões dinâmicos que foram adicionados anteriormente às grelhas nativas
+      document.querySelectorAll('.dynamic-link-item').forEach(el => el.remove());
+
+      // Agrupa por secção
+      const secoesCustomizadas = {};
+
+      recursosDinamicosCache.forEach(item => {
+        if (item.secao === 'credenciais' && credContainer) {
+          credContainer.innerHTML += `
+            <div class="data-row dynamic-link-item">
+              <span class="data-label"><i class="fas ${item.icone || 'fa-key'}"></i> ${item.nome}</span>
+              <div style="display:flex; align-items:center;">
+                <span class="data-value">${item.valor} <button class="btn-copy" onclick="copyText('${item.valor}', this)"><i class="fas fa-copy"></i></button></span>
+                <button class="btn-item-delete" onclick="deletarRecurso('${item.id}')" title="Excluir"><i class="fas fa-trash-alt"></i></button>
               </div>
-            `;
-          });
-          conteudoHTML += `</div>`;
+            </div>
+          `;
+        } else if (item.secao === 'navegacao' && staticLinkGrid) {
+          const a = document.createElement('a');
+          a.href = item.valor;
+          a.target = '_blank';
+          a.className = 'custom-link dynamic-link-item';
+          a.innerHTML = `
+            <span><i class="fas ${item.icone || 'fa-link'}"></i> ${item.nome}</span>
+            <button class="btn-item-delete" onclick="event.preventDefault(); event.stopPropagation(); deletarRecurso('${item.id}')" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+          `;
+          staticLinkGrid.appendChild(a);
+        } else if (item.secao === 'artigos' && staticArtigosGrid) {
+          const a = document.createElement('a');
+          a.href = item.valor;
+          a.target = '_blank';
+          a.className = 'custom-link dynamic-link-item';
+          a.innerHTML = `
+            <span><i class="fas ${item.icone || 'fa-file-alt'}"></i> ${item.nome}</span>
+            <button class="btn-item-delete" onclick="event.preventDefault(); event.stopPropagation(); deletarRecurso('${item.id}')" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+          `;
+          staticArtigosGrid.appendChild(a);
+        } else if (item.secao === 'desenvolvedor' && devContainer) {
+          devContainer.innerHTML += `
+            <div class="data-row dynamic-link-item">
+              <span class="data-label"><i class="fas ${item.icone || 'fa-code'}"></i> ${item.nome}</span>
+              <div style="display:flex; align-items:center;">
+                <span class="data-value">${item.valor.startsWith('http') ? `<a href="${item.valor}" target="_blank" style="color:var(--accent); text-decoration:underline;">Acessar</a>` : item.valor}</span>
+                <button class="btn-item-delete" onclick="deletarRecurso('${item.id}')" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+              </div>
+            </div>
+          `;
         } else {
-          itensSecao.forEach(item => {
-            if (item.valor.startsWith('http')) {
-              conteudoHTML += `
-                <div class="data-row">
-                  <span class="data-label"><i class="fas ${item.icone || 'fa-link'}"></i> ${item.nome}</span>
-                  <div style="display:flex; align-items:center;">
-                    <span class="data-value"><a href="${item.valor}" target="_blank" style="color:var(--accent); text-decoration:underline;">Acessar <i class="fas fa-external-link-alt"></i></a></span>
-                    <div class="item-actions">
-                      <button class="btn-item-action btn-item-delete" onclick="deletarRecurso('${item.id}')" title="Excluir"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                  </div>
-                </div>
-              `;
-            } else {
-              conteudoHTML += `
-                <div class="data-row">
-                  <span class="data-label"><i class="fas ${item.icone || 'fa-key'}"></i> ${item.nome}</span>
-                  <div style="display:flex; align-items:center;">
-                    <span class="data-value">${item.valor} <button class="btn-copy" onclick="copyText('${item.valor}', this)"><i class="fas fa-copy"></i></button></span>
-                    <div class="item-actions">
-                      <button class="btn-item-action btn-item-delete" onclick="deletarRecurso('${item.id}')" title="Excluir"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }
-          });
+          // Secção totalmente personalizada
+          if (!secoesCustomizadas[item.secao]) secoesCustomizadas[item.secao] = [];
+          secoesCustomizadas[item.secao].push(item);
         }
+      });
 
+      // Renderiza as secções totalmente novas na parte inferior
+      Object.keys(secoesCustomizadas).forEach(secaoNome => {
+        const itens = secoesCustomizadas[secaoNome];
         const secaoDiv = document.createElement('div');
         secaoDiv.className = 'target-search';
+
+        let gridHtml = `<div class="link-grid">`;
+        itens.forEach(it => {
+          gridHtml += `
+            <a href="${it.valor.startsWith('http') ? it.valor : '#'}" target="_blank" class="custom-link">
+              <span><i class="fas ${it.icone || 'fa-folder'}"></i> ${it.nome}</span>
+              <button class="btn-item-delete" onclick="event.preventDefault(); event.stopPropagation(); deletarRecurso('${it.id}')" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+            </a>
+          `;
+        });
+        gridHtml += `</div>`;
+
         secaoDiv.innerHTML = `
           <div class="section-header-title">
-            <h2><i class="fas ${secao.icone}"></i> ${secao.titulo}</h2>
-            <button class="btn-add-resource" onclick="abrirModalRecurso('${secao.id}')"><i class="fas fa-plus"></i> Adicionar Item</button>
+            <h2><i class="fas fa-folder"></i> ${secaoNome}</h2>
+            <button class="btn-add-resource" onclick="abrirModalRecurso('${secaoNome}')"><i class="fas fa-plus"></i> Adicionar Item</button>
           </div>
           <div class="collapsible-wrapper">
             <button class="collapsible">
-              <span class="btn-title"><i class="fas ${secao.icone}"></i> ${secao.titulo}</span>
+              <span class="btn-title"><i class="fas fa-folder"></i> ${secaoNome}</span>
               <i class="fas fa-chevron-down chevron"></i>
             </button>
             <div class="content">
-              <div class="content-inner">
-                ${conteudoHTML || '<p style="font-size:0.8em; color:var(--text-muted);">Nenhum item cadastrado nesta seção.</p>'}
-              </div>
+              <div class="content-inner">${gridHtml}</div>
             </div>
           </div>
         `;
-        container.appendChild(secaoDiv);
+        customSectionsContainer.appendChild(secaoDiv);
       });
 
-      /* Reativa a expansão dos colapsáveis */
+      // Reativa os cliques dos colapsáveis
       document.querySelectorAll(".collapsible").forEach(button => {
         button.onclick = function() {
           this.classList.toggle("active");
@@ -1514,21 +1685,37 @@
       document.getElementById('recursoNomeInput').value = '';
       document.getElementById('recursoValorInput').value = '';
       document.getElementById('recursoIconeInput').value = 'fa-link';
-      document.getElementById('recursoCategoriaSelect').value = secaoId === 'NovaSecao' ? 'navegacao' : secaoId;
+      document.getElementById('recursoCategoriaHidden').value = secaoId;
       document.getElementById('recursoModal').style.display = 'flex';
     }
 
-    function fecharModalRecurso() {
-      document.getElementById('recursoModal').style.display = 'none';
+    function fecharModalRecurso() { document.getElementById('recursoModal').style.display = 'none'; }
+
+    function abrirModalNovaSecao() {
+      document.getElementById('secaoTituloInput').value = '';
+      document.getElementById('secaoIconeInput').value = 'fa-folder';
+      document.getElementById('secaoModal').style.display = 'flex';
+    }
+
+    function fecharModalSecao() { document.getElementById('secaoModal').style.display = 'none'; }
+
+    function salvarNovaSecaoDinamica() {
+      const titulo = document.getElementById('secaoTituloInput').value.trim();
+      const icone = document.getElementById('secaoIconeInput').value.trim() || 'fa-folder';
+
+      if (!titulo) return alert("Digite o título da nova seção!");
+
+      fecharModalSecao();
+      abrirModalRecurso(titulo);
     }
 
     function salvarRecursoDinamico() {
       const nome = document.getElementById('recursoNomeInput').value.trim();
       const valor = document.getElementById('recursoValorInput').value.trim();
       const icone = document.getElementById('recursoIconeInput').value.trim() || 'fa-link';
-      const secao = document.getElementById('recursoCategoriaSelect').value;
+      const secao = document.getElementById('recursoCategoriaHidden').value;
 
-      if (!nome || !valor) return alert("Preencha o nome e o valor/link do recurso!");
+      if (!nome || !valor) return alert("Preencha o nome e o valor/link!");
 
       const novoItem = {
         id: Date.now().toString(),
@@ -1539,10 +1726,10 @@
       };
 
       recursosDinamicosCache.push(novoItem);
-      localStorage.setItem('weon_recursos_dinamicos', JSON.stringify(recursosDinamicosCache));
+      localStorage.setItem('weon_recursos_adicionais', JSON.stringify(recursosDinamicosCache));
       renderizarRecursosDinamicos();
       fecharModalRecurso();
-      mostrarToast("Recurso salvo!");
+      mostrarToast("Item adicionado!");
 
       if (APPS_SCRIPT_URL) {
         fetch(APPS_SCRIPT_URL, {
@@ -1558,12 +1745,12 @@
     }
 
     function deletarRecurso(id) {
-      if (!confirm("Tem certeza que deseja excluir este recurso?")) return;
+      if (!confirm("Tem certeza que deseja remover este item?")) return;
 
       recursosDinamicosCache = recursosDinamicosCache.filter(r => r.id !== id);
-      localStorage.setItem('weon_recursos_dinamicos', JSON.stringify(recursosDinamicosCache));
+      localStorage.setItem('weon_recursos_adicionais', JSON.stringify(recursosDinamicosCache));
       renderizarRecursosDinamicos();
-      mostrarToast("Recurso removido!");
+      mostrarToast("Item removido!");
 
       if (APPS_SCRIPT_URL) {
         fetch(APPS_SCRIPT_URL, {
@@ -2373,7 +2560,6 @@ Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" 
           <div class="header-container">
             <div class="logo-weon-official">
               <svg class="logo-weon-svg" viewBox="0 0 255 75" width="180" height="53" xmlns="http://www.w3.org/2000/svg">
-                <!-- VETOR EXACTO DA WEON: W E O N -->
                 <path d="M 5 10 L 28 10 L 42 56 L 56 10 L 76 10 L 90 56 L 104 10 L 126 10 L 102 70 L 80 70 L 66 26 L 52 70 L 30 70 Z" fill="#18181b"/>
                 <path d="M 124 10 L 168 10 L 168 23 L 140 23 L 140 33 L 166 33 L 166 45 L 140 45 L 140 57 L 168 57 L 168 70 L 124 70 Z" fill="#18181b"/>
                 <circle cx="182" cy="40" r="28" fill="#18181b"/>
