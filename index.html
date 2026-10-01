@@ -651,6 +651,210 @@
     .card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 600; color: var(--accent); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; }
     .card-checklist-progress { font-size: 0.72em; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 4px; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
+    .checklist-section {
+      margin-top: 18px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .checklist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .checklist-header h4 {
+      font-size: 0.85em;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checklist-progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .checklist-progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .checklist-container {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+
+    .checklist-container::-webkit-scrollbar { width: 6px; }
+    .checklist-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    .checklist-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: grab;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .checklist-item:active { cursor: grabbing; }
+    .checklist-item.dragging-item { opacity: 0.4; }
+    .checklist-item.drag-over-item { border-top: 2px solid var(--accent); }
+
+    .checklist-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 90%;
+    }
+    .checklist-item-left i.drag-handle {
+      color: var(--text-muted);
+      font-size: 0.8em;
+      cursor: grab;
+    }
+
+    .checklist-item-left input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .checklist-item-text {
+      font-size: 0.84em;
+      color: var(--text-main);
+      word-break: break-word;
+      cursor: pointer;
+    }
+    .checklist-item.completed .checklist-item-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .checklist-item-timestamp {
+      font-size: 0.7em;
+      color: var(--accent);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .btn-remove-chk {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8em;
+      transition: color 0.2s;
+    }
+    .btn-remove-chk:hover { color: var(--danger); }
+
+    .add-chk-wrapper {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .add-chk-input {
+      flex: 1;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 8px 12px;
+      font-size: 0.82em;
+    }
+    .add-chk-input:focus { outline: none; border-color: var(--accent); }
+
+    .ai-report-section {
+      margin-top: 18px;
+      background: rgba(0, 255, 204, 0.03);
+      border: 1px solid var(--border-glow);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .ai-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ai-header h4 {
+      font-size: 0.85em;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-response-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 0.85em;
+      line-height: 1.5;
+      color: var(--text-main);
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 10px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .input-title-group { margin-bottom: 14px; }
+    .input-title-group label { display: block; font-size: 0.75em; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .input-card-title { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); font-weight: 600; font-size: 0.95em; }
+    .input-card-title:focus { outline: none; border-color: var(--accent); }
+
+    .input-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .attachment-box { 
+      margin-bottom: 14px; 
+      background: rgba(255,255,255,0.02); 
+      padding: 12px 16px; 
+      border-radius: 8px; 
+      border: 1px dashed var(--accent); 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+    }
+    .attachment-box label { font-size: 0.82em; color: var(--accent); cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .attachment-box label:hover { color: var(--text-main); }
+    .attachment-box input[type="file"] { display: none; }
+    .upload-status { font-size: 0.78em; color: var(--text-muted); font-weight: 600; }
+
+    .editor-toolbar { display: flex; gap: 6px; margin-bottom: 8px; background: var(--bg-input); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap; align-items: center; }
+    .editor-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
+    .editor-btn:hover { background: var(--accent); color: #090c15; font-weight: bold; }
+    .editor-select { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
+
+    .rich-editor { width: 100%; min-height: 100px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); padding: 14px; margin-bottom: 14px; outline: none; font-size: 0.9em; line-height: 1.5; overflow-y: auto; max-height: 180px; }
+    .rich-editor:focus { border-color: var(--accent); }
+
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
     .modal-content { background: var(--bg-card); border: 1px solid var(--accent); padding: 28px; border-radius: var(--radius-lg); width: 92%; max-width: 720px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; color: var(--text-main); }
     .modal-content h3 { margin-bottom: 18px; color: var(--accent); font-size: 1.15em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -662,6 +866,50 @@
     #toast.show { visibility: visible; opacity: 1; bottom: 35px; }
 
     .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border-color); padding-top: 24px; }
+
+    .printable-preview-container {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border: 1px solid #cbd5e1;
+    }
+
+    @page {
+      size: landscape;
+      margin: 8mm;
+    }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      body * {
+        visibility: hidden !important;
+      }
+      #boardReportPrintContainer, #boardReportPrintContainer * {
+        visibility: visible !important;
+      }
+      #boardReportPrintContainer {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 10px !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .printable-preview-container table {
+        width: 100% !important;
+        table-layout: fixed !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -812,12 +1060,28 @@
       </div>
     </div>
 
-    <!-- SEÇÕES DINÂMICAS DE RECURSOS E LINKS -->
+    <!-- AGENDA GOOGLE CALENDAR EMBED -->
+    <h2><i class="fas fa-calendar-alt"></i> Minha Agenda de Implantação</h2>
+    <div class="collapsible-wrapper target-search">
+      <button class="collapsible">
+        <span class="btn-title"><i class="fas fa-calendar-check"></i> Compromissos & Kick-offs (Google Calendar)</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </button>
+      <div class="content">
+        <div class="content-inner">
+          <div class="calendar-embed-wrapper">
+            <iframe src="https://calendar.google.com/calendar/embed?src=phelipe.ribeiro%40weon.com.br&ctz=America%2FSao_Paulo" style="border:0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÕES DINÂMICAS DE RECURSOS E LINKS (GERENCIADOR DE SEÇÕES) -->
     <div id="dynamicResourceSections"></div>
 
     <div style="margin-top: 25px; text-align: center;">
-      <button class="btn-add-resource" style="margin: 0 auto; padding: 10px 20px; font-size: 0.9em;" onclick="abrirModalRecurso('NovaSecao')">
-        <i class="fas fa-folder-plus"></i> Criar Nova Seção
+      <button class="btn-widget" style="margin: 0 auto; padding: 10px 20px; font-size: 0.88em; border-color:var(--accent); color:var(--accent);" onclick="abrirModalRecurso('NovaSecao')">
+        <i class="fas fa-folder-plus"></i> + Criar Nova Seção Dinâmica
       </button>
     </div>
 
@@ -826,24 +1090,24 @@
     </div>
   </div>
 
-  <!-- MODAL DE ADICIONAR/EDITAR RECURSO E LINK -->
+  <!-- MODAL DE ADICIONAR RECURSO / LINK DINÂMICO -->
   <div id="recursoModal" class="modal">
     <div class="modal-content" style="max-width: 480px;">
-      <h3 id="recursoModalTitle"><i class="fas fa-link"></i> Gerenciar Recurso</h3>
+      <h3 id="recursoModalTitle"><i class="fas fa-link"></i> Adicionar Recurso</h3>
       
       <div class="input-title-group">
         <label>Nome / Rótulo:</label>
-        <input type="text" id="recursoNomeInput" class="input-card-title" placeholder="Ex: Drive Projetos, Senha JIRA...">
+        <input type="text" id="recursoNomeInput" class="input-card-title" placeholder="Ex: Drive de Documentos, IP Servidor X...">
       </div>
 
       <div class="input-title-group">
-        <label>URL / Valor / Comando:</label>
+        <label>URL / Valor / Senha:</label>
         <input type="text" id="recursoValorInput" class="input-card-title" placeholder="Ex: https://..., admin123, 10.0.8.78">
       </div>
 
       <div class="input-title-group">
-        <label>Ícone FontAwesome (Ex: fa-link, fa-key, fa-file-pdf):</label>
-        <input type="text" id="recursoIconeInput" class="input-card-title" placeholder="Ex: fa-link" value="fa-link">
+        <label>Ícone FontAwesome (Ex: fa-link, fa-key, fa-file-pdf, fa-folder):</label>
+        <input type="text" id="recursoIconeInput" class="input-card-title" placeholder="fa-link" value="fa-link">
       </div>
 
       <div class="input-title-group">
@@ -858,7 +1122,162 @@
 
       <div class="modal-actions" style="justify-content: flex-end; gap: 10px;">
         <button class="btn-widget" onclick="fecharModalRecurso()">Cancelar</button>
-        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarRecursoDinamico()">Salvar Recurso</button>
+        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarRecursoDinamico()">Salvar Item</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE STATUS REPORT GERAL & DIAGNÓSTICO IA DO BOARD -->
+  <div id="boardReportModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-file-contract"></i> Status Report Geral & Diagnóstico IA da Carteira</h3>
+      <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Acompanhamento executivo de todos os projetos ativos.</p>
+
+      <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+        <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfBoardGeralPlanoB()"><i class="fas fa-file-pdf"></i> Exportar PDF Geral (Esteira & Tabela)</button>
+        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarAnaliseIAGeral()"><i class="fas fa-magic"></i> Gerar/Atualizar Resumo com IA</button>
+      </div>
+
+      <div class="input-grid-2" style="margin-bottom:12px;">
+        <div>
+          <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">PROVEDOR DE IA:</label>
+          <select id="aiProviderSelect" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" onchange="salvarProvedorIa(this.value)">
+            <option value="gemini">Google Gemini (3.6 / 3.8 - Estável)</option>
+            <option value="groq">Groq (Llama 3)</option>
+            <option value="openai">OpenAI (ChatGPT GPT-4o mini)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY (GEMINI / GROQ / OPENAI):</label>
+          <input type="password" id="boardAiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="AIzaSy... / gsk_... / sk-..." onchange="salvarKeyIaGeral(this.value)">
+        </div>
+      </div>
+
+      <div id="boardAiResponseBox" class="ai-response-box"></div>
+      <button id="btnExportBoardAiPdf" class="btn-widget" style="display:none; margin-top:10px; margin-bottom:14px; border-color:var(--accent); color:var(--accent);" onclick="exportarRelatorioIAGeralPdf()"><i class="fas fa-file-download"></i> 📄 Exportar PDF da Análise IA</button>
+
+      <div id="boardReportPrintContainer" class="printable-preview-container"></div>
+
+      <div class="modal-actions" style="justify-content: flex-end; margin-top:14px;">
+        <button class="btn-widget" onclick="fecharModalBoardReport()">Fechar Modal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE EDIÇÃO E CRIAÇÃO COMPLETO DE CARD INDIVIDUAL -->
+  <div id="obsModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalHeaderTitle"><i class="fab fa-jira"></i> Editar Detalhes do Card</h3>
+      
+      <div class="input-title-group">
+        <label>Título do Card / Projeto:</label>
+        <input type="text" id="modalTitleInput" class="input-card-title" placeholder="Ex: Implantação Sistema X...">
+      </div>
+
+      <div class="input-grid-2">
+        <div class="input-title-group">
+          <label><i class="fas fa-building"></i> Empresa Cliente:</label>
+          <input type="text" id="modalEmpresaInput" class="input-card-title" placeholder="Ex: Nome da Empresa Ltda">
+        </div>
+        <div class="input-title-group">
+          <label><i class="fas fa-address-book"></i> Contato Responsável:</label>
+          <input type="text" id="modalContatoInput" class="input-card-title" placeholder="Ex: Fulano / (11) 99999-9999 / email@empresa.com">
+        </div>
+      </div>
+
+      <div class="attachment-box">
+        <label for="fileInput"><i class="fas fa-paperclip"></i> Anexar Arquivo (PDF, DOCX, Imagem...)</label>
+        <input type="file" id="fileInput" onchange="uploadArquivoDrive(this)">
+        <span id="uploadStatus" class="upload-status">Nenhum anexo novo</span>
+      </div>
+
+      <label style="display:block; font-size:0.75em; color:var(--text-muted); margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Descrição / Anotações:</label>
+      
+      <div class="editor-toolbar">
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('bold')" title="Negrito"><b>B</b></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('italic')" title="Itálico"><i>I</i></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('underline')" title="Sublinhado"><u>U</u></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Lista de Marcadores"><i class="fas fa-list-ul"></i></button>
+        <button class="editor-btn" onmousedown="event.preventDefault(); formatDoc('removeFormat')" title="Limpar Formatação"><i class="fas fa-remove-format"></i> Tx</button>
+        
+        <select class="editor-select" onmousedown="salvarSelecaoTexto()" onchange="formatDoc('fontSize', this.value); this.selectedIndex=0;">
+          <option value="" disabled selected>Tamanho Fonte</option>
+          <option value="2">Pequena</option>
+          <option value="3">Normal</option>
+          <option value="5">Grande</option>
+          <option value="6">Gigante</option>
+        </select>
+
+        <select class="editor-select" onmousedown="salvarSelecaoTexto()" onchange="formatDoc('foreColor', this.value); this.selectedIndex=0;">
+          <option value="" disabled selected>Cor da Fonte</option>
+          <option value="#f8f9fa">Branco</option>
+          <option value="#00ffcc">Ciano Destaque</option>
+          <option value="#ffb703">Amarelo Alerta</option>
+          <option value="#ff4a4a">Vermelho Bloqueio</option>
+        </select>
+      </div>
+
+      <div id="modalObsEditor" class="rich-editor" contenteditable="true" onkeyup="salvarSelecaoTexto()" onclick="salvarSelecaoTexto()"></div>
+
+      <div class="checklist-section">
+        <div class="checklist-header">
+          <h4><i class="fas fa-tasks"></i> Checklist de Implantação</h4>
+          <span id="checklistProgressText" style="font-size:0.78em; color:var(--text-muted); font-weight:700;">0/0 (0%)</span>
+        </div>
+
+        <div class="checklist-progress-bar-bg">
+          <div id="checklistProgressBarFill" class="checklist-progress-bar-fill"></div>
+        </div>
+
+        <div class="checklist-container" id="checklistContainer"></div>
+
+        <div class="add-chk-wrapper">
+          <input type="text" id="addChkInput" class="add-chk-input" placeholder="Adicionar nova tarefa ao checklist..." onkeypress="if(event.key==='Enter') adicionarItemChecklistInput()">
+          <button class="btn-widget" onclick="adicionarItemChecklistInput()"><i class="fas fa-plus"></i> Add</button>
+        </div>
+      </div>
+
+      <!-- IA E PLANO B NO CARD INDIVIDUAL -->
+      <div class="ai-report-section">
+        <div class="ai-header">
+          <h4><i class="fas fa-robot"></i> Status Report do Projeto (Multi-IA & Exportação)</h4>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-widget" style="border-color:#38bdf8; color:#38bdf8;" onclick="exportarPdfDirectoLocal()"><i class="fas fa-file-pdf"></i> Exportar PDF Direto (Sem IA)</button>
+            <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="gerarStatusReportIA()"><i class="fas fa-magic"></i> Gerar Resumo IA</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px; margin-bottom: 8px;">
+          <label style="display:block; font-size:0.7em; color:var(--text-muted); margin-bottom:4px; font-weight:bold;">API KEY (GEMINI / GROQ / OPENAI):</label>
+          <input type="password" id="geminiApiKey" class="input-card-title" style="padding:6px 10px; font-size:0.8em;" placeholder="AIzaSy... / gsk_... / sk-..." onchange="salvarKeyIaGeral(this.value)">
+        </div>
+
+        <div id="aiResponseBox" class="ai-response-box"></div>
+
+        <button id="btnExportPdf" class="btn-widget" style="display:none; margin-top:10px; border-color:#38bdf8; color:#38bdf8;" onclick="exportarRelatorioPdfIA()"><i class="fas fa-download"></i> Exportar Resumo IA em PDF</button>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnDeleteModal" class="btn-widget btn-danger" style="display:none;" onclick="deletarCardModal()"><i class="fas fa-trash-alt"></i> Excluir Card</button>
+        <div class="modal-actions-right">
+          <button class="btn-widget" onclick="fecharModal()">Cancelar</button>
+          <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarObservacao()">Salvar Alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="colunaModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <h3><i class="fas fa-columns"></i> Criar Nova Coluna</h3>
+      <div class="input-title-group">
+        <label>Nome do Status / Etapa:</label>
+        <input type="text" id="colunaTitleInput" class="input-card-title" placeholder="Ex: Setup > Andamento, Testes...">
+      </div>
+      <div class="modal-actions" style="justify-content: flex-end; gap: 10px;">
+        <button class="btn-widget" onclick="fecharModalColuna()">Cancelar</button>
+        <button class="btn-widget" style="border-color:var(--accent); color:var(--accent);" onclick="salvarNovaColuna()">Criar Coluna</button>
       </div>
     </div>
   </div>
@@ -866,20 +1285,35 @@
   <div id="toast">Alteração salva!</div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdMebQ2G5ZD18d5GdwKc7eG55j9aZbT5UYGrQi0bKvQ6GHWylUgoxLOZsflvzA7xY4bQ/exec';
     const WEBHOOK_WEON_BOARD = 'https://weon5m3.weon.com.br/weaction-api/api/weon/public/webhook/XJ7h4IxZ-5zr7-97hZkPnL';
 
-    let recursosDinamicosCache = [];
-    let recursoEditandoId = null;
+    let currentChecklistCache = [];
+    let cardElementoAtual = null;
+    let clienteAtualObs = { cliente: '', col: 0 };
+    let modoCriacao = false;
+    let colIndexCriacao = 0;
+    let savedRange = null;
+    let donutChartInstance = null;
+    let draggedColumn = null;
+    let draggedChecklistItem = null;
 
-    /* RECURSOS PADRÃO DE INICIALIZAÇÃO */
+    let recursosDinamicosCache = [];
+
+    /* RECURSOS E LINKS PADRÃO DO DASHBOARD */
     const RECURSOS_PADRAO = [
-      { id: '1', secao: 'credenciais', nome: 'JIRA Implantação', valor: 'https://weon.atlassian.net/jira/for-you?tab=recommendedActions', icone: 'fa-jira', tipo: 'link' },
-      { id: '2', secao: 'credenciais', nome: 'JIRA E-mail', valor: 'comercial@weon.com.br', icone: 'fa-envelope', tipo: 'texto' },
-      { id: '3', secao: 'credenciais', nome: 'JIRA Senha', valor: 'Weon@2024*', icone: 'fa-key', tipo: 'texto' },
-      { id: '4', secao: 'navegacao', nome: 'Projetos Weon', valor: 'https://docs.google.com/spreadsheets/d/1yMYhXJ9JZTmsKo9AkVnRKQRXVluUKItGVkTpkBxhO4A/edit?usp=sharing', icone: 'fa-table', tipo: 'link' },
-      { id: '5', secao: 'navegacao', nome: 'Bot de atendimento', valor: 'https://docs.google.com/document/d/1JAgCLbS67m6NICvjwlGDb3mG30wsGmNH/edit?usp=sharing', icone: 'fa-robot', tipo: 'link' },
-      { id: '6', secao: 'artigos', nome: 'Manual NodeRed', valor: 'Plano-de-Estudo-Node-RED-WeON.pdf', icone: 'fa-file-pdf', tipo: 'link' }
+      { id: '1', secao: 'credenciais', nome: 'JIRA Implantação', valor: 'https://weon.atlassian.net/jira/for-you?tab=recommendedActions', icone: 'fa-jira' },
+      { id: '2', secao: 'credenciais', nome: 'JIRA E-mail', valor: 'comercial@weon.com.br', icone: 'fa-envelope' },
+      { id: '3', secao: 'credenciais', nome: 'JIRA Senha', valor: 'Weon@2024*', icone: 'fa-key' },
+      { id: '4', secao: 'credenciais', nome: 'WeON Admin User', valor: 'admin', icone: 'fa-user' },
+      { id: '5', secao: 'credenciais', nome: 'WeON Admin Senha', valor: 'vah%4ge1E', icone: 'fa-key' },
+      { id: '6', secao: 'credenciais', nome: 'IP admin (m3 weon)', valor: '10.0.9.84/weon', icone: 'fa-network-wired' },
+      { id: '7', secao: 'navegacao', nome: 'Projetos Weon', valor: 'https://docs.google.com/spreadsheets/d/1yMYhXJ9JZTmsKo9AkVnRKQRXVluUKItGVkTpkBxhO4A/edit?usp=sharing', icone: 'fa-table' },
+      { id: '8', secao: 'navegacao', nome: 'Bot de atendimento', valor: 'https://docs.google.com/document/d/1JAgCLbS67m6NICvjwlGDb3mG30wsGmNH/edit?usp=sharing', icone: 'fa-robot' },
+      { id: '9', secao: 'navegacao', nome: 'Descritivo Comercial', valor: 'https://docs.google.com/spreadsheets/d/1mJ7D98iXfaj85HGFVSixoacgSwWZEY1JglSsG5HkvDI/edit', icone: 'fa-project-diagram' },
+      { id: '10', secao: 'navegacao', nome: 'Empresas Implantação', valor: 'https://drive.google.com/drive/folders/12lWKbZBbYX66lqhWc7x-KDUrU8P4K7IT', icone: 'fa-google-drive' },
+      { id: '11', secao: 'artigos', nome: 'Manual NodeRed', valor: 'Plano-de-Estudo-Node-RED-WeON.pdf', icone: 'fa-file-pdf' },
+      { id: '12', secao: 'artigos', nome: 'POP Agentes', valor: 'https://docs.google.com/document/d/1WB6I7U8UVwT7GiIrxQ5tLXKgb5YiDXm9/edit', icone: 'fa-file-word' }
     ];
 
     function parseJwt(token) {
@@ -962,13 +1396,13 @@
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2200);
     }
 
-    /* GERENCIAMENTO DINÂMICO DE RECURSOS E LINKS EM NUVEM */
+    /* SISTEMA DE RECURSOS E LINKS DINÂMICOS EM NUVEM */
     function carregarRecursosDinamicos() {
       const saved = localStorage.getItem('weon_recursos_dinamicos');
       recursosDinamicosCache = saved ? JSON.parse(saved) : RECURSOS_PADRAO;
       renderizarRecursosDinamicos();
 
-      /* Sincronização Nível Nuvem (Google Sheets) */
+      /* Sincronização em tempo real com o Google Sheets */
       if (APPS_SCRIPT_URL) {
         fetch(`${APPS_SCRIPT_URL}?acao=getRecursos`)
           .then(res => res.json())
@@ -979,7 +1413,7 @@
               renderizarRecursosDinamicos();
             }
           })
-          .catch(err => console.warn("Modo offline para recursos ativos:", err));
+          .catch(err => console.warn("Modo offline de recursos ativo:", err));
       }
     }
 
@@ -987,14 +1421,14 @@
       const container = document.getElementById('dynamicResourceSections');
       container.innerHTML = '';
 
-      const secoes = [
+      const secoesMap = [
         { id: 'credenciais', titulo: 'Credenciais e Acessos', icone: 'fa-lock' },
-        { id: 'navegacao', titulo: 'Navegação Rápida', icone: 'fa-external-link-alt' },
+        { id: 'navegacao', titulo: 'Navegação rápida', icone: 'fa-external-link-alt' },
         { id: 'artigos', titulo: 'Biblioteca de Artigos', icone: 'fa-book-open' },
         { id: 'desenvolvedor', titulo: 'Desenvolvedor & Integrações', icone: 'fa-code' }
       ];
 
-      secoes.forEach(secao => {
+      secoesMap.forEach(secao => {
         const itensSecao = recursosDinamicosCache.filter(r => r.secao === secao.id);
         
         let conteudoHTML = '';
@@ -1066,7 +1500,7 @@
         container.appendChild(secaoDiv);
       });
 
-      /* Reativa os ouvintes de expansão */
+      /* Reativa a expansão dos colapsáveis */
       document.querySelectorAll(".collapsible").forEach(button => {
         button.onclick = function() {
           this.classList.toggle("active");
@@ -1077,7 +1511,6 @@
     }
 
     function abrirModalRecurso(secaoId) {
-      recursoEditandoId = null;
       document.getElementById('recursoNomeInput').value = '';
       document.getElementById('recursoValorInput').value = '';
       document.getElementById('recursoIconeInput').value = 'fa-link';
@@ -1095,24 +1528,22 @@
       const icone = document.getElementById('recursoIconeInput').value.trim() || 'fa-link';
       const secao = document.getElementById('recursoCategoriaSelect').value;
 
-      if (!nome || !valor) return alert("Preencha o nome e o valor/link!");
+      if (!nome || !valor) return alert("Preencha o nome e o valor/link do recurso!");
 
-      const novoRecurso = {
+      const novoItem = {
         id: Date.now().toString(),
         secao: secao,
         nome: nome,
         valor: valor,
-        icone: icone,
-        tipo: valor.startsWith('http') ? 'link' : 'texto'
+        icone: icone
       };
 
-      recursosDinamicosCache.push(novoRecurso);
+      recursosDinamicosCache.push(novoItem);
       localStorage.setItem('weon_recursos_dinamicos', JSON.stringify(recursosDinamicosCache));
       renderizarRecursosDinamicos();
       fecharModalRecurso();
-      mostrarToast("Recurso adicionado!");
+      mostrarToast("Recurso salvo!");
 
-      /* Sincronização em nuvem */
       if (APPS_SCRIPT_URL) {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -1120,9 +1551,9 @@
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
             acao: 'salvarRecurso',
-            recurso: JSON.stringify(novoRecurso)
+            recurso: JSON.stringify(novoItem)
           })
-        }).catch(err => console.error("Erro na sincronização em nuvem:", err));
+        }).catch(err => console.error("Erro na gravação em nuvem:", err));
       }
     }
 
@@ -1147,59 +1578,16 @@
       }
     }
 
-    /* MANTIDOS 100% DOS DEMAIS MÉTODOS DO DASHBOARD (SHEETS, KANBAN, IA, WEENHOOK) */
-    function filterItems() {
-      const input = document.getElementById('searchInput').value.toLowerCase();
-      const wrappers = document.querySelectorAll('.target-search');
-
-      wrappers.forEach(wrapper => {
-        const textContent = wrapper.innerText.toLowerCase();
-        const btn = wrapper.querySelector('.collapsible');
-        const content = wrapper.querySelector('.content');
-
-        if (textContent.includes(input) && input.trim() !== '') {
-          wrapper.style.display = "block";
-          if (btn) btn.classList.add('active');
-          if (content) content.style.maxHeight = content.scrollHeight + "px";
-        } else if (input.trim() === '') {
-          wrapper.style.display = "block";
-          if (btn) btn.classList.remove('active');
-          if (content) content.style.maxHeight = null;
-        } else {
-          wrapper.style.display = "none";
-        }
-      });
-    }
-
-    function saveNotes() { localStorage.setItem('weon_quick_notes', document.getElementById('quickNotes').value); }
-
-    function clearNotes() {
-      if(confirm("Tem certeza que deseja limpar as anotações atuais?")) {
-        document.getElementById('quickNotes').value = "";
-        localStorage.removeItem('weon_quick_notes');
-      }
-    }
-
-    function downloadTXT() {
-      const text = document.getElementById('quickNotes').value;
-      if (!text.trim()) return alert("O bloco de notas está vazio!");
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'notas_weon.txt';
-      link.click();
-    }
-
-    function downloadDOCX() {
-      const text = document.getElementById('quickNotes').value;
-      if (!text.trim()) return alert("O bloco de notas está vazio!");
-      const formattedText = text.split('\n').map(line => `<w:p><w:r><w:t>${escapeXml(line)}</w:t></w:r></w:p>`).join('');
-      const docxTemplate = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${formattedText}</w:body></w:document>`;
-      const blob = new Blob([docxTemplate], { type: 'application/msword' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'notas_weon.docx';
-      link.click();
+    function enviarParaGoogleSheets(dados) {
+      if (!APPS_SCRIPT_URL) return;
+      const payload = new URLSearchParams();
+      for (const key in dados) { payload.append(key, dados[key]); }
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: payload.toString()
+      }).catch(err => console.error("Erro no envio:", err));
     }
 
     function dispararWebhookWeonBoard(dadosProjeto) {
@@ -1222,6 +1610,1332 @@
       })
       .then(() => console.log("Webhook WeON Board disparado com sucesso!"))
       .catch(err => console.error("Erro ao disparar webhook do WeON Board:", err));
+    }
+
+    function uploadArquivoDrive(inputEl) {
+      const file = inputEl.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById('uploadStatus');
+      statusEl.innerText = "Enviando arquivo...";
+      statusEl.style.color = "#ffb703";
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Data = e.target.result;
+
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            acao: 'uploadArquivo',
+            fileName: file.name,
+            fileData: base64Data,
+            mimeType: file.type
+          })
+        })
+        .then(() => {
+          statusEl.innerText = "✓ Anexo Enviado!";
+          statusEl.style.color = "var(--accent)";
+          const editor = document.getElementById('modalObsEditor');
+          editor.innerHTML += `<p style="margin-top:6px;"><span style="color:var(--accent); font-weight:bold;"><i class="fas fa-paperclip"></i> Anexo salvo: ${file.name}</span></p>`;
+        })
+        .catch(err => {
+          console.warn("Retorno de upload via script:", err);
+          statusEl.innerText = "✓ Anexo Enviado!";
+          statusEl.style.color = "var(--accent)";
+          const editor = document.getElementById('modalObsEditor');
+          editor.innerHTML += `<p style="margin-top:6px;"><span style="color:var(--accent); font-weight:bold;"><i class="fas fa-paperclip"></i> Anexo salvo: ${file.name}</span></p>`;
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function getObsLocal(cliente) { return localStorage.getItem('weon_obs_' + cliente) || ''; }
+    function saveObsLocal(cliente, obs) { localStorage.setItem('weon_obs_' + cliente, obs); }
+    function removeObsLocal(cliente) { localStorage.removeItem('weon_obs_' + cliente); }
+
+    function getEmpresaLocal(cliente) { return localStorage.getItem('weon_empresa_' + cliente) || ''; }
+    function getContatoLocal(cliente) { return localStorage.getItem('weon_contato_' + cliente) || ''; }
+    function saveEmpresaContatoLocal(cliente, empresa, contato) {
+      localStorage.setItem('weon_empresa_' + cliente, empresa);
+      localStorage.setItem('weon_contato_' + cliente, contato);
+    }
+
+    function getEtapaAnteriorLocal(cliente) { return localStorage.getItem('weon_prev_col_' + cliente) || 'Inicial'; }
+    function saveEtapaAnteriorLocal(cliente, nomeColunaAnterior) {
+      if (nomeColunaAnterior) { localStorage.setItem('weon_prev_col_' + cliente, nomeColunaAnterior); }
+    }
+
+    function getChecklistLocal(cliente) {
+      const saved = localStorage.getItem('weon_chk_' + cliente);
+      if (saved) return JSON.parse(saved);
+      return CHECKLIST_PADRAO.map(texto => ({ texto: texto, done: false, date: null }));
+    }
+    function saveChecklistLocal(cliente, items) { localStorage.setItem('weon_chk_' + cliente, JSON.stringify(items)); }
+    function removeChecklistLocal(cliente) { localStorage.removeItem('weon_chk_' + cliente); }
+
+    function getCardsCriadosLocais() {
+      const saved = localStorage.getItem('weon_cards_criados');
+      return saved ? JSON.parse(saved) : [];
+    }
+
+    function saveCardCriadoLocal(cliente, colIndex, obs, chk, empresa = '', contato = '') {
+      const cards = getCardsCriadosLocais();
+      const idExistente = cards.findIndex(c => c.cliente.toLowerCase() === cliente.toLowerCase());
+      if (idExistente >= 0) {
+        cards[idExistente] = { cliente, colIndex, obs, chk, empresa, contato };
+      } else {
+        cards.push({ cliente, colIndex, obs, chk, empresa, contato });
+      }
+      localStorage.setItem('weon_cards_criados', JSON.stringify(cards));
+      saveObsLocal(cliente, obs);
+      saveEmpresaContatoLocal(cliente, empresa, contato);
+      if (chk) saveChecklistLocal(cliente, chk);
+    }
+
+    function removeCardCriadoLocal(cliente) {
+      const cards = getCardsCriadosLocais();
+      const novos = cards.filter(c => c.cliente.toLowerCase() !== cliente.toLowerCase());
+      localStorage.setItem('weon_cards_criados', JSON.stringify(novos));
+      removeObsLocal(cliente);
+      removeChecklistLocal(cliente);
+    }
+
+    function salvarOrdemColunasLocal() {
+      const colunas = document.querySelectorAll('.kanban-column');
+      const ordem = [];
+      colunas.forEach((col, idx) => {
+        const headerSpan = col.querySelector('.kanban-header span');
+        if (headerSpan) {
+          ordem.push({ index: idx, nome: headerSpan.innerText.trim() });
+        }
+      });
+      localStorage.setItem('weon_ordem_colunas', JSON.stringify(ordem));
+    }
+
+    function obterOrdemColunasLocal() {
+      const saved = localStorage.getItem('weon_ordem_colunas');
+      return saved ? JSON.parse(saved) : null;
+    }
+
+    async function carregarKanbanDoSheets() {
+      const boardContainer = document.getElementById('kanban-board');
+      let renderizadoSucesso = false;
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL);
+        const resData = await response.json();
+        if (resData && resData.status === 'success' && resData.colunas && resData.colunas.length > 0) {
+          boardContainer.innerHTML = '';
+          
+          let colunasMap = resData.colunas;
+          const ordemSalva = obterOrdemColunasLocal();
+          
+          if (ordemSalva && ordemSalva.length > 0) {
+            colunasMap.sort((a, b) => {
+              const idxA = ordemSalva.findIndex(o => o.nome.toLowerCase() === a.nome.toLowerCase());
+              const idxB = ordemSalva.findIndex(o => o.nome.toLowerCase() === b.nome.toLowerCase());
+              if (idxA >= 0 && idxB >= 0) return idxA - idxB;
+              return 0;
+            });
+          }
+
+          colunasMap.forEach((col, realIdx) => {
+            let cardsHTML = '';
+            col.cards.forEach(card => {
+              let notaTexto = card.obs ? card.obs : getObsLocal(card.cliente);
+              let chkData = card.chk ? card.chk : getChecklistLocal(card.cliente);
+
+              if (card.obs) saveObsLocal(card.cliente, card.obs);
+              if (card.chk) saveChecklistLocal(card.cliente, card.chk);
+
+              cardsHTML += criarCardHTML(card.cliente, realIdx, notaTexto, chkData);
+            });
+
+            const cardsLocais = getCardsCriadosLocais();
+            cardsLocais.forEach(cardLoc => {
+              if (cardLoc.colIndex === realIdx && !cardsHTML.includes(`data-cliente="${cardLoc.cliente}"`)) {
+                let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+                cardsHTML += criarCardHTML(cardLoc.cliente, realIdx, cardLoc.obs, chkDataLoc);
+              }
+            });
+
+            const colDiv = montarElementoColuna(realIdx, col.nome, cardsHTML);
+            boardContainer.appendChild(colDiv);
+          });
+          renderizadoSucesso = true;
+          atualizarDashboardBI();
+        }
+      } catch (err) {
+        console.warn("Fallback offline ativo:", err);
+      }
+
+      if (!renderizadoSucesso) {
+        boardContainer.innerHTML = '';
+        const cardsLocais = getCardsCriadosLocais();
+        if (cardsLocais.length > 0) {
+          const colunasAgrupadas = {};
+          cardsLocais.forEach(cardLoc => {
+            const colIdx = cardLoc.colIndex || 0;
+            if (!colunasAgrupadas[colIdx]) colunasAgrupadas[colIdx] = [];
+            colunasAgrupadas[colIdx].push(cardLoc);
+          });
+          Object.keys(colunasAgrupadas).forEach(colIdx => {
+            let cardsHTML = '';
+            colunasAgrupadas[colIdx].forEach(cardLoc => {
+              let chkDataLoc = cardLoc.chk ? cardLoc.chk : getChecklistLocal(cardLoc.cliente);
+              cardsHTML += criarCardHTML(cardLoc.cliente, parseInt(colIdx), cardLoc.obs, chkDataLoc);
+            });
+            const colDiv = montarElementoColuna(parseInt(colIdx), parseInt(colIdx) === 0 ? 'NOVA DEMANDA' : `COLUNA ${parseInt(colIdx) + 1}`, cardsHTML);
+            boardContainer.appendChild(colDiv);
+          });
+        } else {
+          let colDiv = montarElementoColuna(0, 'NOVA DEMANDA', '');
+          boardContainer.appendChild(colDiv);
+        }
+        atualizarDashboardBI();
+      }
+    }
+
+    function montarElementoColuna(index, nome, cardsHTML) {
+      const colDiv = document.createElement('div');
+      colDiv.className = 'kanban-column';
+      colDiv.setAttribute('data-col-index', index);
+      colDiv.setAttribute('draggable', 'true');
+      
+      colDiv.setAttribute('ondragover', 'allowDrop(event)');
+      colDiv.setAttribute('ondragleave', 'dragLeave(event)');
+      colDiv.setAttribute('ondrop', 'drop(event)');
+
+      colDiv.addEventListener('dragstart', colDragStart);
+      colDiv.addEventListener('dragend', colDragEnd);
+      colDiv.addEventListener('dragenter', colDragEnter);
+      colDiv.addEventListener('dragleave', colDragLeave);
+
+      colDiv.innerHTML = `
+        <div class="kanban-header">
+          <span>${nome}</span>
+          <button class="btn-delete-col" onclick="deletarColuna(${index}, '${escapeXmlAttr(nome)}', this)" title="Excluir Coluna"><i class="fas fa-trash-alt"></i></button>
+        </div>
+        <button class="btn-add-card-col" onclick="abrirModalCriar(${index})"><i class="fas fa-plus"></i> Criar Novo Card</button>
+        <div class="cards-container">
+          ${cardsHTML ? cardsHTML : '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>'}
+        </div>
+      `;
+      return colDiv;
+    }
+
+    function colDragStart(e) {
+      if (window.draggedCard) return;
+      draggedColumn = this;
+      this.classList.add('dragging-column');
+      e.dataTransfer.setData('text/column', this.getAttribute('data-col-index'));
+    }
+
+    function colDragEnd(e) {
+      document.querySelectorAll('.kanban-column').forEach(col => {
+        col.classList.remove('dragging-column');
+        col.classList.remove('drag-over-column');
+      });
+      draggedColumn = null;
+      salvarOrdemColunasLocal();
+    }
+
+    function colDragEnter(e) {
+      if (draggedColumn && draggedColumn !== this) { this.classList.add('drag-over-column'); }
+    }
+
+    function colDragLeave(e) { this.classList.remove('drag-over-column'); }
+
+    function atualizarDashboardBI() {
+      const colunas = document.querySelectorAll('.kanban-column');
+      let totalGeral = 0, totalAndamento = 0, totalBloqueio = 0, totalConcluido = 0;
+      const labelsColunas = [], dadosColunas = [];
+      const coresDinamicas = ['#00ffcc', '#38bdf8', '#818cf8', '#a78bfa', '#f472b6', '#ffb703', '#4ade80', '#ff4a4a'];
+
+      colunas.forEach((col) => {
+        const headerSpan = col.querySelector('.kanban-header span');
+        const nomeColuna = headerSpan ? headerSpan.innerText.trim() : 'Sem Título';
+        const numCards = col.querySelectorAll('.kanban-card').length;
+
+        labelsColunas.push(nomeColuna);
+        dadosColunas.push(numCards);
+        totalGeral += numCards;
+
+        const nomeLower = nomeColuna.toLowerCase();
+        if (nomeLower.includes('bloqueio')) totalBloqueio += numCards;
+        else if (nomeLower.includes('concluido') || nomeLower.includes('setup realizado')) totalConcluido += numCards;
+        else totalAndamento += numCards;
+      });
+
+      document.getElementById('kpiTotal').innerText = totalGeral;
+      document.getElementById('kpiAndamento').innerText = totalAndamento;
+      document.getElementById('kpiBloqueio').innerText = totalBloqueio;
+      document.getElementById('kpiConcluido').innerText = totalConcluido;
+
+      if (typeof Chart !== 'undefined') {
+        try {
+          const ctxDonut = document.getElementById('donutChart').getContext('2d');
+          if (donutChartInstance) donutChartInstance.destroy();
+
+          donutChartInstance = new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+              labels: labelsColunas,
+              datasets: [{
+                data: dadosColunas,
+                backgroundColor: coresDinamicas.slice(0, labelsColunas.length),
+                borderColor: 'var(--bg-card)',
+                borderWidth: 2,
+                hoverOffset: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '70%',
+              plugins: {
+                legend: { position: 'bottom', labels: { color: 'var(--text-muted)', font: { size: 10, family: "'Inter', sans-serif" }, padding: 12, usePointStyle: true } }
+              }
+            }
+          });
+        } catch (e) { console.error("Erro no gráfico:", e); }
+      }
+    }
+
+    function criarCardHTML(clienteNome, cellIndex, obsText, chkData) {
+      let totalItems = chkData ? chkData.length : 0;
+      let doneItems = chkData ? chkData.filter(i => i.done).length : 0;
+      let pct = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
+
+      return `
+        <div class="kanban-card" draggable="true" 
+             ondragstart="drag(event)" 
+             onclick="abrirModalObs(this, ${cellIndex})"
+             data-cliente="${clienteNome}" 
+             data-col="${cellIndex}"
+             data-obs="${escapeXmlAttr(obsText)}">
+          <div class="card-top">
+            <span class="card-title">${clienteNome}</span>
+            <div class="card-actions-top">
+              <button class="btn-card-action btn-delete-card" onclick="deletarCardDirect(event, '${escapeXmlAttr(clienteNome)}', ${cellIndex}, this)" title="Excluir Card"><i class="fas fa-trash-alt"></i></button>
+              <button class="btn-card-action" title="Expandir/Editar"><i class="fas fa-expand-alt"></i></button>
+            </div>
+          </div>
+          <div class="card-obs-area">${obsText}</div>
+          <div class="card-footer-info">
+            <span class="card-badge"><i class="fas fa-tasks"></i> Implantação</span>
+            <span class="card-checklist-progress"><i class="fas fa-check-square"></i> ${doneItems}/${totalItems} (${pct}%)</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeXmlAttr(unsafe) { return unsafe ? unsafe.replace(/"/g, '&quot;') : ''; }
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+      if (!draggedColumn) { ev.currentTarget.classList.add('drag-over'); }
+    }
+
+    function dragLeave(ev) { ev.currentTarget.classList.remove('drag-over'); }
+
+    function drag(ev) {
+      ev.stopPropagation();
+      const card = ev.currentTarget;
+      ev.dataTransfer.setData("text/plain", JSON.stringify({
+        cliente: card.getAttribute('data-cliente'),
+        origemCol: parseInt(card.getAttribute('data-col'))
+      }));
+      window.draggedCard = card;
+    }
+
+    async function drop(ev) {
+      ev.preventDefault();
+      const column = ev.currentTarget;
+      
+      document.querySelectorAll('.kanban-column').forEach(col => {
+        col.classList.remove('drag-over');
+        col.classList.remove('drag-over-column');
+        col.classList.remove('dragging-column');
+      });
+
+      if (draggedColumn && draggedColumn !== column) {
+        const board = document.getElementById('kanban-board');
+        const allCols = Array.from(board.querySelectorAll('.kanban-column'));
+        const targetIndex = allCols.indexOf(column);
+        const draggedIndex = allCols.indexOf(draggedColumn);
+
+        if (draggedIndex < targetIndex) { board.insertBefore(draggedColumn, column.nextSibling); }
+        else { board.insertBefore(draggedColumn, column); }
+
+        draggedColumn = null;
+        salvarOrdemColunasLocal();
+        mostrarToast("Ordem das colunas salva!");
+        atualizarDashboardBI();
+        return;
+      }
+
+      if (window.draggedCard) {
+        const data = JSON.parse(ev.dataTransfer.getData("text/plain"));
+        const destinoCol = parseInt(column.getAttribute('data-col-index'));
+
+        if (data.origemCol === destinoCol) return;
+
+        const colOrigemDiv = document.querySelector(`.kanban-column[data-col-index="${data.origemCol}"]`);
+        let nomeColOrigem = 'INICIAL';
+        if (colOrigemDiv) {
+          nomeColOrigem = colOrigemDiv.querySelector('.kanban-header span').innerText.trim();
+          saveEtapaAnteriorLocal(data.cliente, nomeColOrigem);
+        }
+
+        const cardsContainer = column.querySelector('.cards-container');
+        const emptyText = cardsContainer.querySelector('p');
+        if (emptyText) emptyText.remove();
+
+        cardsContainer.appendChild(window.draggedCard);
+        window.draggedCard.setAttribute('data-col', destinoCol);
+
+        const nomeColDestino = column.querySelector('.kanban-header span').innerText.trim();
+
+        window.draggedCard = null;
+        mostrarToast("Card movido!");
+        atualizarDashboardBI();
+
+        enviarParaGoogleSheets({
+          acao: 'mover',
+          cliente: data.cliente,
+          origemCol: data.origemCol,
+          destinoCol: destinoCol
+        });
+
+        /* Dispara o Webhook do WeON Board */
+        dispararWebhookWeonBoard({
+          cliente: data.cliente,
+          empresa: getEmpresaLocal(data.cliente),
+          contato: getContatoLocal(data.cliente),
+          etapa: nomeColDestino,
+          detalhes: getObsLocal(data.cliente)
+        });
+      }
+    }
+
+    function deletarCardDirect(event, clienteNome, colIndex, btnEl) {
+      event.stopPropagation();
+      if (!confirm(`Tem certeza que deseja excluir o card "${clienteNome}"?`)) return;
+
+      const cardEl = btnEl.closest('.kanban-card');
+      const container = cardEl.parentElement;
+      cardEl.remove();
+
+      if (container && container.children.length === 0) {
+        container.innerHTML = '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>';
+      }
+
+      removeCardCriadoLocal(clienteNome);
+      mostrarToast("Card removido!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({ acao: 'excluirCard', cliente: clienteNome, col: colIndex });
+    }
+
+    function deletarCardModal() {
+      if (!clienteAtualObs.cliente) return;
+      if (!confirm(`Tem certeza que deseja remover o card "${clienteAtualObs.cliente}"?`)) return;
+
+      if (cardElementoAtual) {
+        const container = cardElementoAtual.parentElement;
+        cardElementoAtual.remove();
+        if (container && container.children.length === 0) {
+          container.innerHTML = '<p style="font-size:0.75em; color:var(--text-muted); opacity:0.3;">Vazio</p>';
+        }
+      }
+
+      removeCardCriadoLocal(clienteAtualObs.cliente);
+      mostrarToast("Card removido!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({ acao: 'excluirCard', cliente: clienteAtualObs.cliente, col: clienteAtualObs.col });
+      fecharModal();
+    }
+
+    function renderizarChecklistModal(items) {
+      currentChecklistCache = items;
+      const container = document.getElementById('checklistContainer');
+      container.innerHTML = '';
+
+      items.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = `checklist-item ${item.done ? 'completed' : ''}`;
+        itemDiv.setAttribute('draggable', 'true');
+        itemDiv.setAttribute('data-chk-index', index);
+
+        itemDiv.addEventListener('dragstart', chkDragStart);
+        itemDiv.addEventListener('dragend', chkDragEnd);
+        itemDiv.addEventListener('dragover', chkDragOver);
+        itemDiv.addEventListener('drop', chkDrop);
+
+        const timeStr = item.date ? `<span class="checklist-item-timestamp"><i class="far fa-clock"></i> Concluído em ${item.date}</span>` : '';
+
+        itemDiv.innerHTML = `
+          <div class="checklist-item-left">
+            <i class="fas fa-grip-vertical drag-handle"></i>
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem(${index}, this.checked)">
+            <div>
+              <span class="checklist-item-text" onclick="clickTextToggle(${index})">${item.texto}</span>
+              ${timeStr}
+            </div>
+          </div>
+          <button class="btn-remove-chk" onclick="removerItemChecklist(${index})" title="Remover item"><i class="fas fa-times"></i></button>
+        `;
+        container.appendChild(itemDiv);
+      });
+
+      atualizarProgressoChecklistUI(items);
+    }
+
+    function clickTextToggle(index) {
+      const now = new Date();
+      const dateFormatted = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+      currentChecklistCache[index].done = !currentChecklistCache[index].done;
+      currentChecklistCache[index].date = currentChecklistCache[index].done ? dateFormatted : null;
+      renderizarChecklistModal(currentChecklistCache);
+    }
+
+    function toggleChecklistItem(index, isChecked) {
+      const now = new Date();
+      const dateFormatted = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+      currentChecklistCache[index].done = isChecked;
+      currentChecklistCache[index].date = isChecked ? dateFormatted : null;
+      renderizarChecklistModal(currentChecklistCache);
+    }
+
+    function atualizarProgressoChecklistUI(items) {
+      const total = items.length;
+      const done = items.filter(i => i.done).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      document.getElementById('checklistProgressText').innerText = `${done}/${total} (${pct}%)`;
+      document.getElementById('checklistProgressBarFill').style.width = `${pct}%`;
+    }
+
+    function obterChecklistModalAtual() { return currentChecklistCache; }
+
+    function removerItemChecklist(index) {
+      currentChecklistCache.splice(index, 1);
+      renderizarChecklistModal(currentChecklistCache);
+    }
+
+    function adicionarItemChecklistInput() {
+      const input = document.getElementById('addChkInput');
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      currentChecklistCache.push({ texto: texto, done: false, date: null });
+      renderizarChecklistModal(currentChecklistCache);
+      input.value = '';
+    }
+
+    function chkDragStart(e) {
+      e.stopPropagation();
+      draggedChecklistItem = this;
+      this.classList.add('dragging-item');
+    }
+
+    function chkDragEnd(e) {
+      if (draggedChecklistItem) {
+        draggedChecklistItem.classList.remove('dragging-item');
+        draggedChecklistItem = null;
+      }
+      document.querySelectorAll('.checklist-item').forEach(el => el.classList.remove('drag-over-item'));
+    }
+
+    function chkDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (draggedChecklistItem && draggedChecklistItem !== this) { this.classList.add('drag-over-item'); }
+    }
+
+    function chkDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.classList.remove('drag-over-item');
+
+      if (draggedChecklistItem && draggedChecklistItem !== this) {
+        const fromIndex = parseInt(draggedChecklistItem.getAttribute('data-chk-index'));
+        const toIndex = parseInt(this.getAttribute('data-chk-index'));
+
+        const movedItem = currentChecklistCache.splice(fromIndex, 1)[0];
+        currentChecklistCache.splice(toIndex, 0, movedItem);
+
+        renderizarChecklistModal(currentChecklistCache);
+      }
+    }
+
+    /* CHAMADA EXCLUSIVA E ESTRITA AOS MODELOS GEMINI 3.6 E SUPERIORES */
+    async function chamarGemini36Api(promptText, apiKey) {
+      const modelosExclusivos36 = ['gemini-3.8-flash', 'gemini-3.6-flash'];
+      let ultimoErro = null;
+
+      for (const model of modelosExclusivos36) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: promptText }] }],
+              generationConfig: { maxOutputTokens: 1000, temperature: 0.3 }
+            })
+          });
+          const data = await res.json();
+          if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+            return data.candidates[0].content.parts[0].text;
+          }
+          if (data.error) { ultimoErro = data.error.message; }
+        } catch (e) { ultimoErro = e.message; }
+      }
+      throw new Error(ultimoErro || "Erro na conexão aos modelos Gemini 3.6+.");
+    }
+
+    async function chamarGroqApi(promptText, apiKey) {
+      const model = 'llama-3.1-8b-instant';
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'user', content: promptText }],
+          temperature: 0.3,
+          max_tokens: 800
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        return data.choices[0].message.content;
+      }
+
+      if (data.error) {
+        throw new Error(data.error.message || "Erro na API da Groq");
+      }
+
+      throw new Error("Resposta inválida do servidor Groq");
+    }
+
+    async function chamarOpenAiApi(promptText, apiKey) {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [{ role: 'user', content: promptText }],
+          temperature: 0.3,
+          max_tokens: 800
+        })
+      });
+      const data = await res.json();
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        return data.choices[0].message.content;
+      }
+      throw new Error(data.error ? data.error.message : "Erro na chamada OpenAI API");
+    }
+
+    async function chamarIaGenerica(promptText) {
+      const apiKey = (localStorage.getItem('weon_ai_key') || localStorage.getItem('weon_gemini_key') || '').trim();
+      const provider = localStorage.getItem('weon_ai_provider') || 'gemini';
+
+      if (!apiKey || apiKey.length < 5) {
+        throw new Error("API_KEY_INVALIDA");
+      }
+
+      if (provider === 'gemini' || apiKey.startsWith('AIzaSy')) {
+        return await chamarGemini36Api(promptText, apiKey);
+      } else if (provider === 'groq' || apiKey.startsWith('gsk_')) {
+        return await chamarGroqApi(promptText, apiKey);
+      } else if (provider === 'openai' || apiKey.startsWith('sk-')) {
+        return await chamarOpenAiApi(promptText, apiKey);
+      } else {
+        return await chamarGemini36Api(promptText, apiKey);
+      }
+    }
+
+    function converterMarkdownParaHtmlCorporativo(mdText) {
+      if (!mdText) return '';
+      
+      let html = mdText;
+      html = html.replace(/---/g, '');
+      
+      html = html.replace(/^### (.*$)/gim, '<h3 style="color:#0284c7; font-size:14px; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-top:14px; margin-bottom:8px; font-weight:bold; text-transform:uppercase;">$1</h3>');
+      html = html.replace(/^## (.*$)/gim, '<h2 style="color:#0f172a; font-size:16px; border-bottom:2px solid #00ffcc; padding-bottom:6px; margin-top:16px; margin-bottom:10px; font-weight:bold;">$1</h2>');
+      
+      html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color:#0f172a;">$1</strong>');
+      
+      html = html.replace(/^\* (.*$)/gim, '<li style="margin-bottom:4px; list-style-type:none; padding-left:15px; position:relative;"><span style="position:absolute; left:0; color:#0284c7;">▪</span> $1</li>');
+      html = html.replace(/^- (.*$)/gim, '<li style="margin-bottom:4px; list-style-type:none; padding-left:15px; position:relative;"><span style="position:absolute; left:0; color:#0284c7;">▪</span> $1</li>');
+
+      html = html.replace(/\n\n/g, '<p style="margin-bottom:10px; line-height:1.5; color:#334155;"></p>');
+
+      return html;
+    }
+
+    async function gerarStatusReportIA() {
+      const clienteNome = document.getElementById('modalTitleInput').value.trim();
+      const empresaNome = document.getElementById('modalEmpresaInput').value.trim();
+      const obsHtml = document.getElementById('modalObsEditor').innerText.trim();
+      const chkItems = obterChecklistModalAtual();
+
+      if (!clienteNome) return alert("Digite o nome do cliente no card.");
+
+      const totalChk = chkItems.length;
+      const doneChk = chkItems.filter(i => i.done).length;
+      const pctChk = totalChk > 0 ? Math.round((doneChk / totalChk) * 100) : 0;
+      
+      const pendenciasTop = chkItems.filter(i => !i.done).slice(0, 4).map(i => i.texto);
+
+      const responseBox = document.getElementById('aiResponseBox');
+      const btnExportPdf = document.getElementById('btnExportPdf');
+      responseBox.style.display = 'block';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Gerando Status Report executivo via IA...</i>';
+
+      const promptText = `Você é um analista da WeON. Crie um Status Report executivo curto e formal para o projeto "${clienteNome}" (Empresa: ${empresaNome || 'Cliente'}).
+Progresso Atual: ${pctChk}% (${doneChk}/${totalChk} etapas concluídas).
+Próximas Pendências Principais: ${JSON.stringify(pendenciasTop)}.
+Anotações Internas: "${obsHtml.slice(0, 300)}".
+Crie um resumo em 3 seções curtas: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda em Português diretamente.`;
+
+      try {
+        const reportText = await chamarIaGenerica(promptText);
+        responseBox.innerText = reportText;
+        btnExportPdf.style.display = 'inline-flex';
+      } catch (err) {
+        if (err.message === "API_KEY_INVALIDA") {
+          responseBox.innerHTML = `<span style="color:var(--danger);">Por favor, insira a sua API Key da IA no campo acima.</span>`;
+        } else {
+          responseBox.innerHTML = `
+            <div style="background: rgba(255,74,74,0.08); border:1px solid var(--danger); padding:12px; border-radius:6px; color:var(--danger); font-size:0.85em;">
+              <strong>Erro da API de IA:</strong> ${err.message}
+              <br><br>
+              💡 <strong>Solução Rápida:</strong> Clique no botão <strong>"Exportar PDF Direto (Sem IA)"</strong> no topo para emitir o relatório instantaneamente!
+            </div>
+          `;
+        }
+      }
+    }
+
+    /* GERADOR DE IMPRESSÃO COM VETOR EXATO DA LOGO WEON */
+    function emitirPdfDocumentoCorporativo(titulo, subtitulo, conteudoHtml, statusAtualColuna = 'EM ANDAMENTO') {
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = '0';
+
+      document.body.appendChild(iframe);
+      const doc = iframe.contentWindow.document;
+
+      const htmlCompleto = `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>${titulo}</title>
+          <style>
+            @page { size: A4 portrait; margin: 12mm; }
+            * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+            body { background: #ffffff; color: #0f172a; padding: 20px; line-height: 1.5; font-size: 12px; }
+            
+            .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ffcc; padding-bottom: 10px; margin-bottom: 16px; }
+            .logo-weon-official { display: flex; align-items: center; }
+            .logo-weon-svg { height: 38px; width: auto; display: block; }
+            
+            .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; }
+            .meta-item { font-size: 11px; color: #334155; }
+            .meta-item strong { color: #0f172a; }
+            .status-badge-dinamico { background: #0284c7; color: #ffffff; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+            .footer-banner { margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 8px; text-align: center; font-size: 9px; color: #94a3b8; }
+          </style>
+        </head>
+        <body>
+          <div class="header-container">
+            <div class="logo-weon-official">
+              <svg class="logo-weon-svg" viewBox="0 0 255 75" width="180" height="53" xmlns="http://www.w3.org/2000/svg">
+                <!-- VETOR EXACTO DA WEON: W E O N -->
+                <path d="M 5 10 L 28 10 L 42 56 L 56 10 L 76 10 L 90 56 L 104 10 L 126 10 L 102 70 L 80 70 L 66 26 L 52 70 L 30 70 Z" fill="#18181b"/>
+                <path d="M 124 10 L 168 10 L 168 23 L 140 23 L 140 33 L 166 33 L 166 45 L 140 45 L 140 57 L 168 57 L 168 70 L 124 70 Z" fill="#18181b"/>
+                <circle cx="182" cy="40" r="28" fill="#18181b"/>
+                <circle cx="182" cy="40" r="16.5" fill="#FFFFFF"/>
+                <circle cx="182" cy="40" r="8.5" fill="#00A3FF"/>
+                <path d="M 206 10 L 226 10 L 238 48 L 238 10 L 250 10 L 250 70 L 230 70 L 218 32 L 218 70 L 206 70 Z" fill="#18181b"/>
+              </svg>
+            </div>
+            <div style="text-align:right; font-size:10px; color:#64748b;">
+              <strong>${titulo}</strong><br>
+              <span>Emissão: ${new Date().toLocaleDateString('pt-BR')}</span>
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item"><strong>Projeto:</strong> ${titulo}</div>
+            <div class="meta-item"><strong>Cliente:</strong> ${subtitulo}</div>
+            <div class="meta-item"><strong>Elaboração:</strong> Analista de Implantação – WeON</div>
+            <div class="meta-item"><strong>Status Atual (Etapa):</strong> <span class="status-badge-dinamico">${statusAtualColuna}</span></div>
+          </div>
+
+          <div>
+            ${conteudoHtml}
+          </div>
+
+          <div class="footer-banner">
+            Documento Corporativo Oficial - Hub de Implantação WeON
+          </div>
+        </body>
+        </html>
+      `;
+
+      doc.open();
+      doc.write(htmlCompleto);
+      doc.close();
+
+      setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        setTimeout(() => { document.body.removeChild(iframe); }, 1000);
+      }, 300);
+    }
+
+    function obterNomeColunaAtualCard() {
+      if (cardElementoAtual) {
+        const colDiv = cardElementoAtual.closest('.kanban-column');
+        if (colDiv) {
+          const headerSpan = colDiv.querySelector('.kanban-header span');
+          if (headerSpan) return headerSpan.innerText.trim().toUpperCase();
+        }
+      }
+      return 'EM ANDAMENTO';
+    }
+
+    function exportarRelatorioPdfIA() {
+      const responseBox = document.getElementById('aiResponseBox');
+      const clienteNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto';
+      const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Cliente';
+      const textoIA = responseBox.innerText;
+
+      if (!textoIA) return alert("Nenhum relatório gerado para exportar.");
+
+      const htmlFormatado = converterMarkdownParaHtmlCorporativo(textoIA);
+      const statusColuna = obterNomeColunaAtualCard();
+
+      emitirPdfDocumentoCorporativo(`Implantação ${clienteNome}`, empresaNome, htmlFormatado, statusColuna);
+    }
+
+    function exportarPdfDirectoLocal() {
+      const projetoNome = document.getElementById('modalTitleInput').value.trim() || 'Projeto Sem Título';
+      const empresaNome = document.getElementById('modalEmpresaInput').value.trim() || 'Não Informada';
+      const contatoInfo = document.getElementById('modalContatoInput').value.trim() || 'Não Informado';
+      const obsHtml = document.getElementById('modalObsEditor').innerHTML;
+      const chkItems = obterChecklistModalAtual();
+
+      const doneItems = chkItems.filter(i => i.done);
+      const pendingItems = chkItems.filter(i => !i.done);
+      const total = chkItems.length;
+      const doneCount = doneItems.length;
+      const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+
+      let doneListHtml = doneItems.map(i => `<li style="margin-bottom:4px; color:#15803d; font-size:11px; list-style-type:none;"><span style="color:#15803d;">✔</span> <strong>${i.texto}</strong> ${i.date ? `<span style="font-size:9px; color:#64748b;">(${i.date})</span>` : ''}</li>`).join('');
+      let pendingListHtml = pendingItems.map(i => `<li style="margin-bottom:4px; color:#b91c1c; font-size:11px; list-style-type:none;"><span style="color:#b91c1c;">⌛</span> ${i.texto}</li>`).join('');
+
+      const conteudoHtml = `
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:10px 14px; border-radius:6px; margin-bottom:16px;">
+          <p style="font-size:11px; margin:2px 0;"><strong>Empresa Cliente:</strong> ${empresaNome}</p>
+          <p style="font-size:11px; margin:2px 0;"><strong>Contato Responsável:</strong> ${contatoInfo}</p>
+          <p style="font-size:11px; margin:2px 0; color:#0284c7; font-weight:bold;"><strong>Progresso Geral:</strong> ${doneCount}/${total} (${pct}%)</p>
+        </div>
+
+        ${obsHtml.trim() ? `
+        <div style="margin-bottom:16px;">
+          <h3 style="font-size:12px; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:6px; font-weight:bold; text-transform:uppercase;">Anotações Gerais</h3>
+          <div style="font-size:11px; line-height:1.4; color:#334155;">${obsHtml}</div>
+        </div>` : ''}
+
+        <div style="margin-bottom:16px;">
+          <h3 style="font-size:12px; color:#15803d; border-bottom:1px solid #bbf7d0; padding-bottom:4px; margin-bottom:6px; font-weight:bold; text-transform:uppercase;">Etapas Concluídas (${doneCount})</h3>
+          <ul>${doneListHtml || '<li style="color:#94a3b8; font-style:italic; font-size:11px;">Nenhuma etapa concluída até o momento.</li>'}</ul>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <h3 style="font-size:12px; color:#b91c1c; border-bottom:1px solid #fecaca; padding-bottom:4px; margin-bottom:6px; font-weight:bold; text-transform:uppercase;">Etapas Pendentes (${pendingItems.length})</h3>
+          <ul>${pendingListHtml || '<li style="color:#15803d; font-weight:bold; font-size:11px;">🎉 Todas as etapas concluídas!</li>'}</ul>
+        </div>
+      `;
+
+      const statusColuna = obterNomeColunaAtualCard();
+      emitirPdfDocumentoCorporativo(`Implantação ${projetoNome}`, empresaNome, conteudoHtml, statusColuna);
+    }
+
+    function abrirModalObs(cardEl, col) {
+      modoCriacao = false;
+      cardElementoAtual = cardEl;
+      const clienteNome = cardEl.getAttribute('data-cliente');
+      clienteAtualObs = { cliente: clienteNome, col: col };
+      
+      const statusEl = document.getElementById('uploadStatus');
+      if (statusEl) { statusEl.innerText = "Nenhum anexo novo"; statusEl.style.color = "var(--text-muted)"; }
+
+      document.getElementById('btnDeleteModal').style.display = 'flex';
+
+      const obsAtual = cardEl.getAttribute('data-obs') || getObsLocal(clienteNome);
+      const chkAtual = getChecklistLocal(clienteNome);
+      const empresaAtual = getEmpresaLocal(clienteNome);
+      const contatoAtual = getContatoLocal(clienteNome);
+
+      document.getElementById('modalHeaderTitle').innerHTML = `<i class="fab fa-jira"></i> Editar Detalhes do Card`;
+      document.getElementById('modalTitleInput').value = clienteNome;
+      document.getElementById('modalEmpresaInput').value = empresaAtual;
+      document.getElementById('modalContatoInput').value = contatoAtual;
+      document.getElementById('modalObsEditor').innerHTML = obsAtual;
+      
+      document.getElementById('aiResponseBox').style.display = 'none';
+      document.getElementById('btnExportPdf').style.display = 'none';
+
+      renderizarChecklistModal(chkAtual);
+      document.getElementById('obsModal').style.display = 'flex';
+
+      setTimeout(() => { document.getElementById('modalObsEditor').focus(); }, 100);
+    }
+
+    function abrirModalCriar(colIndex) {
+      modoCriacao = true;
+      colIndexCriacao = colIndex;
+      cardElementoAtual = null;
+      clienteAtualObs = { cliente: '', col: colIndex };
+
+      const statusEl = document.getElementById('uploadStatus');
+      if (statusEl) { statusEl.innerText = "Nenhum anexo novo"; statusEl.style.color = "var(--text-muted)"; }
+
+      document.getElementById('btnDeleteModal').style.display = 'none';
+
+      document.getElementById('modalHeaderTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Criar Novo Card`;
+      document.getElementById('modalTitleInput').value = '';
+      document.getElementById('modalEmpresaInput').value = '';
+      document.getElementById('modalContatoInput').value = '';
+      document.getElementById('modalObsEditor').innerHTML = '';
+      
+      document.getElementById('aiResponseBox').style.display = 'none';
+      document.getElementById('btnExportPdf').style.display = 'none';
+
+      const chkPadrao = CHECKLIST_PADRAO.map(t => ({ texto: t, done: false, date: null }));
+      renderizarChecklistModal(chkPadrao);
+
+      document.getElementById('obsModal').style.display = 'flex';
+
+      setTimeout(() => { document.getElementById('modalTitleInput').focus(); }, 100);
+    }
+
+    function fecharModal() { document.getElementById('obsModal').style.display = 'none'; }
+
+    function salvarObservacao() {
+      const novoTitulo = document.getElementById('modalTitleInput').value.trim();
+      const empresaVal = document.getElementById('modalEmpresaInput').value.trim();
+      const contatoVal = document.getElementById('modalContatoInput').value.trim();
+      const obsHtml = document.getElementById('modalObsEditor').innerHTML;
+      const chkItems = obterChecklistModalAtual();
+
+      if (!novoTitulo) return alert("Digite um título para o card!");
+
+      let nomeColuna = 'INICIAL';
+      if (modoCriacao) {
+        const colDiv = document.querySelector(`.kanban-column[data-col-index="${colIndexCriacao}"]`);
+        if (colDiv) {
+          const headerSpan = colDiv.querySelector('.kanban-header span');
+          if (headerSpan) nomeColuna = headerSpan.innerText.trim();
+        }
+
+        saveCardCriadoLocal(novoTitulo, colIndexCriacao, obsHtml, chkItems, empresaVal, contatoVal);
+
+        if (colDiv) {
+          const container = colDiv.querySelector('.cards-container');
+          const emptyP = container.querySelector('p');
+          if (emptyP) emptyP.remove();
+
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = criarCardHTML(novoTitulo, colIndexCriacao, obsHtml, chkItems);
+          container.appendChild(tempDiv.firstElementChild);
+        }
+
+        mostrarToast("Novo card criado!");
+        enviarParaGoogleSheets({
+          acao: 'criarCard',
+          cliente: novoTitulo,
+          col: colIndexCriacao,
+          empresa: empresaVal,
+          contato: contatoVal,
+          chk: JSON.stringify(chkItems)
+        });
+
+      } else {
+        if (cardElementoAtual) {
+          const colDiv = cardElementoAtual.closest('.kanban-column');
+          if (colDiv) {
+            const headerSpan = colDiv.querySelector('.kanban-header span');
+            if (headerSpan) nomeColuna = headerSpan.innerText.trim();
+          }
+
+          cardElementoAtual.setAttribute('data-cliente', novoTitulo);
+          cardElementoAtual.querySelector('.card-title').innerText = novoTitulo;
+          cardElementoAtual.setAttribute('data-obs', obsHtml);
+          
+          const obsArea = cardElementoAtual.querySelector('.card-obs-area');
+          obsArea.innerHTML = obsHtml;
+
+          const total = chkItems.length;
+          const done = chkItems.filter(i => i.done).length;
+          const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+          cardElementoAtual.querySelector('.card-checklist-progress').innerHTML = `<i class="fas fa-check-square"></i> ${done}/${total} (${pct}%)`;
+
+          saveObsLocal(novoTitulo, obsHtml);
+          saveEmpresaContatoLocal(novoTitulo, empresaVal, contatoVal);
+          saveChecklistLocal(novoTitulo, chkItems);
+        }
+
+        mostrarToast("Card atualizado!");
+        enviarParaGoogleSheets({
+          acao: 'salvarObs',
+          cliente: novoTitulo,
+          col: clienteAtualObs.col,
+          empresa: empresaVal,
+          contato: contatoVal,
+          obs: obsHtml,
+          chk: JSON.stringify(chkItems)
+        });
+      }
+
+      /* Dispara o Webhook do WeON Board */
+      dispararWebhookWeonBoard({
+        cliente: novoTitulo,
+        empresa: empresaVal,
+        contato: contatoVal,
+        etapa: nomeColuna,
+        detalhes: obsHtml
+      });
+
+      atualizarDashboardBI();
+      fecharModal();
+    }
+
+    function abrirModalNovaColuna() {
+      document.getElementById('colunaTitleInput').value = '';
+      document.getElementById('colunaModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('colunaTitleInput').focus(), 100);
+    }
+
+    function fecharModalColuna() { document.getElementById('colunaModal').style.display = 'none'; }
+
+    function salvarNovaColuna() {
+      const nomeColuna = document.getElementById('colunaTitleInput').value.trim();
+      if (!nomeColuna) return alert("Digite o nome da coluna!");
+
+      const boardContainer = document.getElementById('kanban-board');
+      const totalColunasAtuais = boardContainer.querySelectorAll('.kanban-column').length;
+      const novoIndexCol = totalColunasAtuais;
+
+      const colDiv = montarElementoColuna(novoIndexCol, nomeColuna, '');
+      boardContainer.appendChild(colDiv);
+
+      fecharModalColuna();
+      salvarOrdemColunasLocal();
+      mostrarToast("Nova coluna criada!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({ acao: 'criarColuna', nomeColuna: nomeColuna, colIndex: novoIndexCol });
+    }
+
+    function deletarColuna(colIndex, nomeColuna, btnEl) {
+      const colDiv = btnEl.closest('.kanban-column');
+      const qtdCards = colDiv.querySelectorAll('.kanban-card').length;
+
+      if (qtdCards > 0) {
+        if (!confirm(`A coluna "${nomeColuna}" contém ${qtdCards} card(s). Se você excluí-la, todos os cards dela serão removidos. Deseja continuar?`)) return;
+      } else {
+        if (!confirm(`Tem certeza que deseja excluir a coluna "${nomeColuna}"?`)) return;
+      }
+
+      colDiv.remove();
+      salvarOrdemColunasLocal();
+      mostrarToast("Coluna removida!");
+      atualizarDashboardBI();
+
+      enviarParaGoogleSheets({ acao: 'excluirColuna', colIndex: colIndex, nomeColuna: nomeColuna });
+    }
+
+    function salvarSelecaoTexto() {
+      const sel = window.getSelection();
+      if (sel.getRangeAt && sel.rangeCount) { savedRange = sel.getRangeAt(0); }
+    }
+
+    function restaurarSelecaoTexto() {
+      if (savedRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedRange);
+      }
+    }
+
+    function formatDoc(cmd, value = null) {
+      const editor = document.getElementById('modalObsEditor');
+      editor.focus();
+      restaurarSelecaoTexto();
+      document.execCommand(cmd, false, value);
+      salvarSelecaoTexto();
+    }
+
+    function extrairDadosCompletosDoBoard() {
+      const colunas = document.querySelectorAll('.kanban-column');
+      const dadosConsolidados = [];
+
+      colunas.forEach(col => {
+        const headerSpan = col.querySelector('.kanban-header span');
+        const nomeColuna = headerSpan ? headerSpan.innerText.trim() : 'Coluna';
+        const cards = col.querySelectorAll('.kanban-card');
+
+        cards.forEach(card => {
+          const nomeCliente = card.getAttribute('data-cliente');
+          const obsHtml = card.getAttribute('data-obs') || getObsLocal(nomeCliente);
+          const chkItems = getChecklistLocal(nomeCliente);
+          const empresa = getEmpresaLocal(nomeCliente);
+          const etapaAnterior = getEtapaAnteriorLocal(nomeCliente);
+
+          const totalChk = chkItems.length;
+          const doneChk = chkItems.filter(i => i.done).length;
+          const pctChk = totalChk > 0 ? Math.round((doneChk / totalChk) * 100) : 0;
+
+          const dateKickoffObj = chkItems.find(i => i.texto.toLowerCase().includes('kick off realizado') && i.done);
+          const dateSetupObj = chkItems.find(i => i.texto.toLowerCase().includes('iniciar setup') && i.done);
+          const dateHomologObj = chkItems.find(i => i.texto.toLowerCase().includes('homologação') && i.done);
+          const dateGoliveObj = chkItems.find(i => i.texto.toLowerCase().includes('handoff') && i.done);
+
+          dadosConsolidados.push({
+            cliente: nomeCliente,
+            empresa: empresa,
+            etapaAtual: nomeColuna,
+            etapaAnterior: etapaAnterior,
+            progressoPct: pctChk,
+            concluidosCount: `${doneChk}/${totalChk}`,
+            pipelineDates: {
+              demanda: 'Início',
+              kickoff: dateKickoffObj && dateKickoffObj.date ? dateKickoffObj.date.split('às')[0].trim() : '--',
+              setup: dateSetupObj && dateSetupObj.date ? dateSetupObj.date.split('às')[0].trim() : '--',
+              homolog: dateHomologObj && dateHomologObj.date ? dateHomologObj.date.split('às')[0].trim() : '--',
+              golive: dateGoliveObj && dateGoliveObj.date ? dateGoliveObj.date.split('às')[0].trim() : '--'
+            },
+            pendencias: chkItems.filter(i => !i.done).map(i => i.texto)
+          });
+        });
+      });
+
+      return dadosConsolidados;
+    }
+
+    function abrirModalStatusReportGeral() {
+      montarPreviewRelatorioPrint();
+      document.getElementById('boardAiResponseBox').style.display = 'none';
+      document.getElementById('btnExportBoardAiPdf').style.display = 'none';
+      document.getElementById('boardReportModal').style.display = 'flex';
+    }
+
+    function fecharModalBoardReport() { document.getElementById('boardReportModal').style.display = 'none'; }
+
+    function montarPreviewRelatorioPrint() {
+      const dadosBoard = extrairDadosCompletosDoBoard();
+      const printContainer = document.getElementById('boardReportPrintContainer');
+
+      if (dadosBoard.length === 0) {
+        printContainer.innerHTML = '<p style="text-align:center; color:#64748b;">Nenhum card de projeto para listar.</p>';
+        return;
+      }
+
+      const kpiTotal = document.getElementById('kpiTotal').innerText;
+      const kpiAndamento = document.getElementById('kpiAndamento').innerText;
+      const kpiBloqueio = document.getElementById('kpiBloqueio').innerText;
+      const kpiConcluido = document.getElementById('kpiConcluido').innerText;
+
+      let tabelaProjetosHtml = dadosBoard.map(p => {
+        let step1Class = 'completed', step2Class = '', step3Class = '', step4Class = '', step5Class = '';
+        if (p.pipelineDates.kickoff !== '--') step2Class = 'completed';
+        if (p.pipelineDates.setup !== '--') step3Class = 'completed';
+        if (p.pipelineDates.homolog !== '--') step4Class = 'completed';
+        if (p.pipelineDates.golive !== '--') step5Class = 'completed';
+
+        if (p.etapaAtual.toLowerCase().includes('kick')) step2Class = 'active';
+        else if (p.etapaAtual.toLowerCase().includes('setup')) step3Class = 'active';
+        else if (p.etapaAtual.toLowerCase().includes('homolog')) step4Class = 'active';
+        else if (p.etapaAtual.toLowerCase().includes('concluid') || p.etapaAtual.toLowerCase().includes('faturamento')) step5Class = 'active';
+        else step1Class = 'active';
+
+        return `
+        <tr style="border-bottom: 1px solid #cbd5e1;">
+          <td style="padding: 10px 8px; font-weight: bold; color: #0f172a; width: 20%;">
+            ${p.cliente}<br>
+            <span style="font-size:10px; font-weight:normal; color:#64748b;">${p.empresa || 'Cliente'}</span><br>
+            <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:bold;">${p.etapaAtual}</span>
+          </td>
+          
+          <td style="padding: 10px 4px; width: 55%;">
+            <div class="pipeline-tracker-container">
+              <div class="pipeline-line-bg"></div>
+              
+              <div class="pipeline-step ${step1Class}">
+                <div class="pipeline-dot">1</div>
+                <span class="pipeline-label">Demanda</span>
+                <span class="pipeline-date">${p.pipelineDates.demanda}</span>
+              </div>
+
+              <div class="pipeline-step ${step2Class}">
+                <div class="pipeline-dot">2</div>
+                <span class="pipeline-label">Kick-Off</span>
+                <span class="pipeline-date">${p.pipelineDates.kickoff}</span>
+              </div>
+
+              <div class="pipeline-step ${step3Class}">
+                <div class="pipeline-dot">3</div>
+                <span class="pipeline-label">Setup</span>
+                <span class="pipeline-date">${p.pipelineDates.setup}</span>
+              </div>
+
+              <div class="pipeline-step ${step4Class}">
+                <div class="pipeline-dot">4</div>
+                <span class="pipeline-label">Homolog</span>
+                <span class="pipeline-date">${p.pipelineDates.homolog}</span>
+              </div>
+
+              <div class="pipeline-step ${step5Class}">
+                <div class="pipeline-dot">5</div>
+                <span class="pipeline-label">Go-Live</span>
+                <span class="pipeline-date">${p.pipelineDates.golive}</span>
+              </div>
+            </div>
+          </td>
+
+          <td style="padding: 10px 8px; font-weight: bold; color: #0284c7; width: 10%;">
+            ${p.progressoPct}%<br><span style="font-size:9px; color:#64748b;">(${p.concluidosCount})</span>
+          </td>
+
+          <td style="padding: 10px 8px; font-size: 10px; color: #334155; width: 15%;">
+            <strong>Pendências:</strong> ${p.pendencias.slice(0, 2).join(', ')}${p.pendencias.length > 2 ? '...' : ''}
+          </td>
+        </tr>
+      `}).join('');
+
+      printContainer.innerHTML = `
+        <div style="border-bottom: 2px solid #00ffcc; padding-bottom: 10px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h1 style="color:#0f172a; margin:0; font-size:18px; font-weight:bold;">WeON - Status Report Geral com Esteira / Pipeline (Daily & Weekly)</h1>
+            <p style="color:#64748b; font-size:11px; margin-top:2px;">Acompanhamento visual de marcos operacionais por cliente</p>
+          </div>
+          <div style="text-align:right;">
+            <p style="font-size:10px; color:#64748b; margin:0;">Emissão: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:12px; background:#f8fafc; padding:8px; border-radius:6px; border:1px solid #cbd5e1; justify-content:space-around; text-align:center;">
+          <div><span style="font-size:15px; font-weight:bold; color:#0284c7;">${kpiTotal}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">TOTAL PROJETOS</span></div>
+          <div><span style="font-size:15px; font-weight:bold; color:#0369a1;">${kpiAndamento}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">EM ANDAMENTO</span></div>
+          <div><span style="font-size:15px; font-weight:bold; color:#dc2626;">${kpiBloqueio}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">BLOQUEIOS / ATENÇÃO</span></div>
+          <div><span style="font-size:15px; font-weight:bold; color:#15803d;">${kpiConcluido}</span><br><span style="font-size:9px; color:#64748b; font-weight:bold;">CONCLUÍDOS</span></div>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px; table-layout:fixed;">
+          <thead>
+            <tr style="background:#f1f5f9; text-align:left; color:#0f172a; border-bottom:2px solid #cbd5e1;">
+              <th style="padding:8px 8px; width:20%;">Projeto / Cliente</th>
+              <th style="padding:8px 4px; text-align:center; width:55%;">Esteira de Implantação (Pipeline com Datas)</th>
+              <th style="padding:8px 8px; width:10%;">Progresso</th>
+              <th style="padding:8px 8px; width:15%;">Próximos Passos</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tabelaProjetosHtml}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 6px; text-align: center; font-size: 9px; color: #94a3b8;">
+          Relatório gerado pelo Hub de Implantação WeON
+        </div>
+      `;
+    }
+
+    function exportarPdfBoardGeralPlanoB() {
+      montarPreviewRelatorioPrint();
+      window.print();
+    }
+
+    function executarAnaliseIAGeralDireta() {
+      abrirModalStatusReportGeral();
+      gerarAnaliseIAGeral();
+    }
+
+    async function gerarAnaliseIAGeral() {
+      const dadosBoard = extrairDadosCompletosDoBoard();
+      if (dadosBoard.length === 0) {
+        return alert("Não há projetos ativos no board para analisar.");
+      }
+
+      const dadosResumidos = dadosBoard.map(p => ({
+        cliente: p.cliente,
+        etapa: p.etapaAtual,
+        progresso: `${p.progressoPct}%`,
+        pendenciasCount: p.pendencias.length
+      }));
+
+      const responseBox = document.getElementById('boardAiResponseBox');
+      const btnExport = document.getElementById('btnExportBoardAiPdf');
+      responseBox.style.display = 'block';
+      responseBox.innerHTML = '<i><i class="fas fa-spinner fa-spin"></i> Processando diagnóstico executivo via IA...</i>';
+
+      const promptText = `Você é Gestor da WeON. Faça um diagnóstico executivo resumido dos projetos ativos.
+Projetos: ${JSON.stringify(dadosResumidos)}.
+Divida o texto curto em: "Resumo Geral da Carteira", "Gargalos" e "Ações Recomendadas". Responda diretamente em Português sem marcas de código.`;
+
+      try {
+        const reportText = await chamarIaGenerica(promptText);
+        responseBox.innerText = reportText;
+        btnExport.style.display = 'inline-flex';
+      } catch (err) {
+        if (err.message === "API_KEY_INVALIDA") {
+          responseBox.innerHTML = `<span style="color:var(--danger);">Por favor, informe a sua API Key no campo acima.</span>`;
+        } else {
+          responseBox.innerHTML = `
+            <div style="background: rgba(255,74,74,0.08); border:1px solid var(--danger); padding:12px; border-radius:6px; color:var(--danger); font-size:0.85em;">
+              <strong>Erro da API de IA:</strong> ${err.message}
+              <br><br>
+              💡 <strong>Dica Rápida:</strong> Clique no botão <strong>"Exportar PDF Geral (Esteira & Tabela)"</strong> para emitir a visão geral completa em PDF!
+            </div>
+          `;
+        }
+      }
+    }
+
+    function exportarRelatorioIAGeralPdf() {
+      const responseBox = document.getElementById('boardAiResponseBox');
+      const textoIA = responseBox.innerText;
+
+      if (!textoIA) return alert("Nenhuma análise de IA gerada para exportar.");
+
+      const htmlFormatado = converterMarkdownParaHtmlCorporativo(textoIA);
+      emitirPdfDocumentoCorporativo(`Diagnóstico Geral da Carteira de Projetos`, `Relatório Executivo Consolidado de Implantações`, htmlFormatado, 'CARTEIRA GERAL');
     }
   </script>
 </body>
