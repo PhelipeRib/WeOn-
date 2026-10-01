@@ -1256,20 +1256,20 @@
       
       <div class="input-title-group">
         <label>Nome / Rótulo:</label>
-        <input type="text" id="recursoNomeInput" class="input-card-title" placeholder="Ex: Servidor Backup, Manual X...">
+        <input type="text" id="recursoNomeInput" class="input-card-title" placeholder="Ex: DID teste, IP Servidor X...">
       </div>
 
       <div class="input-title-group">
-        <label>Link (URL) ou Valor de Senha/IP:</label>
-        <input type="text" id="recursoValorInput" class="input-card-title" placeholder="Ex: https://... ou 10.0.9.90 ou Senha123">
+        <label>Link (URL) ou Valor de Senha/IP/Telefone:</label>
+        <input type="text" id="recursoValorInput" class="input-card-title" placeholder="Ex: https://... ou 4133540557">
       </div>
 
       <div class="input-title-group">
-        <label>Ícone FontAwesome (Ex: fa-link, fa-key, fa-file-pdf):</label>
+        <label>Ícone FontAwesome (Ex: fa-link, fa-key, fa-phone, fa-file-pdf):</label>
         <input type="text" id="recursoIconeInput" class="input-card-title" placeholder="fa-link" value="fa-link">
       </div>
 
-      <input type="hidden" id="recursoCategoriaHidden" value="navegacao">
+      <input type="hidden" id="recursoCategoriaHidden" value="credenciais">
 
       <div class="modal-actions" style="justify-content: flex-end; gap: 10px;">
         <button class="btn-widget" onclick="fecharModalRecurso()">Cancelar</button>
@@ -1571,7 +1571,6 @@
     }
 
     function renderizarRecursosDinamicos() {
-      // Limpa os contentores dinâmicos das secções nativas
       const credContainer = document.getElementById('dynamic-credenciais-container');
       const devContainer = document.getElementById('dynamic-desenvolvedor-container');
       const staticLinkGrid = document.getElementById('static-link-grid');
@@ -1582,10 +1581,8 @@
       if (devContainer) devContainer.innerHTML = '';
       if (customSectionsContainer) customSectionsContainer.innerHTML = '';
 
-      // Remove apenas os botões dinâmicos que foram adicionados anteriormente às grelhas nativas
       document.querySelectorAll('.dynamic-link-item').forEach(el => el.remove());
 
-      // Agrupa por secção
       const secoesCustomizadas = {};
 
       recursosDinamicosCache.forEach(item => {
@@ -1630,13 +1627,12 @@
             </div>
           `;
         } else {
-          // Secção totalmente personalizada
           if (!secoesCustomizadas[item.secao]) secoesCustomizadas[item.secao] = [];
           secoesCustomizadas[item.secao].push(item);
         }
       });
 
-      // Renderiza as secções totalmente novas na parte inferior
+      // Renderiza as novas seções
       Object.keys(secoesCustomizadas).forEach(secaoNome => {
         const itens = secoesCustomizadas[secaoNome];
         const secaoDiv = document.createElement('div');
@@ -1671,13 +1667,23 @@
         customSectionsContainer.appendChild(secaoDiv);
       });
 
-      // Reativa os cliques dos colapsáveis
+      // Recalcula a altura dos colapsáveis abertos para NÃO CORTAR O CONTEÚDO
       document.querySelectorAll(".collapsible").forEach(button => {
         button.onclick = function() {
           this.classList.toggle("active");
           const content = this.nextElementSibling;
-          content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
+          if (this.classList.contains("active")) {
+            content.style.maxHeight = content.scrollHeight + 100 + "px";
+          } else {
+            content.style.maxHeight = null;
+          }
         };
+
+        // Se a seção já estiver aberta, ajusta a altura dinamicamente
+        if (button.classList.contains("active")) {
+          const content = button.nextElementSibling;
+          content.style.maxHeight = content.scrollHeight + 100 + "px";
+        }
       });
     }
 
@@ -1701,7 +1707,6 @@
 
     function salvarNovaSecaoDinamica() {
       const titulo = document.getElementById('secaoTituloInput').value.trim();
-      const icone = document.getElementById('secaoIconeInput').value.trim() || 'fa-folder';
 
       if (!titulo) return alert("Digite o título da nova seção!");
 
