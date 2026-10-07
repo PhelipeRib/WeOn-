@@ -35,7 +35,7 @@ h2{font-size:1.3em}h3{font-size:.95em;margin-bottom:10px;color:var(--ac)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.g2{grid-template-columns:1fr}}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
 .it{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px}
-.it:hover{border-color:var(--ac)}.it>b{display:flex;justify-content:space-between;gap:8px;font-size:.92em;cursor:grab}
+.it:hover{border-color:var(--ac)}
 .it .ac{display:flex;gap:2px}.it .ac button,.row button,.ch button{background:0;border:0;color:var(--mu);padding:2px 5px}.it .ac button:hover,.row button:hover,.ch button:hover{color:var(--ac)}
 .row{display:flex;gap:8px;align-items:center;font-size:.85em;background:var(--in);border-radius:8px;padding:6px 9px}.row span{flex:1;word-break:break-all}.mono,pre{font-family:'Fira Code',monospace;font-size:.82em}
 pre{background:var(--in);padding:10px;border-radius:8px;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow:auto}
@@ -43,10 +43,9 @@ pre{background:var(--in);padding:10px;border-radius:8px;white-space:pre-wrap;wor
 .ban{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--cd);border:1px solid var(--ac);border-radius:14px;padding:18px 22px;margin-bottom:16px;text-decoration:none;color:var(--tx)}
 .kp{display:grid;grid-template-columns:1fr 1fr;gap:10px}.kp div{background:var(--in);border-radius:10px;padding:12px}.kp b{font-size:1.7em;display:block}.kp span{font-size:.75em;color:var(--mu)}
 .kb{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;align-items:flex-start}
-.col{background:var(--in);border:1px solid var(--bd);border-radius:12px;padding:12px;flex:0 0 270px}
+.col{background:var(--in);border:1px solid var(--bd);border-radius:12px;padding:12px;flex:0 0 300px}
 .ch{display:flex;justify-content:space-between;align-items:center;cursor:grab;font-size:.82em;color:var(--ac);margin-bottom:10px}
-.cl{min-height:50px}.kc{background:var(--cd);border:1px solid var(--bd);border-left:3px solid var(--ac);border-radius:8px;padding:10px 12px;margin-bottom:8px;cursor:pointer;font-size:.85em}
-.kc small{display:block;color:var(--mu);margin:3px 0 6px;max-height:2.6em;overflow:hidden}
+.cl{min-height:50px}.kc{background:var(--cd);border:1px solid var(--bd);border-left:3px solid var(--ac);border-radius:10px;padding:13px 15px;margin-bottom:10px;cursor:pointer;font-size:.86em}.kc>b{font-size:1.02em;display:block}
 .pb{height:5px;background:var(--bd);border-radius:4px;overflow:hidden}.pb i{display:block;height:100%;background:var(--ac)}
 dialog{background:var(--cd);color:var(--tx);border:1px solid var(--ac);border-radius:16px;width:min(720px,94vw);padding:22px;max-height:90vh;margin:auto}
 dialog::backdrop{background:#000b;backdrop-filter:blur(4px)}
@@ -56,6 +55,12 @@ dialog::backdrop{background:#000b;backdrop-filter:blur(4px)}
 #lg{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9;text-align:center}
 #lg>div{max-width:400px;padding:30px}#lg p{color:var(--mu);margin:10px 0 18px;font-size:.9em}#lge{color:var(--dg);display:none}
 #ts{position:fixed;right:20px;bottom:20px;background:var(--ac);color:#06201b;padding:10px 18px;border-radius:8px;font-weight:700;opacity:0;transition:.3s;pointer-events:none}#ts.on{opacity:1}
+.ih{display:flex;gap:11px;align-items:center}.tt{flex:1;min-width:0}.tt b{display:block;font-size:.93em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tt small{color:var(--mu);font-size:.74em}
+.ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:1.2em;flex:none;overflow:hidden;background:color-mix(in srgb,var(--c,var(--ac)) 17%,transparent);color:var(--c,var(--ac))}.ic img{width:100%;height:100%;object-fit:cover}
+.it{cursor:grab}.it .ac{opacity:.5}.it:hover .ac{opacity:1}
+.kc small{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;color:var(--mu);margin:6px 0 8px;word-break:break-word;line-height:1.4}
+.kc .mt{display:flex;gap:6px;align-items:center;color:var(--mu);font-size:.85em;margin-top:4px}
+.kc .nx{margin-top:8px;padding:6px 8px;border-radius:6px;background:color-mix(in srgb,var(--ac) 10%,transparent);font-size:.8em;display:flex;gap:6px}.kc .nx.ok{color:#4ade80}
 .f{display:none}[hidden]{display:none!important}
 </style>
 </head>
@@ -107,7 +112,7 @@ async function pull(){try{const r=await(await fetch(SHEETS)).json();if(r.status!
  if(n){save();render()}}catch{}}
 /* ---------- helpers ---------- */
 let DK={},CUR={};
-function dlg(title,body,ok,del){$('#dg').innerHTML=`<h3>${title}</h3>${body}<div class="bar" style="margin:12px 0 0"><span>${del?'<button class="btn dn" data-a="dd">Excluir</button>':''}</span><span><button class="btn" data-a="x">${ok?'Cancelar':'Fechar'}</button>${ok?'<button class="btn pr" data-a="ok">Salvar</button>':''}</span></div>`;DK={ok,del};$('#dg').showModal()}
+function dlg(title,body,ok,del,lbl){$('#dg').innerHTML=`<h3>${title}</h3>${body}<div class="bar" style="margin:12px 0 0"><span>${del?'<button class="btn dn" data-a="dd">Excluir</button>':''}</span><span><button class="btn" data-a="x">${ok?'Cancelar':'Fechar'}</button>${ok?`<button class="btn pr" data-a="ok">${lbl||'Salvar'}</button>`:''}</span></div>`;DK={ok,del};$('#dg').showModal()}
 const stats=()=>{let t=0,a=0,b=0,c=0;S.cols.forEach(k=>{const n=k.cards.length,l=k.name.toLowerCase();t+=n;l.includes('bloqueio')?b+=n:/conclu|setup realizado/.test(l)?c+=n:a+=n});return{t,a,b,c}};
 const pct=chk=>chk.length?Math.round(chk.filter(i=>i.done).length/chk.length*100):0;
 const md=t=>esc(t).replace(/^###? (.*)$/gm,'<h3>$1</h3>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^[-*] (.*)$/gm,'<li>$1</li>').replace(/\n/g,'<br>');
@@ -124,22 +129,42 @@ async function ai(p){const{provider:v,key:k,model:m}=S.ai;if(!k)throw Error('Con
  const d=await post(o[0],{Authorization:'Bearer '+k},{model:o[1],messages:[{role:'user',content:p}],temperature:.3,max_tokens:900});
  if(d.choices)return d.choices[0].message.content;throw Error(d.error?.message||'Erro na API')}
 async function run(p){const o=$('#ao');o.hidden=false;o.textContent='Gerando…';try{o.textContent=await ai(p);$('#xp').hidden=false}catch(e){o.textContent='Erro: '+e.message+'. Use o PDF direto (sem IA).'}}
+/* ---------- ícones ---------- */
+const ico=c=>/fa-(solid|brands|regular)/.test(c)?c:'fa-solid '+c;
+const IK=[[/jira/,'fa-brands fa-jira'],[/confluence|wiki/,'fa-brands fa-confluence'],[/notion/,'fa-solid fa-book'],[/zabbix|monitor/,'fa-solid fa-heart-pulse'],[/whats|wpp|zap/,'fa-brands fa-whatsapp'],[/meta|facebook/,'fa-brands fa-meta'],[/dashboard|painel|\bbi\b/,'fa-solid fa-gauge-high'],[/gupshup|token|api|curl/,'fa-solid fa-plug'],[/bot|chatbot/,'fa-solid fa-robot'],[/iso|processo|compliance/,'fa-solid fa-shield-halved'],[/coex|config|setup/,'fa-solid fa-gears'],[/planilha|projetos|descritivo|sheet/,'fa-solid fa-table'],[/drive|pasta|empresas/,'fa-brands fa-google-drive'],[/pop|manual|doc|guia|tutorial/,'fa-solid fa-file-lines'],[/faq|ajuda|suporte/,'fa-solid fa-circle-question'],[/\bip\b|servidor|server|dn\d/,'fa-solid fa-server'],[/admin/,'fa-solid fa-user-shield'],[/supervisor|agente|atendimento/,'fa-solid fa-headset'],[/senha|login|acesso|credencia/,'fa-solid fa-key'],[/numero|número|\bdids?\b|telefone/,'fa-solid fa-phone'],[/calend|agenda|reuni/,'fa-regular fa-calendar'],[/banco|database|sql/,'fa-solid fa-database'],[/e-?mail/,'fa-regular fa-envelope']];
+const UK=[[/docs\.google\.com\/spreadsheets/,'fa-solid fa-table'],[/docs\.google\.com\/document/,'fa-solid fa-file-lines'],[/drive\.google/,'fa-brands fa-google-drive'],[/atlassian/,'fa-brands fa-jira'],[/notion/,'fa-solid fa-book'],[/github/,'fa-brands fa-github'],[/youtube/,'fa-brands fa-youtube']];
+const TD={cred:'fa-solid fa-lock',link:'fa-solid fa-link',article:'fa-solid fa-book-open',code:'fa-solid fa-terminal',text:'fa-solid fa-note-sticky'};
+const guess=(t,u,ty)=>{t=(t||'').toLowerCase();const a=IK.find(([r])=>r.test(t))||UK.find(([r])=>r.test(u||''));return a?a[1]:TD[ty]||'fa-solid fa-folder'};
+const itIc=i=>i.icon||guess(i.label,i.url,i.type),secIc=s=>s.icon&&s.icon!='auto'&&s.icon!='fa-folder'?s.icon:guess(s.title);
+const iconH=c=>/^https?:/.test(c)?`<img src="${esc(c)}" alt="">`:/fa-/.test(c)?`<i class="${esc(ico(c))}"></i>`:esc(c);
+const tint=c=>{let h=0;for(const ch of c)h=(h*31+ch.charCodeAt(0))%360;return `hsl(${h} 70% 58%)`};
+const host=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
+const PRE=[['Planilha','fa-solid fa-table'],['Documento','fa-solid fa-file-lines'],['Pasta / Drive','fa-brands fa-google-drive'],['Jira','fa-brands fa-jira'],['WhatsApp','fa-brands fa-whatsapp'],['Meta','fa-brands fa-meta'],['Robô / bot','fa-solid fa-robot'],['Servidor','fa-solid fa-server'],['Chave','fa-solid fa-key'],['Admin','fa-solid fa-user-shield'],['Suporte','fa-solid fa-headset'],['Gráfico','fa-solid fa-chart-line'],['Segurança','fa-solid fa-shield-halved'],['Configuração','fa-solid fa-gears'],['API','fa-solid fa-plug'],['Terminal','fa-solid fa-terminal'],['Telefone','fa-solid fa-phone'],['Livro','fa-solid fa-book'],['Banco de dados','fa-solid fa-database'],['Estrela','fa-solid fa-star']];
+const iconSel=(cur,auto)=>{const own=cur&&cur!='auto'&&!PRE.some(p=>p[1]==cur);return `<select id="isel"><option value="${auto}">Ícone: automático (pelo título)</option>${PRE.map(([n,c])=>`<option value="${c}" ${c==cur?'selected':''}>${n}</option>`).join('')}</select><input id="icu" placeholder="Ícone próprio: classe Font Awesome, emoji ou URL de imagem" value="${own?esc(cur):''}">`};
+/* ---------- agenda ---------- */
+const gcal=o=>window.open('https://calendar.google.com/calendar/render?'+new URLSearchParams({action:'TEMPLATE',ctz:'America/Sao_Paulo',...o}),'_blank','noopener');
+function evDlg(){const d=new Date(),p=n=>String(n).padStart(2,'0'),hoje=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+ dlg('Criar evento no Google Agenda',`<input id="et" placeholder="Título (ex.: Kick-off - Cliente)"><div class="g2"><input id="ed" type="date" value="${hoje}"><div class="g2" style="gap:8px"><input id="eh" type="time" value="10:00"><input id="ef" type="time" value="11:00"></div></div><input id="eg" placeholder="Convidados (e-mails separados por vírgula)"><input id="el" placeholder="Local ou link da reunião"><textarea id="ex" rows="3" placeholder="Descrição"></textarea><p class="mu">O Google Agenda abre com tudo preenchido. Confirme por lá e depois clique em Atualizar.</p>`,
+ ()=>{const t=$('#et').value.trim(),dd=$('#ed').value.replace(/-/g,''),h=$('#eh').value,f=$('#ef').value;if(!t||!dd||!h||!f){toast('Informe título, data e horários');return false}const g=x=>dd+'T'+x.replace(':','')+'00';
+  gcal({text:t,dates:g(h)+'/'+g(f),add:$('#eg').value.replace(/\s/g,''),location:$('#el').value,details:$('#ex').value})},0,'Abrir no Google Agenda')}
 /* ---------- views ---------- */
-function nav(){const v=S.view,b=(id,ic,t,x='')=>`<button class="nv ${v==id?'on':''}" data-a="nav" data-v="${id}"><i class="fa-solid ${ic}"></i>${esc(t)}</button>`;
- $('#nav').innerHTML=b('home','fa-chart-pie','Visão geral')+b('board','fa-table-columns','Kanban')+b('agenda','fa-calendar','Agenda')+'<small>SEÇÕES</small>'+S.sections.map(s=>b(s.id,s.icon,s.title)).join('')+
+function nav(){const v=S.view,b=(id,ic,t,x='')=>`<button class="nv ${v==id?'on':''}" data-a="nav" data-v="${id}"><i class="${ico(ic)}"></i>${esc(t)}</button>`;
+ $('#nav').innerHTML=b('home','fa-gauge-high','Painel e Kanban')+b('agenda','fa-calendar','Agenda')+'<small>SEÇÕES</small>'+S.sections.map(s=>b(s.id,secIc(s),s.title)).join('')+
  '<button class="nv" data-a="newsec"><i class="fa-solid fa-plus"></i>Nova seção</button><small>SISTEMA</small><button class="nv" data-a="cfg"><i class="fa-solid fa-robot"></i>Configurar IA</button><button class="nv" data-a="theme"><i class="fa-solid fa-palette"></i>Tema: '+S.theme+'</button><button class="nv" data-a="exp"><i class="fa-solid fa-download"></i>Exportar backup</button><button class="nv" data-a="imp"><i class="fa-solid fa-upload"></i>Importar backup</button><button class="nv" data-a="out"><i class="fa-solid fa-right-from-bracket"></i>Sair</button>'}
 function render(){document.documentElement.dataset.theme=S.theme;nav();const m=$('#main'),v=S.view;$('#q').value=S.q||'';
- if(S.q)return find(m);if(v=='home')return home(m);if(v=='board')return board(m);
- if(v=='agenda')return m.innerHTML='<h2 style="margin-bottom:14px">Agenda de implantação</h2><iframe src="https://calendar.google.com/calendar/embed?src=phelipe.ribeiro%40weon.com.br&ctz=America%2FSao_Paulo" style="border:0;width:100%;height:75vh;border-radius:12px"></iframe>';
+ if(S.q)return find(m);if(v=='home'||v=='board')return home(m);
+ if(v=='agenda')return m.innerHTML=`<div class="bar"><h2>Agenda de implantação</h2><span><button class="btn pr" data-a="ev"><i class="fa-solid fa-calendar-plus"></i> Criar evento</button><button class="btn" data-a="evr"><i class="fa-solid fa-rotate"></i> Atualizar</button></span></div><iframe id="cal" src="https://calendar.google.com/calendar/embed?src=phelipe.ribeiro%40weon.com.br&ctz=America%2FSao_Paulo" style="border:0;width:100%;height:75vh;border-radius:12px"></iframe>`;
  const s=S.sections.find(x=>x.id==v);if(!s){S.view='home';return render()}sect(m,s)}
 function home(m){const s=stats();m.innerHTML=`<a class="ban" href="https://weon5m3.weon.com.br/supervisor/tasks" target="_blank" rel="noopener"><span><b>Quadro geral de situações</b><br><span class="mu">Tarefas em tempo real da implantação WeON</span></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
  <div class="g2"><div class="cd"><h3>Indicadores</h3><div class="kp"><div><b>${s.t}</b><span>Total</span></div><div><b>${s.a}</b><span>Em andamento</span></div><div><b>${s.b}</b><span>Em bloqueio</span></div><div><b>${s.c}</b><span>Concluídos</span></div></div></div>
- <div class="cd"><h3>Distribuição por status</h3><div style="height:220px"><canvas id="ch"></canvas></div></div></div>
+ <div class="cd"><h3>Distribuição por status</h3><div style="height:190px"><canvas id="ch"></canvas></div></div></div>
+ <div id="bd"></div>
  <div class="cd"><div class="bar"><h3 style="margin:0">Bloco de notas</h3><button class="btn" data-a="txt"><i class="fa-solid fa-file-lines"></i> .txt</button></div><textarea id="nt" rows="6" placeholder="Anotações rápidas (salvas automaticamente)">${esc(S.notes)}</textarea></div>`;
- $('#nt').oninput=e=>{S.notes=e.target.value;save()};
+ $('#nt').oninput=e=>{S.notes=e.target.value;save()};board($('#bd'));
  const mu=getComputedStyle(document.documentElement).getPropertyValue('--mu');
  new Chart($('#ch'),{type:'doughnut',data:{labels:S.cols.map(c=>c.name),datasets:[{data:S.cols.map(c=>c.cards.length),backgroundColor:PAL,borderWidth:0}]},options:{maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{color:mu,usePointStyle:true}}}}})}
-const cardH=k=>`<div class="kc" data-id="${k.id}" data-a="card"><b>${esc(k.title)}</b><small>${esc(k.empresa||new DOMParser().parseFromString(k.obs||'','text/html').body.textContent)}</small><div class="pb"><i style="width:${pct(k.chk)}%"></i></div><small style="margin:4px 0 0">${pct(k.chk)}% concluído</small></div>`;
+const plain=h=>new DOMParser().parseFromString(h||'','text/html').body.textContent.trim();
+const cardH=k=>{const nx=k.chk.find(i=>!i.done),o=plain(k.obs),d=k.chk.filter(i=>i.done).length;return `<div class="kc" data-id="${k.id}" data-a="card"><b>${esc(k.title)}</b>${k.empresa?`<div class="mt"><i class="fa-regular fa-building"></i>${esc(k.empresa)}</div>`:''}${k.contato?`<div class="mt"><i class="fa-regular fa-address-book"></i>${esc(k.contato)}</div>`:''}${o?`<small>${esc(o)}</small>`:''}<div class="pb" style="margin-top:8px"><i style="width:${pct(k.chk)}%"></i></div><div class="mt"><span>${d}/${k.chk.length} etapas · ${pct(k.chk)}%</span></div>${nx?`<div class="nx"><i class="fa-solid fa-forward-step"></i><span>${esc(nx.texto)}</span></div>`:'<div class="nx ok">Todas as etapas concluídas</div>'}</div>`};
 function board(m){m.innerHTML=`<div class="bar"><h2>Quadro de implantação</h2><span><button class="btn" data-a="rep"><i class="fa-solid fa-file-contract"></i> Status report</button><button class="btn" data-a="rep" data-ia="1"><i class="fa-solid fa-robot"></i> Resumo IA</button><button class="btn pr" data-a="newcol"><i class="fa-solid fa-plus"></i> Coluna</button></span></div>
  <div class="kb" id="kb">${S.cols.map(c=>`<div class="col" data-id="${c.id}"><div class="ch"><b>${esc(c.name)} (${c.cards.length})</b><span><button data-a="addc" data-id="${c.id}" title="Novo card"><i class="fa-solid fa-plus"></i></button><button data-a="delcol" data-id="${c.id}" title="Excluir coluna"><i class="fa-solid fa-trash"></i></button></span></div><div class="cl" data-id="${c.id}">${c.cards.map(cardH).join('')}</div></div>`).join('')}</div>`;
  Sortable.create($('#kb'),{handle:'.ch',animation:150,onEnd:()=>sync()});
@@ -150,25 +175,25 @@ function sync(ev){const fi=ev?.from?S.cols.findIndex(c=>c.id==ev.from.dataset.id
  if(ev?.item?.classList.contains('kc')&&ev.from!==ev.to){const k=all[ev.item.dataset.id],to=S.cols.find(c=>c.id==ev.to.dataset.id);k.prev=cs[ev.from.dataset.id].name;save();
   sheets({acao:'mover',cliente:k.title,origemCol:fi,destinoCol:ti});hook(k,to.name);toast('Card movido')}
  render()}
-function sect(m,s){m.innerHTML=`<div class="bar"><h2><i class="fa-solid ${s.icon}"></i> ${esc(s.title)}</h2><span><button class="btn pr" data-a="addi" data-id="${s.id}"><i class="fa-solid fa-plus"></i> Item</button><button class="btn" data-a="rens" data-id="${s.id}">Renomear</button><button class="btn dn" data-a="dels" data-id="${s.id}">Excluir seção</button></span></div>
+function sect(m,s){m.innerHTML=`<div class="bar"><h2><i class="${ico(secIc(s))}"></i> ${esc(s.title)}</h2><span><button class="btn pr" data-a="addi" data-id="${s.id}"><i class="fa-solid fa-plus"></i> Item</button><button class="btn" data-a="rens" data-id="${s.id}">Renomear</button><button class="btn dn" data-a="dels" data-id="${s.id}">Excluir seção</button></span></div>
  <div class="grid" id="gr">${s.items.map(i=>itemH(s.id,i)).join('')||'<p class="mu">Seção vazia. Use "Item" para adicionar uma credencial, link, artigo ou comando.</p>'}</div>`;
  Sortable.create($('#gr'),{animation:150,onEnd:e=>{s.items.splice(e.newIndex,0,s.items.splice(e.oldIndex,1)[0]);save()}})}
-function itemH(sid,i){const cp=(v,ic='fa-copy')=>`<button data-a="copy" data-v="${esc(v)}" title="Copiar"><i class="fa-regular ${ic}"></i></button>`;let b='';
+function itemH(sid,i){const cp=v=>`<button data-a="copy" data-v="${esc(v)}" title="Copiar"><i class="fa-regular fa-copy"></i></button>`,ic=itIc(i),TN={cred:'Credencial',link:'Link',article:'Artigo',code:'Comando',text:'Nota'};let b='';
+ const sub=(i.type=='link'||i.type=='article')&&host(i.url)||TN[i.type];
  if(i.type=='cred')b=`<div class="row"><i class="fa-solid fa-user"></i><span>${esc(i.user)}</span>${cp(i.user)}</div><div class="row"><i class="fa-solid fa-key"></i><span class="mono" data-pw>••••••••</span><button data-a="eye" data-v="${esc(i.pass)}" title="Mostrar"><i class="fa-regular fa-eye"></i></button>${cp(i.pass)}</div>`;
  else if(i.type=='link')b=`<a href="${esc(url(i.url))}" target="_blank" rel="noopener" class="row"><i class="fa-solid fa-arrow-up-right-from-square"></i><span>Abrir link</span></a>`;
  else if(i.type=='article')b=`<a href="${esc(url(i.url))}" target="_blank" rel="noopener" class="row"><i class="fa-solid fa-book-open"></i><span>Ler artigo</span></a><p class="mu">${esc(i.text)}</p>`;
  else b=`<pre>${esc(i.text)||'(vazio)'}</pre><button class="btn" data-a="copy" data-v="${esc(i.text)}">Copiar</button>`;
- return `<div class="it" data-id="${i.id}"><b>${esc(i.label)}<span class="ac"><button data-a="edi" data-s="${sid}" data-id="${i.id}" title="Editar"><i class="fa-solid fa-pen"></i></button><button data-a="deli" data-s="${sid}" data-id="${i.id}" title="Remover"><i class="fa-solid fa-trash"></i></button></span></b>${b}</div>`}
+ return `<div class="it" data-id="${i.id}"><div class="ih"><span class="ic" style="--c:${tint(ic)}">${iconH(ic)}</span><div class="tt"><b>${esc(i.label)}</b><small>${esc(sub)}</small></div><span class="ac"><button data-a="edi" data-s="${sid}" data-id="${i.id}" title="Editar"><i class="fa-solid fa-pen"></i></button><button data-a="deli" data-s="${sid}" data-id="${i.id}" title="Remover"><i class="fa-solid fa-trash"></i></button></span></div>${b}</div>`}
 function find(m){const q=S.q.toLowerCase();const r=S.sections.map(s=>[s,s.items.filter(i=>[i.label,i.user,i.url,i.text].some(x=>(x||'').toLowerCase().includes(q)))]).filter(x=>x[1].length);
  m.innerHTML=`<h2 style="margin-bottom:14px">Resultados para "${esc(S.q)}"</h2>`+(r.map(([s,it])=>`<h3>${esc(s.title)}</h3><div class="grid" style="margin-bottom:18px">${it.map(i=>itemH(s.id,i)).join('')}</div>`).join('')||'<p class="mu">Nada encontrado. Tente outro termo.</p>')}
 function tf(){const t=$('#ty').value;$$('.f').forEach(e=>e.style.display=e.classList.contains(t)?'block':'none')}
 function itemDlg(sid,iid){const s=S.sections.find(x=>x.id==sid);let it=s.items.find(i=>i.id==iid);const nw=!it;it=it||{type:'cred'};const TY={cred:'Credencial (usuário e senha)',link:'Link externo',article:'Artigo',code:'Código / comando',text:'Nota / texto'};
- dlg(nw?'Novo item':'Editar item',`<select id="ty" onchange="tf()">${Object.entries(TY).map(([k,v])=>`<option value="${k}" ${k==it.type?'selected':''}>${v}</option>`).join('')}</select><input id="lb" placeholder="Título" value="${esc(it.label)}"><input class="f cred" id="us" placeholder="Usuário" value="${esc(it.user)}"><input class="f cred" id="pw" type="password" placeholder="Senha" value="${esc(it.pass)}" autocomplete="new-password"><input class="f link article" id="ur" placeholder="https://…" value="${esc(it.url)}"><textarea class="f article code text" id="tx" rows="5" placeholder="Descrição / conteúdo">${esc(it.text)}</textarea>`,
- ()=>{const lb=$('#lb').value.trim();if(!lb){toast('Informe um título');return false}const o={type:$('#ty').value,label:lb,user:$('#us').value,pass:$('#pw').value,url:$('#ur').value.trim(),text:$('#tx').value};
+ dlg(nw?'Novo item':'Editar item',`<select id="ty" onchange="tf()">${Object.entries(TY).map(([k,v])=>`<option value="${k}" ${k==it.type?'selected':''}>${v}</option>`).join('')}</select><input id="lb" placeholder="Título" value="${esc(it.label)}">${iconSel(it.icon,'')}<input class="f cred" id="us" placeholder="Usuário" value="${esc(it.user)}"><input class="f cred" id="pw" type="password" placeholder="Senha" value="${esc(it.pass)}" autocomplete="new-password"><input class="f link article" id="ur" placeholder="https://…" value="${esc(it.url)}"><textarea class="f article code text" id="tx" rows="5" placeholder="Descrição / conteúdo">${esc(it.text)}</textarea>`,
+ ()=>{const lb=$('#lb').value.trim();if(!lb){toast('Informe um título');return false}const o={type:$('#ty').value,label:lb,icon:$('#icu').value.trim()||$('#isel').value,user:$('#us').value,pass:$('#pw').value,url:$('#ur').value.trim(),text:$('#tx').value};
   nw?s.items.push({id:uid(),...o}):Object.assign(it,o);save();render()},nw?0:()=>{s.items=s.items.filter(i=>i.id!=iid);save();render()});tf()}
-function secDlg(s){const IC=['fa-folder','fa-lock','fa-link','fa-book-open','fa-code','fa-gear','fa-server','fa-database','fa-key'];
- dlg(s?'Renomear seção':'Nova seção',`<input id="st" placeholder="Nome da seção" value="${esc(s?.title)}"><select id="si">${IC.map(i=>`<option value="${i}" ${i==s?.icon?'selected':''}>${i.replace('fa-','')}</option>`).join('')}</select>`,
- ()=>{const t=$('#st').value.trim();if(!t){toast('Informe um nome');return false}if(s){s.title=t;s.icon=$('#si').value}else{const n={id:uid(),title:t,icon:$('#si').value,items:[]};S.sections.push(n);S.view=n.id}save();render()})}
+function secDlg(s){dlg(s?'Renomear seção':'Nova seção',`<input id="st" placeholder="Nome da seção" value="${esc(s?.title)}">${iconSel(s?.icon,'auto')}`,
+ ()=>{const t=$('#st').value.trim();if(!t){toast('Informe um nome');return false}const ic=$('#icu').value.trim()||$('#isel').value||'auto';if(s){s.title=t;s.icon=ic}else{const n={id:uid(),title:t,icon:ic,items:[]};S.sections.push(n);S.view=n.id}save();render()})}
 /* ---------- card ---------- */
 function ckr(){const c=CUR.chk;$('#ckl').innerHTML=c.map((i,n)=>`<div class="ck ${i.done?'d':''}" data-n="${n}"><input type="checkbox" style="width:auto;margin:0" ${i.done?'checked':''} data-a="ck" data-n="${n}"><span data-a="ck" data-n="${n}">${esc(i.texto)}${i.date?`<br><em>${i.date}</em>`:''}</span><button class="btn" style="padding:1px 6px" data-a="rmk" data-n="${n}">×</button></div>`).join('');$('#pg').innerHTML=`<div class="pb"><i style="width:${pct(c)}%"></i></div><p class="mu" style="margin:4px 0 8px">${c.filter(i=>i.done).length}/${c.length} (${pct(c)}%)</p>`;
  Sortable.create($('#ckl'),{animation:120,onEnd:e=>{c.splice(e.newIndex,0,c.splice(e.oldIndex,1)[0]);ckr()}})}
@@ -176,7 +201,7 @@ function cardDlg(cid,id){const col=S.cols.find(c=>c.id==cid);let k=col.cards.fin
  dlg(nw?'Novo card':'Editar card',`<input id="t" placeholder="Título / projeto" value="${esc(k.title)}"><div class="g2"><input id="e" placeholder="Empresa cliente" value="${esc(k.empresa)}"><input id="c" placeholder="Contato responsável" value="${esc(k.contato)}"></div>
  <div class="tb">${[['bold','<b>B</b>'],['italic','<i>I</i>'],['underline','<u>U</u>'],['insertUnorderedList','•']].map(([c,l])=>`<button class="btn" data-a="fmt" data-c="${c}">${l}</button>`).join('')}</div><div id="o" class="ed" contenteditable="true">${DOMPurify.sanitize(k.obs)}</div>
  <div class="cd"><h3>Checklist de implantação</h3><div id="pg"></div><div id="ckl"></div><input id="ni" placeholder="Nova tarefa e Enter" style="margin-top:8px"></div>
- <div class="bar"><span><button class="btn" data-a="cpdf"><i class="fa-solid fa-file-pdf"></i> PDF direto</button><button class="btn" data-a="cia"><i class="fa-solid fa-robot"></i> Resumo IA</button><button class="btn" id="xp" data-a="cxp" hidden>PDF do resumo IA</button></span></div><pre id="ao" hidden style="white-space:pre-wrap"></pre>`,
+ <div class="bar"><span><button class="btn" data-a="cpdf"><i class="fa-solid fa-file-pdf"></i> PDF direto</button><button class="btn" data-a="cag"><i class="fa-regular fa-calendar-plus"></i> Agendar</button><button class="btn" data-a="cia"><i class="fa-solid fa-robot"></i> Resumo IA</button><button class="btn" id="xp" data-a="cxp" hidden>PDF do resumo IA</button></span></div><pre id="ao" hidden style="white-space:pre-wrap"></pre>`,
  ()=>{const t=$('#t').value.trim();if(!t){toast('Informe um título');return false}Object.assign(k,{title:t,empresa:$('#e').value.trim(),contato:$('#c').value.trim(),obs:DOMPurify.sanitize($('#o').innerHTML),chk:CUR.chk});
   if(nw)col.cards.push(k);save();render();toast('Card salvo');
   sheets(nw?{acao:'criarCard',cliente:t,col:S.cols.indexOf(col),empresa:k.empresa,contato:k.contato,chk:JSON.stringify(k.chk)}:{acao:'salvarObs',cliente:t,col:S.cols.indexOf(col),empresa:k.empresa,contato:k.contato,obs:k.obs,chk:JSON.stringify(k.chk)});hook(k,col.name)},
@@ -194,7 +219,7 @@ const A={
  theme:()=>{const T=['dark','corporate','light'];S.theme=T[(T.indexOf(S.theme)+1)%3];save();render()},
  out:()=>{localStorage.removeItem('weon_sess');location.reload()},
  txt:()=>{if(!S.notes.trim())return toast('Bloco vazio');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([S.notes],{type:'text/plain'}));a.download='notas_weon.txt';a.click()},
- newsec:()=>secDlg(),rens:d=>secDlg(S.sections.find(s=>s.id==d.id)),
+ newsec:()=>secDlg(),ev:()=>evDlg(),evr:()=>{const f=$('#cal');f.src=f.src},cag:()=>{const{t,e}=cardInfo();gcal({text:'Reunião - '+t+(e!='Cliente'?' ('+e+')':''),details:'Contato: '+($('#c').value||'—')})},rens:d=>secDlg(S.sections.find(s=>s.id==d.id)),
  dels:d=>{const s=S.sections.find(x=>x.id==d.id);if(confirm(`Excluir a seção "${s.title}" e seus ${s.items.length} item(ns)?`)){S.sections=S.sections.filter(x=>x!==s);S.view='home';save();render()}},
  addi:d=>itemDlg(d.id),edi:d=>itemDlg(d.s,d.id),deli:d=>{if(confirm('Remover este item?')){const s=S.sections.find(x=>x.id==d.s);s.items=s.items.filter(i=>i.id!=d.id);save();render()}},
  cfg:()=>dlg('Configurar IA',`<select id="pv"><option value="gemini">Google Gemini</option><option value="groq">Groq (Llama 3)</option><option value="openai">OpenAI (GPT-4o mini)</option></select><input id="md" placeholder="Modelo Gemini (ex.: gemini-3.8-flash)" value="${esc(S.ai.model)}"><input id="ky" type="password" placeholder="API Key" value="${esc(S.ai.key)}" autocomplete="off"><p class="mu">A chave fica só neste navegador (localStorage).</p>`,()=>{S.ai={provider:$('#pv').value,model:$('#md').value.trim(),key:$('#ky').value.trim()};save();toast('IA configurada')}),
