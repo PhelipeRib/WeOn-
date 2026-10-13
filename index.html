@@ -397,6 +397,7 @@
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuWjtlSMOC-AORhO1Yb_jiX-wniwpVSFOGaakMS010IGd3cmTujNOazVFTPTs-vsO7kA/exec";
 
   let currentBase64File = "";
+  let currentFileName = "";
 
   const setupData = {
     "Números de Atendimento": [],
@@ -451,9 +452,11 @@
       e.target.value = "";
       document.getElementById('file-name').innerText = "Nenhum arquivo selecionado";
       currentBase64File = "";
+      currentFileName = "";
       return;
     }
     
+    currentFileName = file.name;
     document.getElementById('file-name').innerText = file.name;
 
     const reader = new FileReader();
@@ -489,9 +492,11 @@
     } else if(key === 'fluxos') {
       newItem = { 
         "Descrição/Lógica": document.getElementById('fluxo-obs').value,
-        "Anexo/Imagem": currentBase64File || "Sem Anexo"
+        "Anexo/Imagem": currentBase64File || "Sem Anexo",
+        "_displayAnexo": currentFileName ? `[Arquivo: ${currentFileName}]` : "Sem Anexo"
       };
       currentBase64File = "";
+      currentFileName = "";
       document.getElementById('file-name').innerText = "Nenhum arquivo selecionado";
     } else if(key === 'templates') {
       newItem = { "Nome": document.getElementById('tpl-nome').value, "Idioma": document.getElementById('tpl-idioma').value, "Texto": document.getElementById('tpl-texto').value };
@@ -527,7 +532,8 @@
       return;
     }
 
-    const headers = Object.keys(items[0]);
+    // Oculta propriedades de controle iniciadas com _
+    const headers = Object.keys(items[0]).filter(h => !h.startsWith('_'));
     let html = '<table><thead><tr>';
     headers.forEach(h => html += `<th>${h}</th>`);
     html += '<th style="text-align: center;">Remover</th></tr></thead><tbody>';
@@ -537,7 +543,7 @@
       headers.forEach(h => {
         let val = item[h] || '';
         if (typeof val === 'string' && val.indexOf('data:') === 0) {
-          val = '📁 [Arquivo Anexado / Carregado]';
+          val = item['_displayAnexo'] || '📁 [Arquivo Anexado / Carregado]';
         }
         html += `<td>${val}</td>`;
       });
@@ -564,7 +570,7 @@
           const val1 = Object.values(item)[0] || '';
           let val2 = Object.values(item)[1] || '';
           if (typeof val2 === 'string' && val2.indexOf('data:') === 0) {
-            val2 = '[Arquivo Anexado / Carregado]';
+            val2 = item['_displayAnexo'] || '[Arquivo Anexado]';
           }
           html += `<li><strong style="color: var(--tx);">${val1}</strong> ${val2 ? ' - ' + val2 : ''}</li>`;
         });
@@ -583,12 +589,22 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando para o Google Sheets & Drive...';
 
+    // Cria uma cópia limpa retirando os campos auxiliares _displayAnexo antes de enviar ao GAS
+    const cleanedPayload = JSON.parse(JSON.stringify(setupData));
+    for (let sheet in cleanedPayload) {
+      if (Array.isArray(cleanedPayload[sheet])) {
+        cleanedPayload[sheet].forEach(item => {
+          delete item['_displayAnexo'];
+        });
+      }
+    }
+
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(setupData)
+        body: JSON.stringify(cleanedPayload)
       });
 
       alert("✨ Sucesso! Todas as abas foram salvas e os anexos foram enviados para o Google Drive!");
