@@ -1,800 +1,357 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configurando a sua empresa</title>
-  
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>?v=3">
-  <link rel="alternate icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABMSURBVHgB7dIxDQAgDATBhz94YwADCEABAtiLgwC20AJuAnfSl8y6m1x6m4mISkYlIhK3iEg8ISLxA4n4h0QU1IjI5/N5e3t7v4C8AZuUD22L1mCFAAAAAElFTkSuQmCC?v=3">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root {
-      --bg: #0b132b;
-      --cd: #1c2541;
-      --in: #0b132b;
-      --ac: #3a86ff;
-      --ac-hover: #2563eb;
-      --dg: #ff4a4a;
-      --tx: #f8fafc;
-      --mu: #94a3b8;
-      --bd: #ffffff1f;
-    }
-
-    [data-theme="light"] {
-      --bg: #f1f5f9;
-      --cd: #ffffff;
-      --in: #f8fafc;
-      --ac: #0284c7;
-      --ac-hover: #0369a1;
-      --dg: #dc2626;
-      --tx: #0f172a;
-      --mu: #64748b;
-      --bd: #0000001a;
-    }
-
-    * { box-sizing: border-box; margin: 0; font-family: 'Inter', sans-serif; transition: background 0.2s, color 0.2s, border-color 0.2s; }
-    body { background: var(--bg); color: var(--tx); min-height: 100vh; }
-    .app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
-    
-    aside { background: var(--cd); border-right: 1px solid var(--bd); padding: 20px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-    aside h1 { color: var(--ac); font-size: 1.15em; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
-    aside small { color: var(--mu); margin: 16px 0 6px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .nv { padding: 10px 12px; border-radius: 8px; color: var(--mu); font-size: 0.85em; font-weight: 600; display: flex; gap: 10px; align-items: center; justify-content: space-between; border: 0; background: 0; text-align: left; width: 100%; cursor: pointer; }
-    .nv:hover, .nv.on { background: color-mix(in srgb, var(--ac) 15%, transparent); color: var(--ac); }
-    .nv i { width: 18px; text-align: center; }
-    .badge { background: var(--in); color: var(--tx); border: 1px solid var(--bd); font-size: 0.75em; padding: 2px 7px; border-radius: 12px; font-weight: 600; }
-    .nv.on .badge { background: var(--ac); color: #ffffff; border-color: var(--ac); }
-
-    .theme-toggle { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--bd); }
-
-    main { padding: 28px; min-width: 0; max-width: 1100px; }
-    @media(max-width: 850px) { .app { grid-template-columns: 1fr; } aside { position: static; height: auto; } }
-
-    .cd { background: var(--cd); border: 1px solid var(--bd); border-radius: 14px; padding: 22px; margin-bottom: 20px; }
-    h2 { font-size: 1.3em; margin-bottom: 4px; color: var(--tx); display: flex; align-items: center; gap: 10px; }
-    p.sub { color: var(--mu); font-size: 0.85em; margin-bottom: 20px; }
-    
-    label { display: block; font-size: 0.78em; color: var(--mu); margin-bottom: 6px; font-weight: 600; }
-    input, select, textarea { background: var(--in); border: 1px solid var(--bd); color: var(--tx); border-radius: 8px; padding: 10px 12px; width: 100%; font-size: 0.88em; margin-bottom: 12px; outline: none; }
-    input:focus, select:focus, textarea:focus { border-color: var(--ac); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ac) 25%, transparent); }
-    
-    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    @media(max-width: 700px) { .g2, .g3 { grid-template-columns: 1fr; } }
-
-    .btn { background: var(--in); border: 1px solid var(--bd); color: var(--tx); border-radius: 8px; padding: 9px 16px; font-size: 0.85em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn:hover { border-color: var(--ac); color: var(--ac); }
-    .btn.pr { background: var(--ac); color: #ffffff !important; border-color: var(--ac); font-weight: 800; }
-    .btn.pr:hover { background: var(--ac-hover); border-color: var(--ac-hover); }
-    .btn.dn:hover { border-color: var(--dg); color: var(--dg); }
-
-    .tb-wrap { overflow-x: auto; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.85em; text-align: left; }
-    th { background: var(--in); color: var(--ac); padding: 10px 12px; border-bottom: 1px solid var(--bd); font-weight: 700; font-size: 0.78em; text-transform: uppercase; }
-    td { padding: 10px 12px; border-bottom: 1px solid var(--bd); color: var(--tx); word-break: break-word; }
-    tr:hover td { background: color-mix(in srgb, var(--in) 50%, transparent); }
-
-    .up-box { border: 2px dashed var(--bd); background: var(--in); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; margin-bottom: 12px; }
-    .up-box:hover { border-color: var(--ac); }
-    .up-box i { font-size: 2em; color: var(--ac); margin-bottom: 8px; }
-
-    .f { display: none; }
-    
-    .sync-status { font-size: 0.75em; color: var(--mu); display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--in); border-radius: 20px; border: 1px solid var(--bd); margin-top: 8px; }
-    .sync-status i { color: var(--ac); }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auxílio WeON</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦍</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<style>
+:root{--bg:#060911;--cd:#0f1422;--in:#151c2d;--ac:#00ffcc;--dg:#ff4a4a;--tx:#f8fafc;--mu:#94a3b8;--bd:#ffffff17}
+[data-theme=corporate]{--bg:#0b132b;--cd:#1c2541;--in:#0b132b;--ac:#3a86ff;--mu:#cbd5e1}
+[data-theme=light]{--bg:#f1f5f9;--cd:#fff;--in:#f8fafc;--ac:#0284c7;--tx:#0f172a;--mu:#64748b;--bd:#0000001a;--dg:#dc2626}
+*{box-sizing:border-box;margin:0;font-family:Inter,sans-serif}
+body{background:var(--bg);color:var(--tx)}
+button{cursor:pointer;font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:var(--cd);border-right:1px solid var(--bd);padding:16px;position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column;gap:3px}
+aside h1{color:var(--ac);font-size:1.25em;margin-bottom:12px}
+aside small{color:var(--mu);margin:12px 0 4px;font-size:.75em}
+.nv{padding:9px 11px;border-radius:8px;color:var(--mu);font-size:.88em;display:flex;gap:10px;align-items:center;border:0;background:0;text-align:left;width:100%}
+.nv:hover,.nv.on{background:color-mix(in srgb,var(--ac) 14%,transparent);color:var(--ac)}
+main{padding:24px;min-width:0}
+@media(max-width:800px){.app{grid-template-columns:1fr}aside{position:static;height:auto}}
+input,select,textarea,.ed{background:var(--in);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:9px 11px;width:100%;font-size:.88em;margin-bottom:8px}
+:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.btn{background:var(--in);border:1px solid var(--bd);border-radius:8px;padding:7px 13px;font-size:.82em;font-weight:600}
+.btn:hover{border-color:var(--ac);color:var(--ac)}.pr{background:var(--ac);color:#06201b!important;border-color:var(--ac)}.dn:hover{border-color:var(--dg);color:var(--dg)}
+.bar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+.bar>span{display:flex;gap:8px;flex-wrap:wrap}
+h2{font-size:1.3em}h3{font-size:.95em;margin-bottom:10px;color:var(--ac)}
+.cd{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.g2{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.it{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.it:hover{border-color:var(--ac)}
+.it .ac{display:flex;gap:2px}.it .ac button,.row button,.ch button{background:0;border:0;color:var(--mu);padding:2px 5px}.it .ac button:hover,.row button:hover,.ch button:hover{color:var(--ac)}
+.row{display:flex;gap:8px;align-items:center;font-size:.85em;background:var(--in);border-radius:8px;padding:6px 9px}.row span{flex:1;word-break:break-all}.mono,pre{font-family:'Fira Code',monospace;font-size:.82em}
+pre{background:var(--in);padding:10px;border-radius:8px;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow:auto}
+.mu{color:var(--mu);font-size:.85em}a{color:var(--ac)}
+.ban{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--cd);border:1px solid var(--ac);border-radius:14px;padding:18px 22px;margin-bottom:16px;text-decoration:none;color:var(--tx)}
+.kp{display:grid;grid-template-columns:1fr 1fr;gap:10px}.kp div{background:var(--in);border-radius:10px;padding:12px}.kp b{font-size:1.7em;display:block}.kp span{font-size:.75em;color:var(--mu)}
+.kb{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;align-items:flex-start}
+.col{background:var(--in);border:1px solid var(--bd);border-radius:12px;padding:12px;flex:0 0 300px}
+.ch{display:flex;justify-content:space-between;align-items:center;cursor:grab;font-size:.82em;color:var(--ac);margin-bottom:10px}
+.cl{min-height:50px}.kc{background:var(--cd);border:1px solid var(--bd);border-left:3px solid var(--ac);border-radius:10px;padding:13px 15px;margin-bottom:10px;cursor:pointer;font-size:.86em}.kc>b{font-size:1.02em;display:block}
+.pb{height:5px;background:var(--bd);border-radius:4px;overflow:hidden}.pb i{display:block;height:100%;background:var(--ac)}
+dialog{background:var(--cd);color:var(--tx);border:1px solid var(--ac);border-radius:16px;width:min(720px,94vw);padding:22px;max-height:90vh;margin:auto}
+dialog::backdrop{background:#000b;backdrop-filter:blur(4px)}
+.ed{min-height:90px;max-height:180px;overflow:auto}.tb{display:flex;gap:4px;margin-bottom:6px}
+.ck{display:flex;gap:8px;align-items:center;padding:5px 8px;border-radius:6px;background:var(--in);margin-bottom:4px;font-size:.84em;cursor:grab}.ck.d span{text-decoration:line-through;color:var(--mu)}.ck span{flex:1;cursor:pointer}.ck em{font-size:.75em;color:var(--ac)}
+#ckl{max-height:200px;overflow:auto}
+#lg{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9;text-align:center}
+#lg>div{max-width:400px;padding:30px}#lg p{color:var(--mu);margin:10px 0 18px;font-size:.9em}#lge{color:var(--dg);display:none}
+#ts{position:fixed;right:20px;bottom:20px;background:var(--ac);color:#06201b;padding:10px 18px;border-radius:8px;font-weight:700;opacity:0;transition:.3s;pointer-events:none}#ts.on{opacity:1}
+.ih{display:flex;gap:11px;align-items:center}.tt{flex:1;min-width:0}.tt b{display:block;font-size:.93em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tt small{color:var(--mu);font-size:.74em}
+.ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:1.2em;flex:none;overflow:hidden;background:color-mix(in srgb,var(--c,var(--ac)) 17%,transparent);color:var(--c,var(--ac))}.ic img{width:100%;height:100%;object-fit:cover}
+.it{cursor:grab}.it .ac{opacity:.5}.it:hover .ac{opacity:1}
+.kc small{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;color:var(--mu);margin:6px 0 8px;word-break:break-word;line-height:1.4}
+.kc .mt{display:flex;gap:6px;align-items:center;color:var(--mu);font-size:.85em;margin-top:4px}
+.kc .nx{margin-top:8px;padding:6px 8px;border-radius:6px;background:color-mix(in srgb,var(--ac) 10%,transparent);font-size:.8em;display:flex;gap:6px}.kc .nx.ok{color:#4ade80}
+.sync-status{font-size:0.75em;color:var(--mu);display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--in);border-radius:20px;border:1px solid var(--bd);margin-bottom:8px}
+.f{display:none}[hidden]{display:none!important}
+</style>
 </head>
 <body>
-
-<div class="app">
-  <aside>
-    <h1><i class="fas fa-building"></i> Configuração</h1>
-    <div class="sync-status" id="sync-indicator">
-      <i class="fa-solid fa-arrows-rotate fa-spin"></i> Sincronizando com Google Sheets...
-    </div>
-    <small>Etapas de Configuração</small>
-    
-    <button class="nv on" onclick="switchTab('numeros')" id="btn-numeros">
-      <span><i class="fa-solid fa-phone"></i> 1. Números / WhatsApp</span>
-      <span class="badge" id="count-numeros">0</span>
-    </button>
-    <button class="nv" onclick="switchTab('grupos')" id="btn-grupos">
-      <span><i class="fa-solid fa-layer-group"></i> 2. Lista de Grupos</span>
-      <span class="badge" id="count-grupos">0</span>
-    </button>
-    <button class="nv" onclick="switchTab('supervisores')" id="btn-supervisores">
-      <span><i class="fa-solid fa-user-tie"></i> 3. Supervisores</span>
-      <span class="badge" id="count-supervisores">0</span>
-    </button>
-    <button class="nv" onclick="switchTab('agentes')" id="btn-agentes">
-      <span><i class="fa-solid fa-headset"></i> 4. Agentes</span>
-      <span class="badge" id="count-agentes">0</span>
-    </button>
-    <button class="nv" onclick="switchTab('grupos_agentes')" id="btn-grupos_agentes">
-      <span><i class="fa-solid fa-sitemap"></i> 5. Grupos X Agentes</span>
-      <span class="badge" id="count-grupos_agentes">0</span>
-    </button>
-    <button class="nv" onclick="switchTab('qualificacoes')" id="btn-qualificacoes">
-      <span><i class="fa-solid fa-tags"></i> 6. Qualificações</span>
-      <span class="badge" id="count-qualificacoes">0</span>
-    </button>
-    <button class="nv" onclick="switchTab('calendario')" id="btn-calendario">
-      <span><i class="fa-solid fa-calendar-days"></i> 7. Calendário</span>
-      <span class="badge" id="count-calendario">0</span>
-    </button>
-    <button class="nv" onclick="switchTab('fluxos')" id="btn-fluxos">
-      <span><i class="fa-solid fa-diagram-project"></i> 8. Fluxos & Anexos</span>
-      <span class="badge" id="count-fluxos">0</span>
-    </button>
-    <button class="nv" onclick="switchTab('templates')" id="btn-templates">
-      <span><i class="fa-brands fa-whatsapp"></i> 9. Templates Meta</span>
-      <span class="badge" id="count-templates">0</span>
-    </button>
-
-    <small>Finalização</small>
-    <button class="nv" onclick="switchTab('revisao')" id="btn-revisao" style="color: var(--ac);">
-      <span><i class="fa-solid fa-paper-plane"></i> Revisar & Enviar</span>
-      <i class="fa-solid fa-chevron-right" style="font-size: 0.75em;"></i>
-    </button>
-
-    <div class="theme-toggle">
-      <button class="nv" onclick="toggleTheme()" id="btn-theme">
-        <span><i class="fa-solid fa-circle-half-stroke"></i> Tema: Escuro</span>
-      </button>
-    </div>
-  </aside>
-
-  <main>
-    <!-- 1. NÚMEROS -->
-    <div id="section-numeros" class="tab-content">
-      <div class="cd">
-        <h2><i class="fa-solid fa-phone"></i> 1. Números de Atendimento</h2>
-        <p class="sub">Cadastre os números de telefone e WhatsApp que serão configurados no sistema.</p>
-        <form onsubmit="addData('numeros', event)">
-          <div class="g2">
-            <div>
-              <label>Identificação do Número *</label>
-              <input type="text" id="num-nome" placeholder="Ex: Suporte SP, Vendas Geral" required>
-            </div>
-            <div>
-              <label>Número com DDD *</label>
-              <input type="text" id="num-telefone" placeholder="Ex: (11) 99999-8888" required>
-            </div>
-          </div>
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Adicionar Número</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-numeros"></div></div>
-    </div>
-
-    <!-- 2. GRUPOS -->
-    <div id="section-grupos" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-solid fa-layer-group"></i> 2. Lista de Grupos de Atendimento</h2>
-        <p class="sub">Setores ou equipes que vão receber os chamados no sistema.</p>
-        <form onsubmit="addData('grupos', event)">
-          <div class="g2">
-            <div>
-              <label>Nome do Grupo *</label>
-              <input type="text" id="grupo-nome" placeholder="Ex: Financeiro, Vendas, N1" required>
-            </div>
-            <div>
-              <label>Descrição / Finalidade</label>
-              <input type="text" id="grupo-desc" placeholder="Ex: Atendimento de faturas e pagamentos">
-            </div>
-          </div>
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Adicionar Grupo</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-grupos"></div></div>
-    </div>
-
-    <!-- 3. SUPERVISORES -->
-    <div id="section-supervisores" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-solid fa-user-tie"></i> 3. Cadastro de Supervisores</h2>
-        <p class="sub">Supervisores responsáveis pelo acompanhamento e relatórios da equipe.</p>
-        <form onsubmit="addData('supervisores', event)">
-          <div class="g2">
-            <div>
-              <label>Nome Completo *</label>
-              <input type="text" id="sup-nome" placeholder="Ex: Pedro Henrique" required>
-            </div>
-            <div>
-              <label>E-mail Corporativo *</label>
-              <input type="email" id="sup-email" placeholder="pedro@empresa.com" required>
-            </div>
-          </div>
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Adicionar Supervisor</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-supervisores"></div></div>
-    </div>
-
-    <!-- 4. AGENTES -->
-    <div id="section-agentes" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-solid fa-headset"></i> 4. Cadastro de Agentes</h2>
-        <p class="sub">Usuários/Atendentes do dia a dia e seus respectivos canais de permissão.</p>
-        <form onsubmit="addData('agentes', event)">
-          <div class="g2">
-            <div>
-              <label>Nome Completo *</label>
-              <input type="text" id="agente-nome" placeholder="Ex: Alan Santos" required>
-            </div>
-            <div>
-              <label>E-mail *</label>
-              <input type="email" id="agente-email" placeholder="alan@empresa.com" required>
-            </div>
-          </div>
-          <div class="g2">
-            <div>
-              <label>Atende WhatsApp? *</label>
-              <select id="agente-whats">
-                <option value="SIM">SIM</option>
-                <option value="NÃO">NÃO</option>
-              </select>
-            </div>
-            <div>
-              <label>Atende Telefone? *</label>
-              <select id="agente-fone">
-                <option value="SIM">SIM</option>
-                <option value="NÃO">NÃO</option>
-              </select>
-            </div>
-          </div>
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Adicionar Agente</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-agentes"></div></div>
-    </div>
-
-    <!-- 5. GRUPOS X AGENTES -->
-    <div id="section-grupos_agentes" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-solid fa-sitemap"></i> 5. Grupos X Agentes</h2>
-        <p class="sub">Associação de cada agente aos seus respectivos grupos.</p>
-        <form onsubmit="addData('grupos_agentes', event)">
-          <div class="g2">
-            <div>
-              <label>Nome do Agente *</label>
-              <input type="text" id="ga-agente" placeholder="Ex: Alan Santos" required>
-            </div>
-            <div>
-              <label>Grupo *</label>
-              <input type="text" id="ga-grupo" placeholder="Ex: Suporte N1" required>
-            </div>
-          </div>
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Vincular Agente ao Grupo</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-grupos_agentes"></div></div>
-    </div>
-
-    <!-- 6. QUALIFICAÇÕES -->
-    <div id="section-qualificacoes" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-solid fa-tags"></i> 6. Qualificações de Atendimento</h2>
-        <p class="sub">Tabulações e motivos de encerramento de atendimentos de whatsapp.</p>
-        <form onsubmit="addData('qualificacoes', event)">
-          <div class="g2">
-            <div>
-              <label>Nome da Qualificação *</label>
-              <input type="text" id="qual-nome" placeholder="Ex: Dúvida Sanada, Venda Concluída" required>
-            </div>
-            <div>
-              <label>Categoria</label>
-              <input type="text" id="qual-cat" placeholder="Ex: Suporte, Vendas">
-            </div>
-          </div>
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Adicionar Qualificação</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-qualificacoes"></div></div>
-    </div>
-
-    <!-- 7. CALENDÁRIO -->
-    <div id="section-calendario" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-solid fa-calendar-days"></i> 7. Calendário de Atendimento</h2>
-        <p class="sub">Horários e dias de expediente da sua empresa.</p>
-        <form onsubmit="addData('calendario', event)">
-          <div class="g3">
-            <div>
-              <label>Dias de Funcionamento *</label>
-              <input type="text" id="cal-dias" placeholder="Ex: Segunda a Sexta" required>
-            </div>
-            <div>
-              <label>Horário de Início *</label>
-              <input type="time" id="cal-inicio" required>
-            </div>
-            <div>
-              <label>Horário de Fim *</label>
-              <input type="time" id="cal-fim" required>
-            </div>
-          </div>
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Adicionar Horário</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-calendario"></div></div>
-    </div>
-
-    <!-- 8. FLUXOS -->
-    <div id="section-fluxos" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-solid fa-diagram-project"></i> 8. Fluxos de Atendimento & Anexos</h2>
-        <p class="sub">Envie a imagem/diagrama do bot (máx. 10MB) e descreva a lógica do fluxo de atendimento.</p>
-        <form onsubmit="addData('fluxos', event)">
-          <label>Imagem / Diagrama do Fluxo (PNG, JPG, PDF - Máx 10MB)</label>
-          <div class="up-box" onclick="document.getElementById('fluxo-file').click()">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <p style="font-size: 0.85em;">Clique para anexar o arquivo do fluxo do WhatsApp</p>
-            <span id="file-name" style="font-size: 0.78em; color: var(--ac); display: block; margin-top: 6px;">Nenhum arquivo selecionado</span>
-          </div>
-          <input type="file" id="fluxo-file" accept="image/*,.pdf" hidden onchange="handleFileSelect(event)">
-
-          <label>Descrição do Fluxo *</label>
-          <textarea id="fluxo-obs" rows="4" placeholder="Descreva a lógica do bot, saudações ou regras de direcionamento..." required></textarea>
-
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Salvar Fluxo / Anexo</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-fluxos"></div></div>
-    </div>
-
-    <!-- 9. TEMPLATES META -->
-    <div id="section-templates" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-brands fa-whatsapp"></i> 9. Templates da Meta (WhatsApp)</h2>
-        <p class="sub">Modelos de mensagem para disparo de notificações ativas.</p>
-        <form onsubmit="addData('templates', event)">
-          <div class="g2">
-            <div>
-              <label>Nome do Template *</label>
-              <input type="text" id="tpl-nome" placeholder="Ex: aviso_fatura_vencimento" required>
-            </div>
-            <div>
-              <label>Idioma *</label>
-              <select id="tpl-idioma">
-                <option value="pt_BR">Português (pt_BR)</option>
-                <option value="en_US">Inglês (en_US)</option>
-                <option value="es_ES">Espanhol (es_ES)</option>
-              </select>
-            </div>
-          </div>
-          <label>Texto da Mensagem *</label>
-          <textarea id="tpl-texto" rows="3" placeholder="Olá {{1}}, informamos que sua fatura vence em {{2}}..." required></textarea>
-          
-          <div style="text-align: right;"><button type="submit" class="btn pr"><i class="fa-solid fa-plus"></i> Adicionar Template</button></div>
-        </form>
-      </div>
-      <div class="cd"><div class="tb-wrap" id="table-templates"></div></div>
-    </div>
-
-    <!-- REVISÃO & ENVIO -->
-    <div id="section-revisao" class="tab-content f">
-      <div class="cd">
-        <h2><i class="fa-solid fa-paper-plane"></i> Revisão & Envio Final</h2>
-        <p class="sub">Confira o resumo de todos os itens antes de gravar na planilha do Google Sheets.</p>
-        
-        <div id="reumo-container" style="display: grid; gap: 12px;" class="g2"></div>
-      </div>
-
-      <div class="cd" style="border-color: var(--ac); text-align: center;">
-        <h3 style="color: var(--ac); margin-bottom: 8px;">Concluir Configuração</h3>
-        <p style="color: var(--mu); font-size: 0.85em; margin-bottom: 18px;">Ao clicar no botão abaixo, todas as abas serão geradas automaticamente na planilha e salvas no Drive.</p>
-        <button onclick="enviarDadosGoogleSheets()" id="btn-enviar-final" class="btn pr" style="padding: 12px 32px; font-size: 1em;">
-          <i class="fa-solid fa-cloud-arrow-up"></i> Concluir & Enviar Setup Completo
-        </button>
-      </div>
-    </div>
-  </main>
+<div id="lg"><div>
+<h2><i class="fas fa-shield-halved"></i> Acesso restrito WeON</h2>
+<p>Entre com sua conta Google corporativa.</p>
+<div id="g_id_onload" data-client_id="829725285866-2b3kuo579qfqtacl0moecfadutm6hmfp.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+<div class="g_id_signin" data-type="standard" data-size="large"></div>
+<p id="lge">Acesso negado. Use uma conta @weon.com ou @weon.com.br.</p>
+</div></div>
+<div class="app" id="app" hidden>
+<aside><h1><i class="fas fa-cubes"></i> Auxílio WeON</h1><div class="sync-status" id="st-icon"><i class="fa-solid fa-arrows-rotate fa-spin"></i> Conectando...</div><div id="nav"></div></aside>
+<main><div class="bar"><input id="q" placeholder="Buscar em todas as seções…" style="max-width:420px;margin:0"><span id="who" class="mu"></span></div><div id="main"></div></main>
 </div>
-
+<dialog id="dg"></dialog><div id="ts"></div>
+<input type="file" id="imp" accept=".json" hidden>
 <script>
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuWjtlSMOC-AORhO1Yb_jiX-wniwpVSFOGaakMS010IGd3cmTujNOazVFTPTs-vsO7kA/exec";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9),url=u=>/^https?:\/\//i.test(u)?u:'#';
+const SHEETS='https://script.google.com/macros/s/AKfycbwvyQ-N5hGrGS-ENqYOIvRKRJOKl_iwSKppBw11l_PZjqfuWSmyEDkzCnz2t4J43TeMmQ/exec';
+const HOOK='https://weon5m3.weon.com.br/weaction-api/api/weon/public/webhook/XJ7h4IxZ-5zr7-97hZkPnL';
+const PAL=['#00ffcc','#38bdf8','#818cf8','#a78bfa','#f472b6','#ffb703','#4ade80','#ff4a4a'];
+const CK='Enviado email boas vindas|Aguardando cliente marcar kick off|Kick off realizado|Responder e-mail do kick off com gravação, envio do BP e da planilha de setup|Coletar BP assinado e dados preenchidos da Planilha|Solicitar acesso ao portfólio da Meta/Ver junto do cliente|Aplicar a verificação no MetaBusiness ao criar um APP|Criar conta na gupshup|Iniciar Setup|Criar UO|Criar supervisores e agentes|Criar grupos, calendário, horário, qualificações, tags, quantidade de atendimentos simultâneos|Solicitar número para Solutions (se aplicável)|Criar bot (se aplicável)|Enviar acessos criados aos usuários|Agendar treinamento de agente e supervisor|Agendar virada do número|Criar coex (se aplicável)|Homologação junto ao cliente pré go live|Acompanhamento dia 1|Acompanhamento dia 2|Acompanhamento dia 3|Acompanhamento dia 4|Acompanhamento dia 5|Assinatura do BP final|Pesquisa CSAT Implantação|Handoff cliente|Enviado para faturamento'.split('|');
+const mk=(type,label,o={})=>({id:uid(),type,label,...o}),L=(l,u)=>mk('link',l,{url:u}),T=(l,t)=>mk('text',l,{text:t});
+const newCard=(title,obs='',chk)=>({id:uid(),title,empresa:'',contato:'',obs,prev:'Inicial',chk:chk||CK.map(texto=>({texto,done:false,date:null}))});
+const seed=()=>({theme:'dark',notes:'',view:'home',q:'',ai:{provider:'gemini',key:'',model:'gemini-3.8-flash'},
+ cols:['NOVA DEMANDA','KICK OFF','SETUP','HOMOLOGAÇÃO','EM BLOQUEIO','CONCLUÍDO'].map(name=>({id:uid(),name,cards:[]})),
+ sections:[
+ {id:'acc',title:'Credenciais e acessos',icon:'fa-lock',items:[L('JIRA Implantação','https://weon.atlassian.net/jira/for-you?tab=recommendedActions'),mk('cred','JIRA',{user:'comercial@weon.com.br',pass:''}),mk('cred','WeON Admin',{user:'admin',pass:''}),mk('cred','weon.supervisor',{user:'supweon',pass:''}),T('IP admin (m3 weon)','10.0.9.84/weon'),T('IP weon5m1-dn1','10.0.8.78'),T('IP weon5m2-dn1','10.0.8.184'),T('IP Dg solutions','10.0.9.175')]},
+ {id:'lnk',title:'Navegação rápida',icon:'fa-link',items:[L('Projetos Weon','https://docs.google.com/spreadsheets/d/1yMYhXJ9JZTmsKo9AkVnRKQRXVluUKItGVkTpkBxhO4A/edit'),L('Bot de atendimento','https://docs.google.com/document/d/1JAgCLbS67m6NICvjwlGDb3mG30wsGmNH/edit'),L('Descritivo Comercial','https://docs.google.com/spreadsheets/d/1mJ7D98iXfaj85HGFVSixoacgSwWZEY1JglSsG5HkvDI/edit?gid=1891921868'),L('Empresas Implantação','https://drive.google.com/drive/folders/12lWKbZBbYX66lqhWc7x-KDUrU8P4K7IT'),L('Dashboard GUPSHUP','https://docs.google.com/spreadsheets/d/1B6YU1bAtcj3IlDBH7tThz53MCGcM58sGbIXZf_Z9lUI/edit?gid=1376319518'),L('Zabbix','http://172.16.0.226/zabbix/zabbix.php?action=dashboard.list'),L('Processo ISO','https://docs.google.com/spreadsheets/d/1-VYV3dmdrxgsZy-ZBy-lEDwq1BKh-ZA7Yj6-Kh3-Ysk/edit?gid=150809063'),L('ISO GERAL WEON','https://drive.google.com/drive/folders/1K2JiILPLgvj3EuVYeD0q0aqQ3ZrZuG_1'),L('Configuração Coex','https://docs.google.com/document/d/1tIQEkCfIJEwFAsGpJ7mHy5vItnCx5WH4OwPOifYuFo8/edit'),L('Meta Docs','https://docs.google.com/document/d/1lcrsotUPRzp619ojLae1pN6hrRGw-x5suvB1Zt_weBI/edit'),L('Notion WeAction API','https://weon.notion.site/WeAction-API-8cd617e2f0e746359a6e6b3557ed2482')]},
+ {id:'art',title:'Biblioteca de artigos',icon:'fa-book-open',items:[mk('article','Confluence: como criar supervisor',{url:'https://weon.atlassian.net/wiki/spaces/NBDCS/pages/1673101313/Como+criar+supervisor',text:'Requer acesso'}),L('POP Agentes','https://docs.google.com/document/d/1WB6I7U8UVwT7GiIrxQ5tLXKgb5YiDXm9/edit'),L('FAQ Supervisores','https://docs.weon.com.br/')]},
+ {id:'dev',title:'Desenvolvedor e APIs',icon:'fa-code',items:[L('Gerador de token Gupshup','https://partner-docs.gupshup.io/reference/get_partner-app-appid-token'),mk('code','Token Gupshup',{text:''}),mk('code','cURL token WeAction',{text:"curl --location 'https://weon5m1.weon.com.br/weaction-api/api/weon/v3/auth/token' \\\n--header 'Content-Type: application/json' \\\n--data-raw '{\"identifier\":\"apicontraktor\",\"password\":\"<SENHA>\"}'"})]}
+ ]});
+let S;try{S=JSON.parse(localStorage.weon_v2)}catch{}S=S||seed();
+const save=()=>localStorage.weon_v2=JSON.stringify(S);
+const toast=m=>{const t=$('#ts');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
+const sheets=o=>fetch(SHEETS,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(o).toString()}).catch(()=>{});
+const hook=(k,etapa)=>fetch(HOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({cliente:k.title||'Sem nome',empresa:k.empresa||'',contato:k.contato||'',telefone:'5541999999999',email:'contato@weon.com.br',etapa,detalhes:k.obs||''}).toString()}).catch(()=>{});
 
-  let currentBase64File = "";
-  let currentFileName = "";
+/* ---------- auth ---------- */
+function handleCredentialResponse(r){try{const p=JSON.parse(decodeURIComponent(escape(atob(r.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))));const e=(p.email||'').toLowerCase();
+ if(p.email_verified&&/@weon\.com(\.br)?$/.test(e)){localStorage.weon_sess=JSON.stringify({e,x:p.exp*1000});start(e)}else $('#lge').style.display='block'}catch{$('#lge').style.display='block'}}
+function start(e){$('#lg').hidden=true;$('#app').hidden=false;$('#who').textContent=e;render();pullAll()}
 
-  const setupData = {
-    "Números de Atendimento": [],
-    "Lista de Grupos": [],
-    "Supervisores": [],
-    "Agentes": [],
-    "Grupos X Agentes": [],
-    "Qualificações de Atendimento": [],
-    "Calendário de Atendimento": [],
-    "Fluxos x Atendimento": [],
-    "Templates da Meta": []
-  };
-
-  const tabMap = {
-    'numeros': 'Números de Atendimento',
-    'grupos': 'Lista de Grupos',
-    'supervisores': 'Supervisores',
-    'agentes': 'Agentes',
-    'grupos_agentes': 'Grupos X Agentes',
-    'qualificacoes': 'Qualificações de Atendimento',
-    'calendario': 'Calendário de Atendimento',
-    'fluxos': 'Fluxos x Atendimento',
-    'templates': 'Templates da Meta'
-  };
-
-  // PERSISTÊNCIA LOCAL (LOCAL STORAGE)
-  function saveToLocalStorage() {
-    localStorage.setItem('company_setup_data', JSON.stringify(setupData));
-  }
-
-  function loadFromLocalStorage() {
-    const saved = localStorage.getItem('company_setup_data');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        Object.assign(setupData, parsed);
-        refreshAllTablesAndBadges();
-      } catch (e) {
-        console.error("Erro ao carregar dados do LocalStorage", e);
-      }
-    }
-  }
-
-  function refreshAllTablesAndBadges() {
-    Object.keys(tabMap).forEach(key => {
-      updateBadge(key);
-      renderTable(key);
-    });
-  }
-
-  // BUSCA DADOS ATUALIZADOS DO GOOGLE SHEETS
-  async function fetchFromGoogleSheets() {
-    const indicator = document.getElementById('sync-indicator');
-    try {
-      indicator.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> Sincronizando dados...';
-      const response = await fetch(GOOGLE_SCRIPT_URL);
-      if (response.ok) {
-        const remoteData = await response.json();
-        for (let sheet in remoteData) {
-          if (setupData[sheet] !== undefined) {
-            setupData[sheet] = remoteData[sheet];
-          }
-        }
-        saveToLocalStorage();
-        refreshAllTablesAndBadges();
-        indicator.innerHTML = '<i class="fa-solid fa-circle-check" style="color: #22c55e;"></i> Sincronizado';
-      } else {
-        throw new Error('Falha ao buscar dados');
-      }
-    } catch (e) {
-      console.warn("Erro na sincronização, mantendo cópia local:", e);
-      indicator.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #eab308;"></i> Modo Offline / Cache';
-    }
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    loadFromLocalStorage();
-    fetchFromGoogleSheets();
-  });
-
-  function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    document.getElementById('btn-theme').innerHTML = `<span><i class="fa-solid fa-circle-half-stroke"></i> Tema: ${newTheme === 'dark' ? 'Escuro' : 'Claro'}</span>`;
-  }
-
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('f'));
-    document.querySelectorAll('aside .nv').forEach(el => el.classList.remove('on'));
-
-    document.getElementById(`section-${tabId}`).classList.remove('f');
-    const activeBtn = document.getElementById(`btn-${tabId}`);
-    if(activeBtn) activeBtn.classList.add('on');
-
-    if(tabId === 'revisao') renderRevisao();
-  }
-
-  function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if(!file) return;
-
-    const maxSizeInBytes = 10 * 1024 * 1024; 
-    if (file.size > maxSizeInBytes) {
-      alert("⚠️ O arquivo selecionado é muito grande! Por favor, escolha um PDF ou imagem de até 10MB.");
-      e.target.value = "";
-      document.getElementById('file-name').innerText = "Nenhum arquivo selecionado";
-      currentBase64File = "";
-      currentFileName = "";
-      return;
-    }
+/* ---------- PULL COMPLETO (KANBAN + DADOS / SENHAS DO SHEETS) ---------- */
+async function pullAll(){
+  const ind = $('#st-icon');
+  try {
+    ind.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> Sincronizando...';
     
-    currentFileName = file.name;
-    document.getElementById('file-name').innerText = file.name;
-
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      currentBase64File = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function addData(key, event) {
-    event.preventDefault();
-    let newItem = {};
-
-    if(key === 'numeros') {
-      newItem = { "Nome da Linha": document.getElementById('num-nome').value, "Telefone": document.getElementById('num-telefone').value };
-    } else if(key === 'grupos') {
-      newItem = { "Nome do Grupo": document.getElementById('grupo-nome').value, "Descrição": document.getElementById('grupo-desc').value };
-    } else if(key === 'supervisores') {
-      newItem = { "Nome Completo": document.getElementById('sup-nome').value, "Email": document.getElementById('sup-email').value };
-    } else if(key === 'agentes') {
-      newItem = { 
-        "Nome do Agente": document.getElementById('agente-nome').value, 
-        "Email": document.getElementById('agente-email').value, 
-        "Atende Whats": document.getElementById('agente-whats').value,
-        "Atende Telefone": document.getElementById('agente-fone').value
-      };
-    } else if(key === 'grupos_agentes') {
-      newItem = { "Agente": document.getElementById('ga-agente').value, "Grupo": document.getElementById('ga-grupo').value };
-    } else if(key === 'qualificacoes') {
-      newItem = { "Qualificação": document.getElementById('qual-nome').value, "Categoria": document.getElementById('qual-cat').value };
-    } else if(key === 'calendario') {
-      newItem = { "Dias": document.getElementById('cal-dias').value, "Início": document.getElementById('cal-inicio').value, "Fim": document.getElementById('cal-fim').value };
-    } else if(key === 'fluxos') {
-      newItem = { 
-        "Descrição/Lógica": document.getElementById('fluxo-obs').value,
-        "Anexo/Imagem": currentBase64File || "Sem Anexo",
-        "_displayAnexo": currentFileName ? `[Arquivo: ${currentFileName}]` : "Sem Anexo"
-      };
-      currentBase64File = "";
-      currentFileName = "";
-      document.getElementById('file-name').innerText = "Nenhum arquivo selecionado";
-    } else if(key === 'templates') {
-      newItem = { "Nome": document.getElementById('tpl-nome').value, "Idioma": document.getElementById('tpl-idioma').value, "Texto": document.getElementById('tpl-texto').value };
-    }
-
-    const sheetName = tabMap[key];
-    setupData[sheetName].push(newItem);
-    saveToLocalStorage();
-
-    document.querySelector(`#section-${key} form`).reset();
-    
-    updateBadge(key);
-    renderTable(key);
-  }
-
-  function removeData(key, index) {
-    const sheetName = tabMap[key];
-    setupData[sheetName].splice(index, 1);
-    saveToLocalStorage();
-    updateBadge(key);
-    renderTable(key);
-  }
-
-  function updateBadge(key) {
-    const sheetName = tabMap[key];
-    document.getElementById(`count-${key}`).innerText = setupData[sheetName] ? setupData[sheetName].length : 0;
-  }
-
-  function renderTable(key) {
-    const sheetName = tabMap[key];
-    const items = setupData[sheetName] || [];
-    const container = document.getElementById(`table-${key}`);
-
-    if (items.length === 0) {
-      container.innerHTML = '<p style="color: var(--mu); font-size: 0.8em; font-style: italic;">Nenhum item cadastrado nesta aba.</p>';
-      return;
-    }
-
-    const headers = Object.keys(items[0]).filter(h => !h.startsWith('_'));
-    let html = '<table><thead><tr>';
-    headers.forEach(h => html += `<th>${h}</th>`);
-    html += '<th style="text-align: center;">Remover</th></tr></thead><tbody>';
-
-    items.forEach((item, idx) => {
-      html += '<tr>';
-      headers.forEach(h => {
-        let val = item[h] || '';
-        if (typeof val === 'string' && val.indexOf('data:') === 0) {
-          val = item['_displayAnexo'] || '📁 [Arquivo Anexado / Carregado]';
+    // 1. Puxar Recursos, Credenciais e Acessos da aba RECURSOS_LINKS
+    const rRec = await(await fetch(SHEETS+'?acao=getRecursos')).json();
+    if(rRec.status === 'success' && rRec.recursos && rRec.recursos.length > 0) {
+      // Reconstroi estrutura de secoes se vier do banco
+      const secMap = {};
+      rRec.recursos.forEach(rc => {
+        const sid = rc.secao || 'acc';
+        if(!secMap[sid]) {
+          let origSec = S.sections.find(s => s.id === sid);
+          secMap[sid] = {
+            id: sid,
+            title: origSec ? origSec.title : sid,
+            icon: origSec ? origSec.icon : 'fa-folder',
+            items: []
+          };
         }
-        html += `<td>${val}</td>`;
-      });
-      html += `<td style="text-align: center;"><button onclick="removeData('${key}', ${idx})" class="btn dn" style="padding: 2px 8px;"><i class="fa-solid fa-trash"></i></button></td></tr>`;
-    });
-
-    html += '</tbody></table>';
-    container.innerHTML = html;
-  }
-
-  function renderRevisao() {
-    const container = document.getElementById('reumo-container');
-    let html = '';
-
-    for (const [sheet, items] of Object.entries(setupData)) {
-      html += `<div style="background: var(--in); padding: 14px; border-radius: 8px; border: 1px solid var(--bd);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <strong style="color: var(--ac); font-size: 0.9em;">${sheet}</strong>
-          <span class="badge" style="background: var(--ac); color: #ffffff;">${items.length}</span>
-        </div>`;
-      if(items.length > 0) {
-        html += '<ul style="font-size: 0.8em; color: var(--mu); padding-left: 18px;">';
-        items.forEach(item => {
-          const val1 = Object.values(item)[0] || '';
-          let val2 = Object.values(item)[1] || '';
-          if (typeof val2 === 'string' && val2.indexOf('data:') === 0) {
-            val2 = item['_displayAnexo'] || '[Arquivo Anexado]';
-          }
-          html += `<li><strong style="color: var(--tx);">${val1}</strong> ${val2 ? ' - ' + val2 : ''}</li>`;
+        let itemVal = {};
+        try { itemVal = JSON.parse(rc.valor); } catch { itemVal = { text: rc.valor }; }
+        
+        secMap[sid].items.push({
+          id: rc.id,
+          type: itemVal.type || 'link',
+          label: rc.nome,
+          icon: rc.icone,
+          ...itemVal
         });
-        html += '</ul>';
-      } else {
-        html += '<p style="font-size: 0.78em; color: var(--mu); font-style: italic;">Pendente de preenchimento</p>';
-      }
-      html += '</div>';
-    }
-
-    container.innerHTML = html;
-  }
-
-  async function enviarDadosGoogleSheets() {
-    const btn = document.getElementById('btn-enviar-final');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando para o Google Sheets & Drive...';
-
-    const cleanedPayload = JSON.parse(JSON.stringify(setupData));
-    for (let sheet in cleanedPayload) {
-      if (Array.isArray(cleanedPayload[sheet])) {
-        cleanedPayload[sheet].forEach(item => {
-          delete item['_displayAnexo'];
-        });
-      }
-    }
-
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cleanedPayload)
       });
-
-      alert("✨ Sucesso! Todas as abas foram salvas e os anexos foram enviados para o Google Drive!");
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> Enviado com Sucesso!';
-      btn.style.background = '#16a34a';
       
-      fetchFromGoogleSheets();
-    } catch (error) {
-      console.error("Erro ao enviar:", error);
-      alert("Ops! Ocorreu um erro ao enviar para o Google Sheets. Tente novamente.");
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Tentar Enviar Novamente';
+      S.sections = Object.values(secMap);
+    } else {
+      // Se a aba estiver vazia no Google Sheets, envia o SEED inicial
+      syncInitialSeedToCloud();
     }
-  }
-</script>
 
+    // 2. Puxar Kanban de Projetos da aba principal
+    const rKanban = await(await fetch(SHEETS)).json();
+    if(rKanban.colunas && rKanban.colunas.length > 0) {
+      const known = new Set(S.cols.flatMap(c => c.cards.map(k => k.title)));
+      rKanban.colunas.forEach(rc => {
+        let c = S.cols.find(x => x.name.toLowerCase() === rc.nome.toLowerCase());
+        if(!c) S.cols.push(c = {id:uid(), name:rc.nome, cards:[]});
+        rc.cards.forEach(k => {
+          if(!known.has(k.cliente)) {
+            c.cards.push(newCard(k.cliente, k.obs || '', k.chk));
+          }
+        });
+      });
+    }
+
+    save();
+    render();
+    ind.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> Sincronizado';
+  } catch(err) {
+    console.warn("Erro ao sincronizar com Google Sheets", err);
+    ind.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#eab308"></i> Modo Offline';
+  }
+}
+
+function syncInitialSeedToCloud() {
+  S.sections.forEach(s => {
+    s.items.forEach(i => {
+      saveRecursoCloud(s.id, i);
+    });
+  });
+}
+
+function saveRecursoCloud(secaoId, item) {
+  const payload = {
+    type: item.type,
+    user: item.user || '',
+    pass: item.pass || '',
+    url: item.url || '',
+    text: item.text || ''
+  };
+  sheets({
+    acao: 'salvarRecurso',
+    recurso: JSON.stringify({
+      id: item.id,
+      secao: secaoId,
+      nome: item.label,
+      valor: JSON.stringify(payload),
+      icone: item.icon || 'fa-link'
+    })
+  });
+}
+
+function deleteRecursoCloud(id) {
+  sheets({ acao: 'excluirRecurso', id: id });
+}
+
+function deleteSecaoCloud(secaoId) {
+  sheets({ acao: 'excluirSecao', id: secaoId });
+}
+
+/* ---------- HELPERS ---------- */
+let DK={},CUR={};
+function dlg(title,body,ok,del,lbl){$('#dg').innerHTML=`<h3>${title}</h3>${body}<div class="bar" style="margin:12px 0 0"><span>${del?'<button class="btn dn" data-a="dd">Excluir</button>':''}</span><span><button class="btn" data-a="x">${ok?'Cancelar':'Fechar'}</button>${ok?`<button class="btn pr" data-a="ok">${lbl||'Salvar'}</button>`:''}</span></div>`;DK={ok,del};$('#dg').showModal()}
+const stats=()=>{let t=0,a=0,b=0,c=0;S.cols.forEach(k=>{const n=k.cards.length,l=k.name.toLowerCase();t+=n;l.includes('bloqueio')?b+=n:/conclu|setup realizado/.test(l)?c+=n:a+=n});return{t,a,b,c}};
+const pct=chk=>chk.length?Math.round(chk.filter(i=>i.done).length/chk.length*100):0;
+const md=t=>esc(t).replace(/^###? (.*)$/gm,'<h3>$1</h3>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^[-*] (.*)$/gm,'<li>$1</li>').replace(/\n/g,'<br>');
+function pdf(title,sub,html,status){const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0';document.body.appendChild(f);const d=f.contentWindow.document;
+ d.open();d.write(`<html><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4;margin:12mm}body{font:12px Helvetica,Arial;color:#0f172a}h1{font-size:20px;color:#0284c7}h3{font-size:13px;border-bottom:1px solid #cbd5e1;padding-bottom:3px;margin-top:14px}.m{background:#f1f5f9;border:1px solid #cbd5e1;padding:8px 12px;margin:10px 0}table{width:100%;border-collapse:collapse;font-size:11px}td,th{border-bottom:1px solid #cbd5e1;padding:6px;text-align:left;vertical-align:top}.b{height:6px;background:#e2e8f0}.b i{display:block;height:100%;background:#0284c7}footer{margin-top:20px;text-align:center;font-size:9px;color:#94a3b8}</style></head><body><h1>WeON</h1><div class="m"><b>Projeto:</b> ${esc(title)}<br><b>Cliente:</b> ${esc(sub)}<br><b>Status:</b> ${esc(status)}<br><b>Emissão:</b> ${new Date().toLocaleDateString('pt-BR')}</div>${html}<footer>Documento corporativo - Hub de Implantação WeON</footer></body></html>`);d.close();
+ setTimeout(()=>{f.contentWindow.focus();f.contentWindow.print();setTimeout(()=>f.remove(),1500)},300)}
+
+/* ---------- IA ---------- */
+async function ai(p){const{provider:v,key:k,model:m}=S.ai;if(!k)throw Error('Configure a API Key em "Configurar IA".');
+ const post=(u,h,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json',...h},body:JSON.stringify(b)}).then(r=>r.json());
+ if(v=='gemini'){let err;for(const md of new Set([m,'gemini-3.8-flash','gemini-3.6-flash'].filter(Boolean))){
+  const d=await post(`https://generativelanguage.googleapis.com/v1beta/models/${md}:generateContent`,{'x-goog-api-key':k},{contents:[{parts:[{text:p}]}],generationConfig:{temperature:.3,maxOutputTokens:1200}}).catch(e=>({error:{message:e.message}}));
+  const t=d.candidates?.[0]?.content?.parts?.[0]?.text;if(t)return t;err=d.error?.message}throw Error(err||'Sem resposta')}
+ const o=v=='groq'?['https://api.groq.com/openai/v1/chat/completions','llama-3.1-8b-instant']:['https://api.openai.com/v1/chat/completions','gpt-4o-mini'];
+ const d=await post(o[0],{Authorization:'Bearer '+k},{model:o[1],messages:[{role:'user',content:p}],temperature:.3,max_tokens:900});
+ if(d.choices)return d.choices[0].message.content;throw Error(d.error?.message||'Erro na API')}
+async function run(p){const o=$('#ao');o.hidden=false;o.textContent='Gerando…';try{o.textContent=await ai(p);$('#xp').hidden=false}catch(e){o.textContent='Erro: '+e.message+'. Use o PDF direto (sem IA).'}}
+
+/* ---------- ÍCONES ---------- */
+const ico=c=>/fa-(solid|brands|regular)/.test(c)?c:'fa-solid '+c;
+const IK=[[/jira/,'fa-brands fa-jira'],[/confluence|wiki/,'fa-brands fa-confluence'],[/notion/,'fa-solid fa-book'],[/zabbix|monitor/,'fa-solid fa-heart-pulse'],[/whats|wpp|zap/,'fa-brands fa-whatsapp'],[/meta|facebook/,'fa-brands fa-meta'],[/dashboard|painel|\bbi\b/,'fa-solid fa-gauge-high'],[/gupshup|token|api|curl/,'fa-solid fa-plug'],[/bot|chatbot/,'fa-solid fa-robot'],[/iso|processo|compliance/,'fa-solid fa-shield-halved'],[/coex|config|setup/,'fa-solid fa-gears'],[/planilha|projetos|descritivo|sheet/,'fa-solid fa-table'],[/drive|pasta|empresas/,'fa-brands fa-google-drive'],[/pop|manual|doc|guia|tutorial/,'fa-solid fa-file-lines'],[/faq|ajuda|suporte/,'fa-solid fa-circle-question'],[/\bip\b|servidor|server|dn\d/,'fa-solid fa-server'],[/admin/,'fa-solid fa-user-shield'],[/supervisor|agente|atendimento/,'fa-solid fa-headset'],[/senha|login|acesso|credencia/,'fa-solid fa-key'],[/numero|número|\bdids?\b|telefone/,'fa-solid fa-phone'],[/calend|agenda|reuni/,'fa-regular fa-calendar'],[/banco|database|sql/,'fa-solid fa-database'],[/e-?mail/,'fa-regular fa-envelope']];
+const UK=[[/docs\.google\.com\/spreadsheets/,'fa-solid fa-table'],[/docs\.google\.com\/document/,'fa-solid fa-file-lines'],[/drive\.google/,'fa-brands fa-google-drive'],[/atlassian/,'fa-brands fa-jira'],[/notion/,'fa-solid fa-book'],[/github/,'fa-brands fa-github'],[/youtube/,'fa-brands fa-youtube']];
+const TD={cred:'fa-solid fa-lock',link:'fa-solid fa-link',article:'fa-solid fa-book-open',code:'fa-solid fa-terminal',text:'fa-solid fa-note-sticky'};
+const guess=(t,u,ty)=>{t=(t||'').toLowerCase();const a=IK.find(([r])=>r.test(t))||UK.find(([r])=>r.test(u||''));return a?a[1]:TD[ty]||'fa-solid fa-folder'};
+const itIc=i=>i.icon||guess(i.label,i.url,i.type),secIc=s=>s.icon&&s.icon!='auto'&&s.icon!='fa-folder'?s.icon:guess(s.title);
+const iconH=c=>/^https?:/.test(c)?`<img src="${esc(c)}" alt="">`:/fa-/.test(c)?`<i class="${esc(ico(c))}"></i>`:esc(c);
+const tint=c=>{let h=0;for(const ch of c)h=(h*31+ch.charCodeAt(0))%360;return `hsl(${h} 70% 58%)`};
+const host=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
+const PRE=[['Planilha','fa-solid fa-table'],['Documento','fa-solid fa-file-lines'],['Pasta / Drive','fa-brands fa-google-drive'],['Jira','fa-brands fa-jira'],['WhatsApp','fa-brands fa-whatsapp'],['Meta','fa-brands fa-meta'],['Robô / bot','fa-solid fa-robot'],['Servidor','fa-solid fa-server'],['Chave','fa-solid fa-key'],['Admin','fa-solid fa-user-shield'],['Suporte','fa-solid fa-headset'],['Gráfico','fa-solid fa-chart-line'],['Segurança','fa-solid fa-shield-halved'],['Configuração','fa-solid fa-gears'],['API','fa-solid fa-plug'],['Terminal','fa-solid fa-terminal'],['Telefone','fa-solid fa-phone'],['Livro','fa-solid fa-book'],['Banco de dados','fa-solid fa-database'],['Estrela','fa-solid fa-star']];
+const iconSel=(cur,auto)=>{const own=cur&&cur!='auto'&&!PRE.some(p=>p[1]==cur);return `<select id="isel"><option value="${auto}">Ícone: automático (pelo título)</option>${PRE.map(([n,c])=>`<option value="${c}" ${c==cur?'selected':''}>${n}</option>`).join('')}</select><input id="icu" placeholder="Ícone próprio: classe Font Awesome, emoji ou URL de imagem" value="${own?esc(cur):''}">`};
+
+/* ---------- AGENDA ---------- */
+const gcal=o=>window.open('https://calendar.google.com/calendar/render?'+new URLSearchParams({action:'TEMPLATE',ctz:'America/Sao_Paulo',...o}),'_blank','noopener');
+function evDlg(){const d=new Date(),p=n=>String(n).padStart(2,'0'),hoje=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+ dlg('Criar evento no Google Agenda',`<input id="et" placeholder="Título (ex.: Kick-off - Cliente)"><div class="g2"><input id="ed" type="date" value="${hoje}"><div class="g2" style="gap:8px"><input id="eh" type="time" value="10:00"><input id="ef" type="time" value="11:00"></div></div><input id="eg" placeholder="Convidados (e-mails separados por vírgula)"><input id="el" placeholder="Local ou link da reunião"><textarea id="ex" rows="3" placeholder="Descrição"></textarea><p class="mu">O Google Agenda abre com tudo preenchido. Confirme por lá e depois clique em Atualizar.</p>`,
+ ()=>{const t=$('#et').value.trim(),dd=$('#ed').value.replace(/-/g,''),h=$('#eh').value,f=$('#ef').value;if(!t||!dd||!h||!f){toast('Informe título, data e horários');return false}const g=x=>dd+'T'+x.replace(':','')+'00';
+  gcal({text:t,dates:g(h)+'/'+g(f),add:$('#eg').value.replace(/\s/g,''),location:$('#el').value,details:$('#ex').value})},0,'Abrir no Google Agenda')}
+
+/* ---------- VIEWS ---------- */
+function nav(){const v=S.view,b=(id,ic,t,x='')=>`<button class="nv ${v==id?'on':''}" data-a="nav" data-v="${id}"><i class="${ico(ic)}"></i>${esc(t)}</button>`;
+ $('#nav').innerHTML=b('home','fa-gauge-high','Painel e Kanban')+b('agenda','fa-calendar','Agenda')+'<small>SEÇÕES</small>'+S.sections.map(s=>b(s.id,secIc(s),s.title)).join('')+
+ '<button class="nv" data-a="newsec"><i class="fa-solid fa-plus"></i>Nova seção</button><small>SISTEMA</small><button class="nv" data-a="cfg"><i class="fa-solid fa-robot"></i>Configurar IA</button><button class="nv" data-a="theme"><i class="fa-solid fa-palette"></i>Tema: '+S.theme+'</button><button class="nv" data-a="exp"><i class="fa-solid fa-download"></i>Exportar backup</button><button class="nv" data-a="imp"><i class="fa-solid fa-upload"></i>Importar backup</button><button class="nv" data-a="out"><i class="fa-solid fa-right-from-bracket"></i>Sair</button>'}
+function render(){document.documentElement.dataset.theme=S.theme;nav();const m=$('#main'),v=S.view;$('#q').value=S.q||'';
+ if(S.q)return find(m);if(v=='home'||v=='board')return home(m);
+ if(v=='agenda')return m.innerHTML=`<div class="bar"><h2>Agenda de implantação</h2><span><button class="btn pr" data-a="ev"><i class="fa-solid fa-calendar-plus"></i> Criar evento</button><button class="btn" data-a="evr"><i class="fa-solid fa-rotate"></i> Atualizar</button></span></div><iframe id="cal" src="https://calendar.google.com/calendar/embed?src=phelipe.ribeiro%40weon.com.br&ctz=America%2FSao_Paulo" style="border:0;width:100%;height:75vh;border-radius:12px"></iframe>`;
+ const s=S.sections.find(x=>x.id==v);if(!s){S.view='home';return render()}sect(m,s)}
+function home(m){const s=stats();m.innerHTML=`<a class="ban" href="https://weon5m3.weon.com.br/supervisor/tasks" target="_blank" rel="noopener"><span><b>Quadro geral de situações</b><br><span class="mu">Tarefas em tempo real da implantação WeON</span></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+ <div class="g2"><div class="cd"><h3>Indicadores</h3><div class="kp"><div><b>${s.t}</b><span>Total</span></div><div><b>${s.a}</b><span>Em andamento</span></div><div><b>${s.b}</b><span>Em bloqueio</span></div><div><b>${s.c}</b><span>Concluídos</span></div></div></div>
+ <div class="cd"><h3>Distribuição por status</h3><div style="height:190px"><canvas id="ch"></canvas></div></div></div>
+ <div id="bd"></div>
+ <div class="cd"><div class="bar"><h3 style="margin:0">Bloco de notas</h3><button class="btn" data-a="txt"><i class="fa-solid fa-file-lines"></i> .txt</button></div><textarea id="nt" rows="6" placeholder="Anotações rápidas (salvas automaticamente)">${esc(S.notes)}</textarea></div>`;
+ $('#nt').oninput=e=>{S.notes=e.target.value;save()};board($('#bd'));
+ const mu=getComputedStyle(document.documentElement).getPropertyValue('--mu');
+ new Chart($('#ch'),{type:'doughnut',data:{labels:S.cols.map(c=>c.name),datasets:[{data:S.cols.map(c=>c.cards.length),backgroundColor:PAL,borderWidth:0}]},options:{maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{color:mu,usePointStyle:true}}}}})}
+const plain=h=>new DOMParser().parseFromString(h||'','text/html').body.textContent.trim();
+const cardH=k=>{const nx=k.chk.find(i=>!i.done),o=plain(k.obs),d=k.chk.filter(i=>i.done).length;return `<div class="kc" data-id="${k.id}" data-a="card"><b>${esc(k.title)}</b>${k.empresa?`<div class="mt"><i class="fa-regular fa-building"></i>${esc(k.empresa)}</div>`:''}${k.contato?`<div class="mt"><i class="fa-regular fa-address-book"></i>${esc(k.contato)}</div>`:''}${o?`<small>${esc(o)}</small>`:''}<div class="pb" style="margin-top:8px"><i style="width:${pct(k.chk)}%"></i></div><div class="mt"><span>${d}/${k.chk.length} etapas · ${pct(k.chk)}%</span></div>${nx?`<div class="nx"><i class="fa-solid fa-forward-step"></i><span>${esc(nx.texto)}</span></div>`:'<div class="nx ok">Todas as etapas concluídas</div>'}</div>`};
+function board(m){m.innerHTML=`<div class="bar"><h2>Quadro de implantação</h2><span><button class="btn" data-a="rep"><i class="fa-solid fa-file-contract"></i> Status report</button><button class="btn" data-a="rep" data-ia="1"><i class="fa-solid fa-robot"></i> Resumo IA</button><button class="btn pr" data-a="newcol"><i class="fa-solid fa-plus"></i> Coluna</button></span></div>
+ <div class="kb" id="kb">${S.cols.map(c=>`<div class="col" data-id="${c.id}"><div class="ch"><b>${esc(c.name)} (${c.cards.length})</b><span><button data-a="addc" data-id="${c.id}" title="Novo card"><i class="fa-solid fa-plus"></i></button><button data-a="delcol" data-id="${c.id}" title="Excluir coluna"><i class="fa-solid fa-trash"></i></button></span></div><div class="cl" data-id="${c.id}">${c.cards.map(cardH).join('')}</div></div>`).join('')}</div>`;
+ Sortable.create($('#kb'),{handle:'.ch',animation:150,onEnd:()=>sync()});
+ $$('.cl').forEach(e=>Sortable.create(e,{group:'k',animation:150,onEnd:sync}))} function sync(ev){const fi=ev?.from?S.cols.findIndex(c=>c.id==ev.from.dataset.id):-1,all=Object.fromEntries(S.cols.flatMap(c=>c.cards).map(k=>[k.id,k])),cs=Object.fromEntries(S.cols.map(c=>[c.id,c])); const ti=ev?.to?S.cols.findIndex(c=>c.id==ev.to.dataset.id):-1; S.cols=$$
+('.col').map(e=>({...cs[e.dataset.id],cards:[...e.querySelectorAll('.kc')].map(k=>all[k.dataset.id])}));save();
+ if(ev?.item?.classList.contains('kc')&&ev.from!==ev.to){const k=all[ev.item.dataset.id],to=S.cols.find(c=>c.id==ev.to.dataset.id);k.prev=cs[ev.from.dataset.id].name;save();
+  sheets({acao:'mover',cliente:k.title,origemCol:fi,destinoCol:ti});hook(k,to.name);toast('Card movido')}
+ render()}
+function sect(m,s){m.innerHTML=`<div class="bar"><h2><i class="${ico(secIc(s))}"></i> ${esc(s.title)}</h2><span><button class="btn pr" data-a="addi" data-id="${s.id}"><i class="fa-solid fa-plus"></i> Item</button><button class="btn" data-a="rens" data-id="${s.id}">Renomear</button><button class="btn dn" data-a="dels" data-id="${s.id}">Excluir seção</button></span></div>
+ <div class="grid" id="gr">${s.items.map(i=>itemH(s.id,i)).join('')||'<p class="mu">Seção vazia. Use "Item" para adicionar uma credencial, link, artigo ou comando.</p>'}</div>`;
+ Sortable.create($('#gr'),{animation:150,onEnd:e=>{s.items.splice(e.newIndex,0,s.items.splice(e.oldIndex,1)[0]);save()}})}
+function itemH(sid,i){const cp=v=>`<button data-a="copy" data-v="${esc(v)}" title="Copiar"><i class="fa-regular fa-copy"></i></button>`,ic=itIc(i),TN={cred:'Credencial',link:'Link',article:'Artigo',code:'Comando',text:'Nota'};let b='';
+ const sub=(i.type=='link'||i.type=='article')&&host(i.url)||TN[i.type];
+ if(i.type=='cred')b=`<div class="row"><i class="fa-solid fa-user"></i><span>${esc(i.user)}</span>${cp(i.user)}</div><div class="row"><i class="fa-solid fa-key"></i><span class="mono" data-pw>••••••••</span><button data-a="eye" data-v="${esc(i.pass)}" title="Mostrar"><i class="fa-regular fa-eye"></i></button>${cp(i.pass)}</div>`;
+ else if(i.type=='link')b=`<a href="${esc(url(i.url))}" target="_blank" rel="noopener" class="row"><i class="fa-solid fa-arrow-up-right-from-square"></i><span>Abrir link</span></a>`;
+ else if(i.type=='article')b=`<a href="${esc(url(i.url))}" target="_blank" rel="noopener" class="row"><i class="fa-solid fa-book-open"></i><span>Ler artigo</span></a><p class="mu">${esc(i.text)}</p>`;
+ else b=`<pre>${esc(i.text)||'(vazio)'}</pre><button class="btn" data-a="copy" data-v="${esc(i.text)}">Copiar</button>`;
+ return `<div class="it" data-id="${i.id}"><div class="ih"><span class="ic" style="--c:${tint(ic)}">${iconH(ic)}</span><div class="tt"><b>${esc(i.label)}</b><small>${esc(sub)}</small></div><span class="ac"><button data-a="edi" data-s="${sid}" data-id="${i.id}" title="Editar"><i class="fa-solid fa-pen"></i></button><button data-a="deli" data-s="${sid}" data-id="${i.id}" title="Remover"><i class="fa-solid fa-trash"></i></button></span></div>${b}</div>`}
+function find(m){const q=S.q.toLowerCase();const r=S.sections.map(s=>[s,s.items.filter(i=>[i.label,i.user,i.url,i.text].some(x=>(x||'').toLowerCase().includes(q)))]).filter(x=>x[1].length);
+ m.innerHTML=`<h2 style="margin-bottom:14px">Resultados para "${esc(S.q)}"</h2>`+(r.map(([s,it])=>`<h3>${esc(s.title)}</h3><div class="grid" style="margin-bottom:18px">${it.map(i=>itemH(s.id,i)).join('')}</div>`).join('')||'<p class="mu">Nada encontrado. Tente outro termo.</p>')}
+function tf(){const t=$('#ty').value;$$('.f').forEach(e=>e.style.display=e.classList.contains(t)?'block':'none')}
+function itemDlg(sid,iid){const s=S.sections.find(x=>x.id==sid);let it=s.items.find(i=>i.id==iid);const nw=!it;it=it||{type:'cred'};const TY={cred:'Credencial (usuário e senha)',link:'Link externo',article:'Artigo',code:'Código / comando',text:'Nota / texto'};
+ dlg(nw?'Novo item':'Editar item',`<select id="ty" onchange="tf()">${Object.entries(TY).map(([k,v])=>`<option value="${k}" ${k==it.type?'selected':''}>${v}</option>`).join('')}</select><input id="lb" placeholder="Título" value="${esc(it.label)}">${iconSel(it.icon,'')}<input class="f cred" id="us" placeholder="Usuário" value="${esc(it.user)}"><input class="f cred" id="pw" type="password" placeholder="Senha" value="${esc(it.pass)}" autocomplete="new-password"><input class="f link article" id="ur" placeholder="https://…" value="${esc(it.url)}"><textarea class="f article code text" id="tx" rows="5" placeholder="Descrição / conteúdo">${esc(it.text)}</textarea>`,
+ ()=>{const lb=$('#lb').value.trim();if(!lb){toast('Informe um título');return false}const o={id:nw?uid():it.id,type:$('#ty').value,label:lb,icon:$('#icu').value.trim()\vert{}\vert{}$('#isel').value,user:$('#us').value,pass:$('#pw').value,url:$('#ur').value.trim(),text:$('#tx').value};
+  nw?s.items.push(o):Object.assign(it,o);save();render();
+  saveRecursoCloud(sid, o);
+ },nw?0:()=>{s.items=s.items.filter(i=>i.id!=iid);save();render();deleteRecursoCloud(iid);});tf()}
+function secDlg(s){dlg(s?'Renomear seção':'Nova seção',`<input id="st" placeholder="Nome da seção" value="${esc(s?.title)}">${iconSel(s?.icon,'auto')}`,
+ ()=>{const t=$('#st').value.trim();if(!t){toast('Informe um nome');return false}const ic=$('#icu').value.trim()\vert{}\vert{}$('#isel').value||'auto';if(s){s.title=t;s.icon=ic}else{const n={id:uid(),title:t,icon:ic,items:[]};S.sections.push(n);S.view=n.id}save();render()})}
+
+/* ---------- CARD KANBAN ---------- */
+function ckr(){const c=CUR.chk;$('#ckl').innerHTML=c.map((i,n)=>`<div class="ck ${i.done?'d':''}" data-n="${n}"><input type="checkbox" style="width:auto;margin:0" ${i.done?'checked':''} data-a="ck" data-n="${n}"><span data-a="ck" data-n="${n}">${esc(i.texto)}${i.date?`<br><em>${i.date}</em>`:''}</span><button class="btn" style="padding:1px 6px" data-a="rmk" data-n="${n}">×</button></div>`).join('');$('#pg').innerHTML=`<div class="pb"><i style="width:${pct(c)}%"></i></div><p class="mu" style="margin:4px 0 8px">${c.filter(i=>i.done).length}/${c.length} (${pct(c)}%)</p>`;
+ Sortable.create($('#ckl'),{animation:120,onEnd:e=>{c.splice(e.newIndex,0,c.splice(e.oldIndex,1)[0]);ckr()}})}
+function cardDlg(cid,id){const col=S.cols.find(c=>c.id==cid);let k=col.cards.find(x=>x.id==id);const nw=!k;k=k||newCard('');CUR={k,col,chk:structuredClone(k.chk)};
+ dlg(nw?'Novo card':'Editar card',`<input id="t" placeholder="Título / projeto" value="${esc(k.title)}"><div class="g2"><input id="e" placeholder="Empresa cliente" value="${esc(k.empresa)}"><input id="c" placeholder="Contato responsável" value="${esc(k.contato)}"></div>
+ <div class="tb">${[['bold','<b>B</b>'],['italic','<i>I</i>'],['underline','<u>U</u>'],['insertUnorderedList','•']].map(([c,l])=>`<button class="btn" data-a="fmt" data-c="${c}">${l}</button>`).join('')}</div><div id="o" class="ed" contenteditable="true">${DOMPurify.sanitize(k.obs)}</div>
+ <div class="cd"><h3>Checklist de implantação</h3><div id="pg"></div><div id="ckl"></div><input id="ni" placeholder="Nova tarefa e Enter" style="margin-top:8px"></div>
+ <div class="bar"><span><button class="btn" data-a="cpdf"><i class="fa-solid fa-file-pdf"></i> PDF direto</button><button class="btn" data-a="cag"><i class="fa-regular fa-calendar-plus"></i> Agendar</button><button class="btn" data-a="cia"><i class="fa-solid fa-robot"></i> Resumo IA</button><button class="btn" id="xp" data-a="cxp" hidden>PDF do resumo IA</button></span></div><pre id="ao" hidden style="white-space:pre-wrap"></pre>`,
+ ()=>{const t=$('#t').value.trim();if(!t){toast('Informe um título');return false}Object.assign(k,{title:t,empresa:$('#e').value.trim(),contato:$('#c').value.trim(),obs:DOMPurify.sanitize($('#o').innerHTML),chk:CUR.chk});
+  if(nw)col.cards.push(k);save();render();toast('Card salvo');
+  sheets(nw?{acao:'criarCard',cliente:t,col:S.cols.indexOf(col),empresa:k.empresa,contato:k.contato,chk:JSON.stringify(k.chk)}:{acao:'salvarObs',cliente:t,col:S.cols.indexOf(col),empresa:k.empresa,contato:k.contato,obs:k.obs,chk:JSON.stringify(k.chk)});hook(k,col.name)},
+ nw?0:()=>{const i=S.cols.indexOf(col);col.cards=col.cards.filter(x=>x!==k);save();render();sheets({acao:'excluirCard',cliente:k.title,col:i})});
+ ckr();$('#ni').onkeydown=e=>{if(e.key=='Enter'&&e.target.value.trim()){CUR.chk.push({texto:e.target.value.trim(),done:false,date:null});ckr();e.target.value=''}}}
+const nowS=()=>{const n=new Date();return n.toLocaleDateString('pt-BR')+' às '+n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})};
+const ms=chk=>[['Kick-off','kick off realizado'],['Setup','iniciar setup'],['Homolog.','homologação'],['Go-live','handoff']].map(([n,k])=>{const i=chk.find(x=>x.done&&x.texto.toLowerCase().includes(k));return `${n}: ${i?.date?i.date.split(' às')[0]:'--'}`}).join(' · ');
+const cardInfo=()=>({t:$('#t').value.trim()\vert{}\vert{}'Projeto',e:$('#e').value.trim()||'Cliente'});
+
+/* ---------- AÇÕES ---------- */
+const A={
+ nav:d=>{S.view=d.v;S.q='';save();render()},
+ copy:d=>navigator.clipboard.writeText(d.v).then(()=>toast('Copiado')),
+ eye:(d,b)=>{const p=b.parentElement.querySelector('[data-pw]');p.textContent=p.textContent=='••••••••'?(d.v||'(vazio)'):'••••••••'},
+ x:()=>$('#dg').close(),ok:()=>{if(DK.ok()!==false)$('#dg').close()},dd:()=>{if(confirm('Excluir definitivamente?')){DK.del();$('#dg').close()}},
+ theme:()=>{const T=['dark','corporate','light'];S.theme=T[(T.indexOf(S.theme)+1)%3];save();render()},
+ out:()=>{localStorage.removeItem('weon_sess');location.reload()},
+ txt:()=>{if(!S.notes.trim())return toast('Bloco vazio');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([S.notes],{type:'text/plain'}));a.download='notas_weon.txt';a.click()},
+ newsec:()=>secDlg(),ev:()=>evDlg(),evr:()=>{const f=$('#cal');f.src=f.src},cag:()=>{const{t,e}=cardInfo();gcal({text:'Reunião - '+t+(e!='Cliente'?' ('+e+')':''),details:'Contato: '+($('#c').value||'—')})},rens:d=>secDlg(S.sections.find(s=>s.id==d.id)),
+ dels:d=>{const s=S.sections.find(x=>x.id==d.id);if(confirm(`Excluir a seção "${s.title}" e seus ${s.items.length} item(ns)?`)){S.sections=S.sections.filter(x=>x!==s);S.view='home';save();render();deleteSecaoCloud(d.id);}},
+ addi:d=>itemDlg(d.id),edi:d=>itemDlg(d.s,d.id),deli:d=>{if(confirm('Remover este item?')){const s=S.sections.find(x=>x.id==d.s);s.items=s.items.filter(i=>i.id!=d.id);save();render();deleteRecursoCloud(d.id);}},
+ cfg:()=>dlg('Configurar IA',`<select id="pv"><option value="gemini">Google Gemini</option><option value="groq">Groq (Llama 3)</option><option value="openai">OpenAI (GPT-4o mini)</option></select><input id="md" placeholder="Modelo Gemini (ex.: gemini-3.8-flash)" value="${esc(S.ai.model)}"><input id="ky" type="password" placeholder="API Key" value="${esc(S.ai.key)}" autocomplete="off"><p class="mu">A chave fica só neste navegador (localStorage).</p>`,()=>{S.ai={provider:$('#pv').value,model:$('#md').value.trim(),key:$('#ky').value.trim()};save();toast('IA configurada')}),
+ exp:()=>{const o={...S,ai:{...S.ai,key:''}},a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,1)],{type:'application/json'}));a.download='weon_backup.json';a.click()},
+ imp:()=>$('#imp').click(),
+ newcol:()=>dlg('Nova coluna','<input id="cn" placeholder="Nome do status / etapa">',()=>{const n=$('#cn').value.trim();if(!n)return false;S.cols.push({id:uid(),name:n,cards:[]});save();render();sheets({acao:'criarColuna',nomeColuna:n,colIndex:S.cols.length-1})}),
+ delcol:d=>{const c=S.cols.find(x=>x.id==d.id);if(confirm(`Excluir a coluna "${c.name}" com ${c.cards.length} card(s)?`)){const i=S.cols.indexOf(c);S.cols.splice(i,1);save();render();sheets({acao:'excluirColuna',colIndex:i,nomeColuna:c.name})}},
+ addc:d=>cardDlg(d.id),card:(d,b)=>cardDlg(b.closest('.col').dataset.id,d.id),
+ fmt:d=>document.execCommand(d.c),
+ ck:d=>{const i=CUR.chk[d.n];i.done=!i.done;i.date=i.done?nowS():null;ckr()},rmk:d=>{CUR.chk.splice(d.n,1);ckr()},
+ cpdf:()=>{const{t,e}=cardInfo(),c=CUR.chk,li=(a,col)=>a.map(i=>`<li style="color:${col}">${esc(i.texto)} ${i.date?`<small>(${i.date})</small>`:''}</li>`).join('')||'<li>—</li>';
+  pdf('Implantação '+t,e,`<div class="m"><b>Contato:</b> ${esc($('#c').value)||'—'}<br><b>Progresso:</b> ${pct(c)}%</div><h3>Anotações</h3>${DOMPurify.sanitize($('#o').innerHTML)||'—'}<h3>Etapas concluídas</h3><ul>${li(c.filter(i=>i.done),'#15803d')}</ul><h3>Etapas pendentes</h3><ul>${li(c.filter(i=>!i.done),'#b91c1c')}</ul>`,CUR.col.name)},
+ cia:()=>{const{t,e}=cardInfo(),c=CUR.chk;run(`Você é um analista da WeON. Crie um Status Report executivo curto e formal para o projeto "${t}" (Empresa: ${e}). Progresso: ${pct(c)}% (${c.filter(i=>i.done).length}/${c.length}). Próximas pendências: ${JSON.stringify(c.filter(i=>!i.done).slice(0,4).map(i=>i.texto))}. Anotações: "${$('#o').innerText.slice(0,300)}". Use 3 seções: "Resumo Executivo", "O que foi concluído" e "Próximas Etapas". Responda em português.`)},
+ cxp:()=>{const{t,e}=cardInfo();pdf('Implantação '+t,e,md($('#ao').textContent),CUR.col.name)},
+ rep:d=>{const rows=S.cols.flatMap(c=>c.cards.map(k=>({...k,col:c.name})));
+  dlg('Status report geral',`<div class="bar"><span><button class="btn" data-a="bpdf">PDF geral</button><button class="btn" data-a="bia"><i class="fa-solid fa-robot"></i> Resumo IA</button><button class="btn" id="xp" data-a="bxp" hidden>PDF do resumo IA</button></span></div><pre id="ao" hidden style="white-space:pre-wrap"></pre><p class="mu">${rows.length} projeto(s) ativos no quadro.</p>`);if(d.ia)A.bia()},
+ bpdf:()=>{const rows=S.cols.flatMap(c=>c.cards.map(k=>({...k,col:c.name}))),s=stats();
+  pdf('Status Report Geral','Carteira de implantações',`<div class="m">Total: <b>${s.t}</b> · Em andamento: <b>${s.a}</b> · Bloqueio: <b>${s.b}</b> · Concluídos: <b>${s.c}</b></div><table><tr><th>Projeto</th><th>Etapa</th><th>Progresso</th><th>Marcos</th><th>Pendências</th></tr>${rows.map(k=>`<tr><td><b>${esc(k.title)}</b><br>${esc(k.empresa)}</td><td>${esc(k.col)}</td><td>${pct(k.chk)}%<div class="b"><i style="width:${pct(k.chk)}%"></i></div></td><td>${ms(k.chk)}</td><td>${esc(k.chk.filter(i=>!i.done).slice(0,2).map(i=>i.texto).join(', '))}</td></tr>`).join('')}</table>`,'CARTEIRA GERAL')},
+ bia:()=>{const r=S.cols.flatMap(c=>c.cards.map(k=>({cliente:k.title,etapa:c.name,progresso:pct(k.chk)+'%',pendencias:k.chk.filter(i=>!i.done).length})));if(!r.length)return toast('Quadro vazio');
+  run(`Você é Gestor da WeON. Faça um diagnóstico executivo resumido dos projetos ativos: ${JSON.stringify(r)}. Divida em "Resumo Geral da Carteira", "Gargalos" e "Ações Recomendadas". Responda em português.`)},
+ bxp:()=>pdf('Diagnóstico geral da carteira','Relatório executivo consolidado',md($('#ao').textContent),'CARTEIRA GERAL')
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.tagName=='INPUT'&&e.type!='click')return;if(b.dataset.a=='card'&&e.target.closest('button'))return;A[b.dataset.a]?.(b.dataset,b)});
+document.addEventListener('mousedown',e=>{if(e.target.closest('[data-c]'))e.preventDefault()});
+$('#q').oninput=e=>{S.q=e.target.value.trim();render();$('#q').focus()};
+$('#imp').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const o=JSON.parse(t);if(!o.sections||!o.cols)throw 0;if(confirm('Substituir os dados atuais pelo backup?')){o.ai={...o.ai,key:S.ai.key};S=o;save();render();toast('Backup importado')}}catch{toast('Arquivo inválido')}})};
+try{const s=JSON.parse(localStorage.weon_sess);if(s.x>Date.now())start(s.e)}catch{}
+</script>
 </body>
 </html>
-```eof
-
-```javascript:Code.gs
-/**
- * Google Apps Script - Servidor de Dados em Google Sheets & Drive
- * Deve ser implantado como Web App (Executar como: 'Eu', Acesso: 'Qualquer pessoa')
- */
-
-function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var result = {};
-  
-  var sheets = ss.getSheets();
-  for (var i = 0; i < sheets.length; i++) {
-    var sheet = sheets[i];
-    var sheetName = sheet.getName();
-    var data = sheet.getDataRange().getValues();
-    
-    result[sheetName] = [];
-    if (data.length > 1) {
-      var headers = data[0];
-      for (var r = 1; r < data.length; r++) {
-        var row = data[r];
-        var item = {};
-        var isEmpty = true;
-        
-        for (var c = 0; c < headers.length; c++) {
-          if (row[c] !== "" && row[c] !== null) {
-            isEmpty = false;
-          }
-          item[headers[c]] = row[c];
-        }
-        
-        if (!isEmpty) {
-          result[sheetName].push(item);
-        }
-      }
-    }
-  }
-  
-  return ContentService
-    .createTextOutput(JSON.stringify(result))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  try {
-    var data = JSON.parse(e.postData.contents);
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    
-    for (var sheetName in data) {
-      var items = data[sheetName];
-      if (!Array.isArray(items)) continue;
-      
-      var sheet = ss.getSheetByName(sheetName);
-      if (!sheet) {
-        sheet = ss.insertSheet(sheetName);
-      } else {
-        sheet.clearContents();
-      }
-      
-      if (items.length > 0) {
-        var headers = Object.keys(items[0]);
-        sheet.appendRow(headers);
-        
-        for (var i = 0; i < items.length; i++) {
-          var item = items[i];
-          var row = [];
-          
-          for (var h = 0; h < headers.length; h++) {
-            var key = headers[h];
-            var value = item[key];
-            
-            // Tratamento especial para arquivos base64
-            if (typeof value === 'string' && value.indexOf('data:') === 0) {
-              try {
-                var fileUrl = saveFileToDrive(value, sheetName + "_Anexo_" + (i + 1));
-                row.push(fileUrl);
-              } catch (err) {
-                row.push("Erro ao salvar anexo no Drive");
-              }
-            } else {
-              row.push(value);
-            }
-          }
-          sheet.appendRow(row);
-        }
-      }
-    }
-    
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "success" }))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function saveFileToDrive(base64Data, filename) {
-  var parts = base64Data.split(';base64,');
-  var contentType = parts[0].replace('data:', '');
-  var decoded = Utilities.base64Decode(parts[1]);
-  
-  var blob = Utilities.newBlob(decoded, contentType, filename);
-  var file = DriveApp.createFile(blob);
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  
-  return file.getUrl();
-}
-```eof
-
-### Mudanças efetuadas:
-1. **Google Apps Script (`Code.gs`)**: Atualizado para suportar a rota `doGet`, lendo as abas da planilha e convertendo-as em JSON para alimentar a aplicação Web.
-2. **Aplicação Web (`index.html`)**: 
-   - Ao carregar a página, consulta a planilha do Google Sheets para puxar as informações cadastradas mais recentes, permitindo que qualquer colega veja os dados sem depender de `localStorage` local.
-   - Os dados são mantidos sincronizados tanto localmente no navegador quanto no Google Sheets ao clicar em **Concluir & Enviar**.
