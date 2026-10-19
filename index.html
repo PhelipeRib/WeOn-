@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Configurando a sua empresa</title>
   
-  !-- Favicon de Prancheta 📋 (Força atualização sem cache) -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>?v=3">
   <link rel="alternate icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABMSURBVHgB7dIxDQAgDATBhz94YwADCEABAtiLgwC20AJuAnfSl8y6m1x6m4mISkYlIhK3iEg8ISLxA4n4h0QU1IjI5/N5e3t7v4C8AZuUD22L1mCFAAAAAElFTkSuQmCC?v=3">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
-      /* Dark Mode (Tom Azulado Corporativo) */
       --bg: #0b132b;
       --cd: #1c2541;
       --in: #0b132b;
@@ -25,7 +23,6 @@
     }
 
     [data-theme="light"] {
-      /* Light Mode Clean */
       --bg: #f1f5f9;
       --cd: #ffffff;
       --in: #f8fafc;
@@ -41,7 +38,6 @@
     body { background: var(--bg); color: var(--tx); min-height: 100vh; }
     .app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
     
-    /* Header & Sidebar */
     aside { background: var(--cd); border-right: 1px solid var(--bd); padding: 20px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
     aside h1 { color: var(--ac); font-size: 1.15em; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
     aside small { color: var(--mu); margin: 16px 0 6px; font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -57,7 +53,6 @@
     main { padding: 28px; min-width: 0; max-width: 1100px; }
     @media(max-width: 850px) { .app { grid-template-columns: 1fr; } aside { position: static; height: auto; } }
 
-    /* Forms & Inputs */
     .cd { background: var(--cd); border: 1px solid var(--bd); border-radius: 14px; padding: 22px; margin-bottom: 20px; }
     h2 { font-size: 1.3em; margin-bottom: 4px; color: var(--tx); display: flex; align-items: center; gap: 10px; }
     p.sub { color: var(--mu); font-size: 0.85em; margin-bottom: 20px; }
@@ -70,33 +65,36 @@
     .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     @media(max-width: 700px) { .g2, .g3 { grid-template-columns: 1fr; } }
 
-    /* Buttons */
     .btn { background: var(--in); border: 1px solid var(--bd); color: var(--tx); border-radius: 8px; padding: 9px 16px; font-size: 0.85em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
     .btn:hover { border-color: var(--ac); color: var(--ac); }
     .btn.pr { background: var(--ac); color: #ffffff !important; border-color: var(--ac); font-weight: 800; }
     .btn.pr:hover { background: var(--ac-hover); border-color: var(--ac-hover); }
     .btn.dn:hover { border-color: var(--dg); color: var(--dg); }
 
-    /* Tables */
     .tb-wrap { overflow-x: auto; margin-top: 10px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.85em; text-align: left; }
     th { background: var(--in); color: var(--ac); padding: 10px 12px; border-bottom: 1px solid var(--bd); font-weight: 700; font-size: 0.78em; text-transform: uppercase; }
     td { padding: 10px 12px; border-bottom: 1px solid var(--bd); color: var(--tx); word-break: break-word; }
     tr:hover td { background: color-mix(in srgb, var(--in) 50%, transparent); }
 
-    /* Upload Box */
     .up-box { border: 2px dashed var(--bd); background: var(--in); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; margin-bottom: 12px; }
     .up-box:hover { border-color: var(--ac); }
     .up-box i { font-size: 2em; color: var(--ac); margin-bottom: 8px; }
 
     .f { display: none; }
+    
+    .sync-status { font-size: 0.75em; color: var(--mu); display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--in); border-radius: 20px; border: 1px solid var(--bd); margin-top: 8px; }
+    .sync-status i { color: var(--ac); }
   </style>
 </head>
 <body>
 
 <div class="app">
   <aside>
-    <h1><i class="fas fa-building"></i> Configurando a sua empresa</h1>
+    <h1><i class="fas fa-building"></i> Configuração</h1>
+    <div class="sync-status" id="sync-indicator">
+      <i class="fa-solid fa-arrows-rotate fa-spin"></i> Sincronizando com Google Sheets...
+    </div>
     <small>Etapas de Configuração</small>
     
     <button class="nv on" onclick="switchTab('numeros')" id="btn-numeros">
@@ -397,7 +395,6 @@
 </div>
 
 <script>
-  // SCRIPT GOOGLE SHEETS
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuWjtlSMOC-AORhO1Yb_jiX-wniwpVSFOGaakMS010IGd3cmTujNOazVFTPTs-vsO7kA/exec";
 
   let currentBase64File = "";
@@ -427,6 +424,61 @@
     'templates': 'Templates da Meta'
   };
 
+  // PERSISTÊNCIA LOCAL (LOCAL STORAGE)
+  function saveToLocalStorage() {
+    localStorage.setItem('company_setup_data', JSON.stringify(setupData));
+  }
+
+  function loadFromLocalStorage() {
+    const saved = localStorage.getItem('company_setup_data');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        Object.assign(setupData, parsed);
+        refreshAllTablesAndBadges();
+      } catch (e) {
+        console.error("Erro ao carregar dados do LocalStorage", e);
+      }
+    }
+  }
+
+  function refreshAllTablesAndBadges() {
+    Object.keys(tabMap).forEach(key => {
+      updateBadge(key);
+      renderTable(key);
+    });
+  }
+
+  // BUSCA DADOS ATUALIZADOS DO GOOGLE SHEETS
+  async function fetchFromGoogleSheets() {
+    const indicator = document.getElementById('sync-indicator');
+    try {
+      indicator.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> Sincronizando dados...';
+      const response = await fetch(GOOGLE_SCRIPT_URL);
+      if (response.ok) {
+        const remoteData = await response.json();
+        for (let sheet in remoteData) {
+          if (setupData[sheet] !== undefined) {
+            setupData[sheet] = remoteData[sheet];
+          }
+        }
+        saveToLocalStorage();
+        refreshAllTablesAndBadges();
+        indicator.innerHTML = '<i class="fa-solid fa-circle-check" style="color: #22c55e;"></i> Sincronizado';
+      } else {
+        throw new Error('Falha ao buscar dados');
+      }
+    } catch (e) {
+      console.warn("Erro na sincronização, mantendo cópia local:", e);
+      indicator.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #eab308;"></i> Modo Offline / Cache';
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadFromLocalStorage();
+    fetchFromGoogleSheets();
+  });
+
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -449,7 +501,6 @@
     const file = e.target.files[0];
     if(!file) return;
 
-    // VALIDAÇÃO DE TRAVA DE 10MB
     const maxSizeInBytes = 10 * 1024 * 1024; 
     if (file.size > maxSizeInBytes) {
       alert("⚠️ O arquivo selecionado é muito grande! Por favor, escolha um PDF ou imagem de até 10MB.");
@@ -508,6 +559,8 @@
 
     const sheetName = tabMap[key];
     setupData[sheetName].push(newItem);
+    saveToLocalStorage();
+
     document.querySelector(`#section-${key} form`).reset();
     
     updateBadge(key);
@@ -517,18 +570,19 @@
   function removeData(key, index) {
     const sheetName = tabMap[key];
     setupData[sheetName].splice(index, 1);
+    saveToLocalStorage();
     updateBadge(key);
     renderTable(key);
   }
 
   function updateBadge(key) {
     const sheetName = tabMap[key];
-    document.getElementById(`count-${key}`).innerText = setupData[sheetName].length;
+    document.getElementById(`count-${key}`).innerText = setupData[sheetName] ? setupData[sheetName].length : 0;
   }
 
   function renderTable(key) {
     const sheetName = tabMap[key];
-    const items = setupData[sheetName];
+    const items = setupData[sheetName] || [];
     const container = document.getElementById(`table-${key}`);
 
     if (items.length === 0) {
@@ -612,6 +666,8 @@
       alert("✨ Sucesso! Todas as abas foram salvas e os anexos foram enviados para o Google Drive!");
       btn.innerHTML = '<i class="fa-solid fa-check"></i> Enviado com Sucesso!';
       btn.style.background = '#16a34a';
+      
+      fetchFromGoogleSheets();
     } catch (error) {
       console.error("Erro ao enviar:", error);
       alert("Ops! Ocorreu um erro ao enviar para o Google Sheets. Tente novamente.");
@@ -623,3 +679,122 @@
 
 </body>
 </html>
+```eof
+
+```javascript:Code.gs
+/**
+ * Google Apps Script - Servidor de Dados em Google Sheets & Drive
+ * Deve ser implantado como Web App (Executar como: 'Eu', Acesso: 'Qualquer pessoa')
+ */
+
+function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var result = {};
+  
+  var sheets = ss.getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    var sheet = sheets[i];
+    var sheetName = sheet.getName();
+    var data = sheet.getDataRange().getValues();
+    
+    result[sheetName] = [];
+    if (data.length > 1) {
+      var headers = data[0];
+      for (var r = 1; r < data.length; r++) {
+        var row = data[r];
+        var item = {};
+        var isEmpty = true;
+        
+        for (var c = 0; c < headers.length; c++) {
+          if (row[c] !== "" && row[c] !== null) {
+            isEmpty = false;
+          }
+          item[headers[c]] = row[c];
+        }
+        
+        if (!isEmpty) {
+          result[sheetName].push(item);
+        }
+      }
+    }
+  }
+  
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    for (var sheetName in data) {
+      var items = data[sheetName];
+      if (!Array.isArray(items)) continue;
+      
+      var sheet = ss.getSheetByName(sheetName);
+      if (!sheet) {
+        sheet = ss.insertSheet(sheetName);
+      } else {
+        sheet.clearContents();
+      }
+      
+      if (items.length > 0) {
+        var headers = Object.keys(items[0]);
+        sheet.appendRow(headers);
+        
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          var row = [];
+          
+          for (var h = 0; h < headers.length; h++) {
+            var key = headers[h];
+            var value = item[key];
+            
+            // Tratamento especial para arquivos base64
+            if (typeof value === 'string' && value.indexOf('data:') === 0) {
+              try {
+                var fileUrl = saveFileToDrive(value, sheetName + "_Anexo_" + (i + 1));
+                row.push(fileUrl);
+              } catch (err) {
+                row.push("Erro ao salvar anexo no Drive");
+              }
+            } else {
+              row.push(value);
+            }
+          }
+          sheet.appendRow(row);
+        }
+      }
+    }
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function saveFileToDrive(base64Data, filename) {
+  var parts = base64Data.split(';base64,');
+  var contentType = parts[0].replace('data:', '');
+  var decoded = Utilities.base64Decode(parts[1]);
+  
+  var blob = Utilities.newBlob(decoded, contentType, filename);
+  var file = DriveApp.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  
+  return file.getUrl();
+}
+```eof
+
+### Mudanças efetuadas:
+1. **Google Apps Script (`Code.gs`)**: Atualizado para suportar a rota `doGet`, lendo as abas da planilha e convertendo-as em JSON para alimentar a aplicação Web.
+2. **Aplicação Web (`index.html`)**: 
+   - Ao carregar a página, consulta a planilha do Google Sheets para puxar as informações cadastradas mais recentes, permitindo que qualquer colega veja os dados sem depender de `localStorage` local.
+   - Os dados são mantidos sincronizados tanto localmente no navegador quanto no Google Sheets ao clicar em **Concluir & Enviar**.
