@@ -62,7 +62,6 @@ dialog::backdrop{background:#000b;backdrop-filter:blur(4px)}
 .kc small{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;color:var(--mu);margin:6px 0 8px;word-break:break-word;line-height:1.4}
 .kc .mt{display:flex;gap:6px;align-items:center;color:var(--mu);font-size:.85em;margin-top:4px}
 .kc .nx{margin-top:8px;padding:6px 8px;border-radius:6px;background:color-mix(in srgb,var(--ac) 10%,transparent);font-size:.8em;display:flex;gap:6px}.kc .nx.ok{color:#4ade80}
-.sync-status{font-size:0.75em;color:var(--mu);display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--in);border-radius:20px;border:1px solid var(--bd);margin-bottom:8px}
 .f{display:none}[hidden]{display:none!important}
 </style>
 </head>
@@ -75,7 +74,7 @@ dialog::backdrop{background:#000b;backdrop-filter:blur(4px)}
 <p id="lge">Acesso negado. Use uma conta @weon.com ou @weon.com.br.</p>
 </div></div>
 <div class="app" id="app" hidden>
-<aside><h1><i class="fas fa-cubes"></i> Auxílio WeON</h1><div class="sync-status" id="st-icon"><i class="fa-solid fa-arrows-rotate fa-spin"></i> Conectando...</div><div id="nav"></div></aside>
+<aside><h1><i class="fas fa-cubes"></i> Auxílio WeON</h1><div id="nav"></div></aside>
 <main><div class="bar"><input id="q" placeholder="Buscar em todas as seções…" style="max-width:420px;margin:0"><span id="who" class="mu"></span></div><div id="main"></div></main>
 </div>
 <dialog id="dg"></dialog><div id="ts"></div>
@@ -107,109 +106,49 @@ const hook=(k,etapa)=>fetch(HOOK,{method:'POST',mode:'no-cors',headers:{'Content
 /* ---------- auth ---------- */
 function handleCredentialResponse(r){try{const p=JSON.parse(decodeURIComponent(escape(atob(r.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))));const e=(p.email||'').toLowerCase();
  if(p.email_verified&&/@weon\.com(\.br)?$/.test(e)){localStorage.weon_sess=JSON.stringify({e,x:p.exp*1000});start(e)}else $('#lge').style.display='block'}catch{$('#lge').style.display='block'}}
-function start(e){$('#lg').hidden=true;$('#app').hidden=false;$('#who').textContent=e;render();pullAll()}
+function start(e){$('#lg').hidden=true;$('#app').hidden=false;$('#who').textContent=e;render();pull()}
 
-/* ---------- PULL COMPLETO (KANBAN + DADOS / SENHAS DO SHEETS) ---------- */
-async function pullAll(){
-  const ind = $('#st-icon');
-  try {
-    ind.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> Sincronizando...';
+async function pull(){
+  try{
+    // 1. Kanban
+    const r=await(await fetch(SHEETS)).json();
+    if(r.status==='success'&&r.colunas?.length){
+      const known=new Set(S.cols.flatMap(c=>c.cards.map(k=>k.title)));
+      let n=0;
+      r.colunas.forEach(rc=>{
+        let c=S.cols.find(x=>x.name.toLowerCase()===rc.nome.toLowerCase());
+        if(!c)S.cols.push(c={id:uid(),name:rc.nome,cards:[]});
+        rc.cards.forEach(k=>{if(!known.has(k.cliente)){c.cards.push(newCard(k.cliente,k.obs||'',k.chk));n++}});
+      });
+      if(n)save();
+    }
     
-    // 1. Puxar Recursos, Credenciais e Acessos da aba RECURSOS_LINKS
-    const rRec = await(await fetch(SHEETS+'?acao=getRecursos')).json();
-    if(rRec.status === 'success' && rRec.recursos && rRec.recursos.length > 0) {
-      // Reconstroi estrutura de secoes se vier do banco
-      const secMap = {};
-      rRec.recursos.forEach(rc => {
-        const sid = rc.secao || 'acc';
-        if(!secMap[sid]) {
-          let origSec = S.sections.find(s => s.id === sid);
-          secMap[sid] = {
-            id: sid,
-            title: origSec ? origSec.title : sid,
-            icon: origSec ? origSec.icon : 'fa-folder',
-            items: []
-          };
+    // 2. Credenciais e Recursos da Planilha
+    const resRec=await(await fetch(SHEETS+'?acao=getRecursos')).json();
+    if(resRec.status==='success'&&resRec.recursos){
+      resRec.recursos.forEach(rec=>{
+        let sec=S.sections.find(s=>s.id===rec.secao);
+        if(!sec){
+          sec={id:rec.secao,title:rec.secao,icon:'auto',items:[]};
+          S.sections.push(sec);
         }
-        let itemVal = {};
-        try { itemVal = JSON.parse(rc.valor); } catch { itemVal = { text: rc.valor }; }
+        let itemObj;
+        try{itemObj=JSON.parse(rec.valor)}catch{itemObj={text:rec.valor}}
         
-        secMap[sid].items.push({
-          id: rc.id,
-          type: itemVal.type || 'link',
-          label: rc.nome,
-          icon: rc.icone,
-          ...itemVal
-        });
+        let existing=sec.items.find(i=>i.id===rec.id);
+        if(existing){
+          Object.assign(existing,{label:rec.nome,icon:rec.icone,...itemObj});
+        }else{
+          sec.items.push({id:rec.id,label:rec.nome,icon:rec.icone,...itemObj});
+        }
       });
-      
-      S.sections = Object.values(secMap);
-    } else {
-      // Se a aba estiver vazia no Google Sheets, envia o SEED inicial
-      syncInitialSeedToCloud();
+      save();
     }
-
-    // 2. Puxar Kanban de Projetos da aba principal
-    const rKanban = await(await fetch(SHEETS)).json();
-    if(rKanban.colunas && rKanban.colunas.length > 0) {
-      const known = new Set(S.cols.flatMap(c => c.cards.map(k => k.title)));
-      rKanban.colunas.forEach(rc => {
-        let c = S.cols.find(x => x.name.toLowerCase() === rc.nome.toLowerCase());
-        if(!c) S.cols.push(c = {id:uid(), name:rc.nome, cards:[]});
-        rc.cards.forEach(k => {
-          if(!known.has(k.cliente)) {
-            c.cards.push(newCard(k.cliente, k.obs || '', k.chk));
-          }
-        });
-      });
-    }
-
-    save();
     render();
-    ind.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> Sincronizado';
-  } catch(err) {
-    console.warn("Erro ao sincronizar com Google Sheets", err);
-    ind.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#eab308"></i> Modo Offline';
-  }
+  }catch(e){console.error('Erro no pull:',e)}
 }
 
-function syncInitialSeedToCloud() {
-  S.sections.forEach(s => {
-    s.items.forEach(i => {
-      saveRecursoCloud(s.id, i);
-    });
-  });
-}
-
-function saveRecursoCloud(secaoId, item) {
-  const payload = {
-    type: item.type,
-    user: item.user || '',
-    pass: item.pass || '',
-    url: item.url || '',
-    text: item.text || ''
-  };
-  sheets({
-    acao: 'salvarRecurso',
-    recurso: JSON.stringify({
-      id: item.id,
-      secao: secaoId,
-      nome: item.label,
-      valor: JSON.stringify(payload),
-      icone: item.icon || 'fa-link'
-    })
-  });
-}
-
-function deleteRecursoCloud(id) {
-  sheets({ acao: 'excluirRecurso', id: id });
-}
-
-function deleteSecaoCloud(secaoId) {
-  sheets({ acao: 'excluirSecao', id: secaoId });
-}
-
-/* ---------- HELPERS ---------- */
+/* ---------- helpers ---------- */
 let DK={},CUR={};
 function dlg(title,body,ok,del,lbl){$('#dg').innerHTML=`<h3>${title}</h3>${body}<div class="bar" style="margin:12px 0 0"><span>${del?'<button class="btn dn" data-a="dd">Excluir</button>':''}</span><span><button class="btn" data-a="x">${ok?'Cancelar':'Fechar'}</button>${ok?`<button class="btn pr" data-a="ok">${lbl||'Salvar'}</button>`:''}</span></div>`;DK={ok,del};$('#dg').showModal()}
 const stats=()=>{let t=0,a=0,b=0,c=0;S.cols.forEach(k=>{const n=k.cards.length,l=k.name.toLowerCase();t+=n;l.includes('bloqueio')?b+=n:/conclu|setup realizado/.test(l)?c+=n:a+=n});return{t,a,b,c}};
@@ -225,12 +164,12 @@ async function ai(p){const{provider:v,key:k,model:m}=S.ai;if(!k)throw Error('Con
  if(v=='gemini'){let err;for(const md of new Set([m,'gemini-3.8-flash','gemini-3.6-flash'].filter(Boolean))){
   const d=await post(`https://generativelanguage.googleapis.com/v1beta/models/${md}:generateContent`,{'x-goog-api-key':k},{contents:[{parts:[{text:p}]}],generationConfig:{temperature:.3,maxOutputTokens:1200}}).catch(e=>({error:{message:e.message}}));
   const t=d.candidates?.[0]?.content?.parts?.[0]?.text;if(t)return t;err=d.error?.message}throw Error(err||'Sem resposta')}
- const o=v=='groq'?['https://api.groq.com/openai/v1/chat/completions','llama-3.1-8b-instant']:['https://api.openai.com/v1/chat/completions','gpt-4o-mini'];
+ const o=v=='groq'?['https://api.groq.com/openai/v1/chat/completions','llama-3.1-8b-instant']:['https://api.openai.com/v1,chat/completions','gpt-4o-mini'];
  const d=await post(o[0],{Authorization:'Bearer '+k},{model:o[1],messages:[{role:'user',content:p}],temperature:.3,max_tokens:900});
  if(d.choices)return d.choices[0].message.content;throw Error(d.error?.message||'Erro na API')}
 async function run(p){const o=$('#ao');o.hidden=false;o.textContent='Gerando…';try{o.textContent=await ai(p);$('#xp').hidden=false}catch(e){o.textContent='Erro: '+e.message+'. Use o PDF direto (sem IA).'}}
 
-/* ---------- ÍCONES ---------- */
+/* ---------- ícones ---------- */
 const ico=c=>/fa-(solid|brands|regular)/.test(c)?c:'fa-solid '+c;
 const IK=[[/jira/,'fa-brands fa-jira'],[/confluence|wiki/,'fa-brands fa-confluence'],[/notion/,'fa-solid fa-book'],[/zabbix|monitor/,'fa-solid fa-heart-pulse'],[/whats|wpp|zap/,'fa-brands fa-whatsapp'],[/meta|facebook/,'fa-brands fa-meta'],[/dashboard|painel|\bbi\b/,'fa-solid fa-gauge-high'],[/gupshup|token|api|curl/,'fa-solid fa-plug'],[/bot|chatbot/,'fa-solid fa-robot'],[/iso|processo|compliance/,'fa-solid fa-shield-halved'],[/coex|config|setup/,'fa-solid fa-gears'],[/planilha|projetos|descritivo|sheet/,'fa-solid fa-table'],[/drive|pasta|empresas/,'fa-brands fa-google-drive'],[/pop|manual|doc|guia|tutorial/,'fa-solid fa-file-lines'],[/faq|ajuda|suporte/,'fa-solid fa-circle-question'],[/\bip\b|servidor|server|dn\d/,'fa-solid fa-server'],[/admin/,'fa-solid fa-user-shield'],[/supervisor|agente|atendimento/,'fa-solid fa-headset'],[/senha|login|acesso|credencia/,'fa-solid fa-key'],[/numero|número|\bdids?\b|telefone/,'fa-solid fa-phone'],[/calend|agenda|reuni/,'fa-regular fa-calendar'],[/banco|database|sql/,'fa-solid fa-database'],[/e-?mail/,'fa-regular fa-envelope']];
 const UK=[[/docs\.google\.com\/spreadsheets/,'fa-solid fa-table'],[/docs\.google\.com\/document/,'fa-solid fa-file-lines'],[/drive\.google/,'fa-brands fa-google-drive'],[/atlassian/,'fa-brands fa-jira'],[/notion/,'fa-solid fa-book'],[/github/,'fa-brands fa-github'],[/youtube/,'fa-brands fa-youtube']];
@@ -241,16 +180,16 @@ const iconH=c=>/^https?:/.test(c)?`<img src="${esc(c)}" alt="">`:/fa-/.test(c)?`
 const tint=c=>{let h=0;for(const ch of c)h=(h*31+ch.charCodeAt(0))%360;return `hsl(${h} 70% 58%)`};
 const host=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
 const PRE=[['Planilha','fa-solid fa-table'],['Documento','fa-solid fa-file-lines'],['Pasta / Drive','fa-brands fa-google-drive'],['Jira','fa-brands fa-jira'],['WhatsApp','fa-brands fa-whatsapp'],['Meta','fa-brands fa-meta'],['Robô / bot','fa-solid fa-robot'],['Servidor','fa-solid fa-server'],['Chave','fa-solid fa-key'],['Admin','fa-solid fa-user-shield'],['Suporte','fa-solid fa-headset'],['Gráfico','fa-solid fa-chart-line'],['Segurança','fa-solid fa-shield-halved'],['Configuração','fa-solid fa-gears'],['API','fa-solid fa-plug'],['Terminal','fa-solid fa-terminal'],['Telefone','fa-solid fa-phone'],['Livro','fa-solid fa-book'],['Banco de dados','fa-solid fa-database'],['Estrela','fa-solid fa-star']];
-const iconSel=(cur,auto)=>{const own=cur&&cur!='auto'&&!PRE.some(p=>p[1]==cur);return `<select id="isel"><option value="${auto}">Ícone: automático (pelo título)</option>${PRE.map(([n,c])=>`<option value="${c}" ${c==cur?'selected':''}>${n}</option>`).join('')}</select><input id="icu" placeholder="Ícone próprio: classe Font Awesome, emoji ou URL de imagem" value="${own?esc(cur):''}">`};
+const iconSel=(cur,auto)=>`<select id="isel"><option value="${auto}">Ícone: automático (pelo título)</option>${PRE.map(([n,c])=>`<option value="${c}" ${c==cur?'selected':''}>${n}</option>`).join('')}</select><input id="icu" placeholder="Ícone próprio: classe Font Awesome, emoji ou URL de imagem" value="${cur&&cur!='auto'&&!PRE.some(p=>p[1]==cur)?esc(cur):''}">`;
 
-/* ---------- AGENDA ---------- */
+/* ---------- agenda ---------- */
 const gcal=o=>window.open('https://calendar.google.com/calendar/render?'+new URLSearchParams({action:'TEMPLATE',ctz:'America/Sao_Paulo',...o}),'_blank','noopener');
 function evDlg(){const d=new Date(),p=n=>String(n).padStart(2,'0'),hoje=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
  dlg('Criar evento no Google Agenda',`<input id="et" placeholder="Título (ex.: Kick-off - Cliente)"><div class="g2"><input id="ed" type="date" value="${hoje}"><div class="g2" style="gap:8px"><input id="eh" type="time" value="10:00"><input id="ef" type="time" value="11:00"></div></div><input id="eg" placeholder="Convidados (e-mails separados por vírgula)"><input id="el" placeholder="Local ou link da reunião"><textarea id="ex" rows="3" placeholder="Descrição"></textarea><p class="mu">O Google Agenda abre com tudo preenchido. Confirme por lá e depois clique em Atualizar.</p>`,
  ()=>{const t=$('#et').value.trim(),dd=$('#ed').value.replace(/-/g,''),h=$('#eh').value,f=$('#ef').value;if(!t||!dd||!h||!f){toast('Informe título, data e horários');return false}const g=x=>dd+'T'+x.replace(':','')+'00';
   gcal({text:t,dates:g(h)+'/'+g(f),add:$('#eg').value.replace(/\s/g,''),location:$('#el').value,details:$('#ex').value})},0,'Abrir no Google Agenda')}
 
-/* ---------- VIEWS ---------- */
+/* ---------- views ---------- */
 function nav(){const v=S.view,b=(id,ic,t,x='')=>`<button class="nv ${v==id?'on':''}" data-a="nav" data-v="${id}"><i class="${ico(ic)}"></i>${esc(t)}</button>`;
  $('#nav').innerHTML=b('home','fa-gauge-high','Painel e Kanban')+b('agenda','fa-calendar','Agenda')+'<small>SEÇÕES</small>'+S.sections.map(s=>b(s.id,secIc(s),s.title)).join('')+
  '<button class="nv" data-a="newsec"><i class="fa-solid fa-plus"></i>Nova seção</button><small>SISTEMA</small><button class="nv" data-a="cfg"><i class="fa-solid fa-robot"></i>Configurar IA</button><button class="nv" data-a="theme"><i class="fa-solid fa-palette"></i>Tema: '+S.theme+'</button><button class="nv" data-a="exp"><i class="fa-solid fa-download"></i>Exportar backup</button><button class="nv" data-a="imp"><i class="fa-solid fa-upload"></i>Importar backup</button><button class="nv" data-a="out"><i class="fa-solid fa-right-from-bracket"></i>Sair</button>'}
@@ -289,16 +228,72 @@ function itemH(sid,i){const cp=v=>`<button data-a="copy" data-v="${esc(v)}" titl
 function find(m){const q=S.q.toLowerCase();const r=S.sections.map(s=>[s,s.items.filter(i=>[i.label,i.user,i.url,i.text].some(x=>(x||'').toLowerCase().includes(q)))]).filter(x=>x[1].length);
  m.innerHTML=`<h2 style="margin-bottom:14px">Resultados para "${esc(S.q)}"</h2>`+(r.map(([s,it])=>`<h3>${esc(s.title)}</h3><div class="grid" style="margin-bottom:18px">${it.map(i=>itemH(s.id,i)).join('')}</div>`).join('')||'<p class="mu">Nada encontrado. Tente outro termo.</p>')}
 function tf(){const t=$('#ty').value;$$('.f').forEach(e=>e.style.display=e.classList.contains(t)?'block':'none')}
-function itemDlg(sid,iid){const s=S.sections.find(x=>x.id==sid);let it=s.items.find(i=>i.id==iid);const nw=!it;it=it||{type:'cred'};const TY={cred:'Credencial (usuário e senha)',link:'Link externo',article:'Artigo',code:'Código / comando',text:'Nota / texto'};
- dlg(nw?'Novo item':'Editar item',`<select id="ty" onchange="tf()">${Object.entries(TY).map(([k,v])=>`<option value="${k}" ${k==it.type?'selected':''}>${v}</option>`).join('')}</select><input id="lb" placeholder="Título" value="${esc(it.label)}">${iconSel(it.icon,'')}<input class="f cred" id="us" placeholder="Usuário" value="${esc(it.user)}"><input class="f cred" id="pw" type="password" placeholder="Senha" value="${esc(it.pass)}" autocomplete="new-password"><input class="f link article" id="ur" placeholder="https://…" value="${esc(it.url)}"><textarea class="f article code text" id="tx" rows="5" placeholder="Descrição / conteúdo">${esc(it.text)}</textarea>`,
- ()=>{const lb=$('#lb').value.trim();if(!lb){toast('Informe um título');return false}const o={id:nw?uid():it.id,type:$('#ty').value,label:lb,icon:$('#icu').value.trim()\vert{}\vert{}$('#isel').value,user:$('#us').value,pass:$('#pw').value,url:$('#ur').value.trim(),text:$('#tx').value};
-  nw?s.items.push(o):Object.assign(it,o);save();render();
-  saveRecursoCloud(sid, o);
- },nw?0:()=>{s.items=s.items.filter(i=>i.id!=iid);save();render();deleteRecursoCloud(iid);});tf()}
+
+function itemDlg(sid, iid) {
+  const s = S.sections.find(x => x.id == sid);
+  let it = s.items.find(i => i.id == iid);
+  const nw = !it;
+  it = it || { type: 'cred' };
+  const TY = { cred: 'Credencial (usuário e senha)', link: 'Link externo', article: 'Artigo', code: 'Código / comando', text: 'Nota / texto' };
+
+  dlg(
+    nw ? 'Novo item' : 'Editar item',
+    `<select id="ty" onchange="tf()">${Object.entries(TY).map(([k, v]) => `<option value="${k}" ${k == it.type ? 'selected' : ''}>${v}</option>`).join('')}</select>` +
+    `<input id="lb" placeholder="Título" value="${esc(it.label)}">` +
+    iconSel(it.icon, '') +
+    `<input class="f cred" id="us" placeholder="Usuário" value="${esc(it.user)}">` +
+    `<input class="f cred" id="pw" type="password" placeholder="Senha" value="${esc(it.pass)}" autocomplete="new-password">` +
+    `<input class="f link article" id="ur" placeholder="https://…" value="${esc(it.url)}">` +
+    `<textarea class="f article code text" id="tx" rows="5" placeholder="Descrição / conteúdo">${esc(it.text)}</textarea>`,
+    () => {
+      const lb = $('#lb').value.trim();
+      if (!lb) { toast('Informe um título'); return false; }
+      
+      const itemId = it.id || uid();
+      const o = {
+        id: itemId,
+        type: $('#ty').value,
+        label: lb,
+        icon: $('#icu').value.trim() \vert{}\vert{} $('#isel').value,
+        user: $('#us').value,
+        pass: $('#pw').value,
+        url: $('#ur').value.trim(),
+        text: $('#tx').value
+      };
+
+      if (nw) s.items.push(o);
+      else Object.assign(it, o);
+      
+      save();
+      render();
+
+      const recursoPayload = {
+        id: itemId,
+        secao: sid,
+        nome: lb,
+        valor: JSON.stringify({ type: o.type, user: o.user, pass: o.pass, url: o.url, text: o.text }),
+        icone: o.icon
+      };
+
+      sheets({ acao: 'salvarRecurso', recurso: JSON.stringify(recursoPayload) });
+      toast('Item salvo na planilha!');
+    },
+    nw ? 0 : () => {
+      s.items = s.items.filter(i => i.id != iid);
+      save();
+      render();
+
+      sheets({ acao: 'excluirRecurso', id: iid });
+      toast('Item excluído da planilha!');
+    }
+  );
+  tf();
+}
+
 function secDlg(s){dlg(s?'Renomear seção':'Nova seção',`<input id="st" placeholder="Nome da seção" value="${esc(s?.title)}">${iconSel(s?.icon,'auto')}`,
  ()=>{const t=$('#st').value.trim();if(!t){toast('Informe um nome');return false}const ic=$('#icu').value.trim()\vert{}\vert{}$('#isel').value||'auto';if(s){s.title=t;s.icon=ic}else{const n={id:uid(),title:t,icon:ic,items:[]};S.sections.push(n);S.view=n.id}save();render()})}
 
-/* ---------- CARD KANBAN ---------- */
+/* ---------- card ---------- */
 function ckr(){const c=CUR.chk;$('#ckl').innerHTML=c.map((i,n)=>`<div class="ck ${i.done?'d':''}" data-n="${n}"><input type="checkbox" style="width:auto;margin:0" ${i.done?'checked':''} data-a="ck" data-n="${n}"><span data-a="ck" data-n="${n}">${esc(i.texto)}${i.date?`<br><em>${i.date}</em>`:''}</span><button class="btn" style="padding:1px 6px" data-a="rmk" data-n="${n}">×</button></div>`).join('');$('#pg').innerHTML=`<div class="pb"><i style="width:${pct(c)}%"></i></div><p class="mu" style="margin:4px 0 8px">${c.filter(i=>i.done).length}/${c.length} (${pct(c)}%)</p>`;
  Sortable.create($('#ckl'),{animation:120,onEnd:e=>{c.splice(e.newIndex,0,c.splice(e.oldIndex,1)[0]);ckr()}})}
 function cardDlg(cid,id){const col=S.cols.find(c=>c.id==cid);let k=col.cards.find(x=>x.id==id);const nw=!k;k=k||newCard('');CUR={k,col,chk:structuredClone(k.chk)};
@@ -313,9 +308,9 @@ function cardDlg(cid,id){const col=S.cols.find(c=>c.id==cid);let k=col.cards.fin
  ckr();$('#ni').onkeydown=e=>{if(e.key=='Enter'&&e.target.value.trim()){CUR.chk.push({texto:e.target.value.trim(),done:false,date:null});ckr();e.target.value=''}}}
 const nowS=()=>{const n=new Date();return n.toLocaleDateString('pt-BR')+' às '+n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})};
 const ms=chk=>[['Kick-off','kick off realizado'],['Setup','iniciar setup'],['Homolog.','homologação'],['Go-live','handoff']].map(([n,k])=>{const i=chk.find(x=>x.done&&x.texto.toLowerCase().includes(k));return `${n}: ${i?.date?i.date.split(' às')[0]:'--'}`}).join(' · ');
-const cardInfo=()=>({t:$('#t').value.trim()\vert{}\vert{}'Projeto',e:$('#e').value.trim()||'Cliente'});
+const cardInfo=()=>({t:$('#t').value.trim()||'Projeto',e:$('#e').value.trim()||'Cliente'});
 
-/* ---------- AÇÕES ---------- */
+/* ---------- ações ---------- */
 const A={
  nav:d=>{S.view=d.v;S.q='';save();render()},
  copy:d=>navigator.clipboard.writeText(d.v).then(()=>toast('Copiado')),
@@ -325,8 +320,8 @@ const A={
  out:()=>{localStorage.removeItem('weon_sess');location.reload()},
  txt:()=>{if(!S.notes.trim())return toast('Bloco vazio');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([S.notes],{type:'text/plain'}));a.download='notas_weon.txt';a.click()},
  newsec:()=>secDlg(),ev:()=>evDlg(),evr:()=>{const f=$('#cal');f.src=f.src},cag:()=>{const{t,e}=cardInfo();gcal({text:'Reunião - '+t+(e!='Cliente'?' ('+e+')':''),details:'Contato: '+($('#c').value||'—')})},rens:d=>secDlg(S.sections.find(s=>s.id==d.id)),
- dels:d=>{const s=S.sections.find(x=>x.id==d.id);if(confirm(`Excluir a seção "${s.title}" e seus ${s.items.length} item(ns)?`)){S.sections=S.sections.filter(x=>x!==s);S.view='home';save();render();deleteSecaoCloud(d.id);}},
- addi:d=>itemDlg(d.id),edi:d=>itemDlg(d.s,d.id),deli:d=>{if(confirm('Remover este item?')){const s=S.sections.find(x=>x.id==d.s);s.items=s.items.filter(i=>i.id!=d.id);save();render();deleteRecursoCloud(d.id);}},
+ dels:d=>{const s=S.sections.find(x=>x.id==d.id);if(confirm(`Excluir a seção "${s.title}" e seus ${s.items.length} item(ns)?`)){S.sections=S.sections.filter(x=>x!==s);S.view='home';save();render();sheets({acao:'excluirSecao',id:d.id});toast('Seção e itens excluídos!')}},
+ addi:d=>itemDlg(d.id),edi:d=>itemDlg(d.s,d.id),deli:d=>{if(confirm('Remover este item?')){const s=S.sections.find(x=>x.id==d.s);s.items=s.items.filter(i=>i.id!=d.id);save();render();sheets({acao:'excluirRecurso',id:d.id});toast('Item excluído!')}},
  cfg:()=>dlg('Configurar IA',`<select id="pv"><option value="gemini">Google Gemini</option><option value="groq">Groq (Llama 3)</option><option value="openai">OpenAI (GPT-4o mini)</option></select><input id="md" placeholder="Modelo Gemini (ex.: gemini-3.8-flash)" value="${esc(S.ai.model)}"><input id="ky" type="password" placeholder="API Key" value="${esc(S.ai.key)}" autocomplete="off"><p class="mu">A chave fica só neste navegador (localStorage).</p>`,()=>{S.ai={provider:$('#pv').value,model:$('#md').value.trim(),key:$('#ky').value.trim()};save();toast('IA configurada')}),
  exp:()=>{const o={...S,ai:{...S.ai,key:''}},a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,1)],{type:'application/json'}));a.download='weon_backup.json';a.click()},
  imp:()=>$('#imp').click(),
@@ -347,6 +342,7 @@ const A={
   run(`Você é Gestor da WeON. Faça um diagnóstico executivo resumido dos projetos ativos: ${JSON.stringify(r)}. Divida em "Resumo Geral da Carteira", "Gargalos" e "Ações Recomendadas". Responda em português.`)},
  bxp:()=>pdf('Diagnóstico geral da carteira','Relatório executivo consolidado',md($('#ao').textContent),'CARTEIRA GERAL')
 };
+
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.tagName=='INPUT'&&e.type!='click')return;if(b.dataset.a=='card'&&e.target.closest('button'))return;A[b.dataset.a]?.(b.dataset,b)});
 document.addEventListener('mousedown',e=>{if(e.target.closest('[data-c]'))e.preventDefault()});
 $('#q').oninput=e=>{S.q=e.target.value.trim();render();$('#q').focus()};
