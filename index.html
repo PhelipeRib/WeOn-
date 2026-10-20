@@ -100,7 +100,9 @@ const seed=()=>({theme:'dark',notes:'',view:'home',q:'',ai:{provider:'gemini',ke
 let S;try{S=JSON.parse(localStorage.weon_v2)}catch{}S=S||seed();
 const save=()=>localStorage.weon_v2=JSON.stringify(S);
 const toast=m=>{const t=$('#ts');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
-const sheets=o=>fetch(SHEETS,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(o).toString()}).catch(()=>{});
+
+// Envio seguro para o Apps Script usando JSON e text/plain para evitar erro de CORS
+const sheets=o=>fetch(SHEETS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o)}).catch(()=>{});
 const hook=(k,etapa)=>fetch(HOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({cliente:k.title||'Sem nome',empresa:k.empresa||'',contato:k.contato||'',telefone:'5541999999999',email:'contato@weon.com.br',etapa,detalhes:k.obs||''}).toString()}).catch(()=>{});
 
 /* ---------- auth ---------- */
@@ -122,7 +124,9 @@ async function pull(){
       });
       if(n)save();
     }
-    
+  }catch(e){console.warn('Erro ao carregar Kanban:',e)}
+
+  try{
     // 2. Credenciais e Recursos da Planilha
     const resRec=await(await fetch(SHEETS+'?acao=getRecursos')).json();
     if(resRec.status==='success'&&resRec.recursos){
@@ -144,8 +148,9 @@ async function pull(){
       });
       save();
     }
-    render();
-  }catch(e){console.error('Erro no pull:',e)}
+  }catch(e){console.warn('Erro ao carregar Recursos:',e)}
+
+  render();
 }
 
 /* ---------- helpers ---------- */
@@ -164,7 +169,7 @@ async function ai(p){const{provider:v,key:k,model:m}=S.ai;if(!k)throw Error('Con
  if(v=='gemini'){let err;for(const md of new Set([m,'gemini-3.8-flash','gemini-3.6-flash'].filter(Boolean))){
   const d=await post(`https://generativelanguage.googleapis.com/v1beta/models/${md}:generateContent`,{'x-goog-api-key':k},{contents:[{parts:[{text:p}]}],generationConfig:{temperature:.3,maxOutputTokens:1200}}).catch(e=>({error:{message:e.message}}));
   const t=d.candidates?.[0]?.content?.parts?.[0]?.text;if(t)return t;err=d.error?.message}throw Error(err||'Sem resposta')}
- const o=v=='groq'?['https://api.groq.com/openai/v1/chat/completions','llama-3.1-8b-instant']:['https://api.openai.com/v1,chat/completions','gpt-4o-mini'];
+ const o=v=='groq'?['https://api.groq.com/openai/v1/chat/completions','llama-3.1-8b-instant']:['https://api.openai.com/v1/chat/completions','gpt-4o-mini'];
  const d=await post(o[0],{Authorization:'Bearer '+k},{model:o[1],messages:[{role:'user',content:p}],temperature:.3,max_tokens:900});
  if(d.choices)return d.choices[0].message.content;throw Error(d.error?.message||'Erro na API')}
 async function run(p){const o=$('#ao');o.hidden=false;o.textContent='Gerando…';try{o.textContent=await ai(p);$('#xp').hidden=false}catch(e){o.textContent='Erro: '+e.message+'. Use o PDF direto (sem IA).'}}
